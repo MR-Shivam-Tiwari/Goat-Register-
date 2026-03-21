@@ -32,7 +32,7 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                      <h2 className="text-2xl font-bold text-gray-800">{t.goats.addTitle}</h2>
                      <p className="text-sm text-gray-500 mt-1">{t.goats.officialDetails}</p>
                  </div>
-                 <Link href="/catalog/goats" className="text-sm font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-5 py-2.5 rounded-xl transition-all active:scale-95 whitespace-nowrap">
+                 <Link href="/catalog/goats" className="text-sm font-semibold text-[#491907] hover:text-[#6D260D] bg-amber-50 px-5 py-2.5 rounded-xl transition-all active:scale-95 whitespace-nowrap">
                      ← {t.nav.catalog}
                  </Link>
             </div>
@@ -48,7 +48,7 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                                 name="nickname"
                                 type="text" 
                                 placeholder={t.goats.nickname}
-                                className="w-full border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                                className="w-full border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#491907]/20 focus:border-[#491907] transition-shadow"
                                 required
                             />
                         </div>
@@ -194,7 +194,7 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                 </div>
 
                 <div className="pt-8 flex justify-center border-t border-gray-100">
-                    <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-16 rounded-xl shadow-lg transition-all active:scale-95 text-lg tracking-wide uppercase">
+                    <button type="submit" className="bg-[#491907] hover:bg-[#6D260D] text-white font-bold py-4 px-16 rounded-xl shadow-lg transition-all active:scale-95 text-lg tracking-wide uppercase">
                         {t.goats.addToRegistry}
                     </button>
                 </div>

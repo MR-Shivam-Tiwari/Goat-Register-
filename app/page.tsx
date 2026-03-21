@@ -27,7 +27,7 @@ export default async function Home() {
 
           {/* Center Column - Text Content */}
           <div className="lg:col-span-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-blue-600 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-[#491907] opacity-80"></div>
             
             <header className="mb-10 text-center">
               <h1 className="text-xl md:text-2xl font-bold text-red-600 uppercase leading-snug tracking-tight">
@@ -43,7 +43,7 @@ export default async function Home() {
               <p>{t.home.p5}</p>
               <p>{t.home.p6}</p>
               
-              <div className="my-8 font-bold border-l-4 border-blue-600 pl-6 italic bg-blue-50/50 py-6 text-gray-900 rounded-r-lg">
+              <div className="my-8 font-bold border-l-4 border-[#491907] pl-6 italic bg-amber-50/50 py-6 text-gray-900 rounded-r-lg">
                 {t.home.quoteHighlight}
               </div>
               

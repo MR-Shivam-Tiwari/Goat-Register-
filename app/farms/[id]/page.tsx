@@ -83,11 +83,16 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-8 bg-primary text-secondary">
+              <div className="p-8 bg-[#491907] text-white">
                  <span className="text-[10px] font-black uppercase tracking-[0.4em] mb-3 block opacity-60">{t.farms.trustedBreeder}</span>
-                 <h3 className="text-xl font-black mb-6 uppercase tracking-tight leading-tight">ФЕРМА ПРОШЛА <br/> ВЕРИФИКАЦИЮ</h3>
-                 <button className="w-full py-4 bg-secondary text-primary font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-white transition-all">
-                    СВИДЕТЕЛЬСТВО ➔
+                 <h3 className="text-xl font-black mb-6 uppercase tracking-tight leading-tight">
+                    {t.farms.passedVerification.split(' ').length > 2 
+                      ? <>{t.farms.passedVerification.split(' ').slice(0, 2).join(' ')} <br/> {t.farms.passedVerification.split(' ').slice(2).join(' ')}</>
+                      : t.farms.passedVerification
+                    }
+                 </h3>
+                 <button className="w-full py-4 bg-amber-50 text-[#491907] font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-md">
+                    {t.farms.certificate} ➔
                  </button>
               </div>
             </div>
@@ -103,9 +108,9 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                   <p className="text-xl font-bold text-secondary uppercase tracking-widest italic">{t.farms.officialMember}</p>
                </div>
                {isAdmin && (
-                  <Link href={`/farms/${farm.id}/edit`} className="flex items-center gap-3 px-8 py-4 bg-secondary text-primary rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-primary hover:text-white transition-all transform hover:-translate-y-2 group">
+                  <Link href={`/farms/${farm.id}/edit`} className="flex items-center gap-3 px-8 py-4 bg-[#491907] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-[#6D260D] transition-all transform hover:-translate-y-2 group">
                      <Pencil size={14} className="group-hover:rotate-12 transition-transform" />
-                     РЕДАКТИРОВАТЬ
+                     {t.common.edit}
                   </Link>
                )}
             </header>
@@ -129,11 +134,11 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             )}
 
             <div className="flex flex-col sm:flex-row gap-6 pt-10">
-               <Link href="/farms" className="px-10 py-5 border-2 border-primary text-primary font-black rounded-2xl text-[10px] uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all text-center">
-                  ← К СПИСКУ ФЕРМ
+               <Link href="/farms" className="px-10 py-5 border-2 border-[#491907] text-[#491907] font-black rounded-2xl text-[10px] uppercase tracking-[0.3em] hover:bg-[#491907] hover:text-white transition-all text-center">
+                  ← {t.farms.toFarmList}
                </Link>
-               <Link href="/catalog/goats" className="px-10 py-5 bg-primary text-secondary font-black rounded-2xl text-[10px] uppercase tracking-[0.3em] hover:bg-secondary hover:text-primary transition-all text-center flex-1">
-                  СМОТРЕТЬ ЖИВОТНЫХ
+               <Link href="/catalog/goats" className="px-10 py-5 bg-[#491907] text-white font-black rounded-2xl text-[10px] uppercase tracking-[0.3em] hover:bg-[#6D260D] transition-all text-center flex-1">
+                  {t.farms.viewAnimals}
                </Link>
             </div>
           </div>

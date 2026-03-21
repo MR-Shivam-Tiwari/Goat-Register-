@@ -5,6 +5,8 @@ import Image from 'next/image';
 import fs from 'fs';
 import path from 'path';
 import { Pencil } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { getTranslation, Locale } from '@/lib/translations';
 
 async function getFarms() {
     const result = await query('SELECT id, name, pic1 FROM farms ORDER BY id DESC');
@@ -32,53 +34,62 @@ async function getFarms() {
 
 export default async function FarmsPage() {
     const farms = await getFarms();
+    const cookieStore = await cookies();
+    const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+    const t = getTranslation(lang);
     
     return (
-        <div className="min-h-screen bg-bg-site py-12 px-4 md:px-12 lg:px-24">
-            <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000">
-                <Breadcrumbs items={[{ label: 'КАТАЛОГ ФЕРМ' }]} />
+        <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-12 lg:px-24 font-sans">
+            <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
+                <Breadcrumbs items={[{ label: t.farms.breadcrumbs }]} />
 
-                <header className="flex flex-col md:flex-row items-center justify-between border-b border-primary/10 pb-10 gap-8">
+                <header className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 pb-10 gap-8">
                     <div className="text-center md:text-left">
-                        <h1 className="text-4xl font-black text-primary uppercase tracking-tighter italic m-0">ФЕРМЕРСКИЕ ХОЗЯЙСТВА</h1>
-                        <p className="mt-1 text-[10px] font-black text-primary/40 uppercase tracking-[0.4em] italic leading-tight">Официальный реестр племенных хозяйств АПК</p>
+                        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">{t.farms.title}</h1>
+                        <p className="mt-2 text-sm font-medium text-gray-500 uppercase tracking-widest">{t.farms.desc}</p>
                     </div>
-                    <Link href="/farms/add" className="px-10 py-4 bg-primary text-secondary font-black rounded-2xl text-[10px] uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-xl active:scale-95 duration-500">
-                        ДОБАВИТЬ ХОЗЯЙСТВО +
+                    <Link href="/farms/add" className="px-10 py-4 bg-[#491907] text-white font-bold rounded-2xl text-[11px] uppercase tracking-widest hover:bg-[#6D260D] transition-all shadow-lg active:scale-95 duration-300">
+                        {t.farms.addFarm}
                     </Link>
                 </header>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
                     {farms.map((farm: any) => (
                         <div key={farm.id} className="group flex flex-col items-center">
-                            <Link href={`/farms/${farm.id}`} className="block relative w-full overflow-hidden rounded-3xl border-4 border-white shadow-2xl aspect-[1.1/1] bg-white transition-all duration-700 group-hover:shadow-4xl group-hover:border-secondary hover:-rotate-1">
+                            <Link href={`/farms/${farm.id}`} className="block relative w-full overflow-hidden rounded-3xl border-8 border-white shadow-xl aspect-[1.1/1] bg-white transition-all duration-500 group-hover:shadow-2xl group-hover:border-amber-50">
                                 <Image 
                                     src={farm.displayPic} 
                                     alt={farm.name} 
                                     fill
-                                    className="object-cover transition-transform duration-1000 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                <div className="absolute top-4 right-4 bg-secondary text-primary px-3 py-1 rounded-xl font-black text-[8px] uppercase tracking-[0.2em] shadow-lg animate-pulse">
-                                    MEMBER АПК
+                                <div className="absolute top-4 right-4 bg-[#491907] text-white px-3 py-1.5 rounded-xl font-bold text-[9px] uppercase tracking-wider shadow-md">
+                                    {t.farms.memberApk}
                                 </div>
                             </Link>
                             
-                            <div className="mt-6 text-center space-y-2">
-                                <h3 className="text-sm font-black text-primary uppercase tracking-tight group-hover:text-secondary transition-colors origin-top">
-                                    <Link href={`/farms/${farm.id}`} className="hover:underline underline-offset-8 decoration-primary/20 decoration-2">
+                            <div className="mt-6 text-center space-y-4">
+                                <h3 className="text-lg font-bold text-gray-900 tracking-tight group-hover:text-[#491907] transition-colors">
+                                    <Link href={`/farms/${farm.id}`} className="hover:underline underline-offset-4">
                                         {farm.name}
                                     </Link>
                                 </h3>
-                                <div className="mt-4">
-                                   <Link href={`/farms/${farm.id}/edit`} className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary/5 border border-primary/10 text-[10px] font-black text-primary hover:bg-secondary transition-all uppercase tracking-widest rounded-xl group/btn shadow-sm hover:shadow-md">
-                                      <Pencil size={12} className="text-secondary group-hover/btn:text-primary transition-colors" />
-                                      Редактировать
+                                <div>
+                                   <Link href={`/farms/${farm.id}/edit`} className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-100/50 border border-gray-200 text-[10px] font-bold text-gray-600 hover:bg-[#491907] hover:text-white hover:border-[#491907] transition-all uppercase tracking-widest rounded-xl shadow-sm">
+                                      <Pencil size={12} />
+                                      {t.common.edit}
                                    </Link>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
+
+                {farms.length === 0 && (
+                    <div className="text-center py-20">
+                        <p className="text-gray-400 font-medium">{t.common.notAvailable}</p>
+                    </div>
+                )}
             </div>
         </div>
     );

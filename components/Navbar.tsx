@@ -42,10 +42,10 @@ export default async function Navbar() {
             <Link 
               key={link.href}
               href={link.href} 
-              className="text-gray-600 hover:text-blue-600 transition-all uppercase relative group py-2"
+              className="text-gray-600 hover:text-[#491907] transition-all uppercase relative group py-2"
             >
               {link.label}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#491907] transition-all group-hover:w-full"></span>
             </Link>
           ))}
         </div>
@@ -59,9 +59,11 @@ export default async function Navbar() {
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-end">
               <span className="text-[9px] uppercase text-gray-400 font-bold tracking-widest leading-none mb-1">{t.nav.authenticated}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-gray-900 tracking-tight">{user.login}</span>
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+              <div className="flex items-center gap-2 group/user cursor-pointer">
+                <Link href="/profile" className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-gray-900 tracking-tight group-hover/user:text-[#491907] transition-colors">{user.login}</span>
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] group-hover/user:scale-125 transition-transform" />
+                </Link>
               </div>
             </div>
             <form action={logoutAction}>
@@ -83,7 +85,7 @@ export default async function Navbar() {
             </Link>
             <Link 
               href="/register" 
-              className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all active:scale-95 text-center"
+              className="px-6 py-2.5 rounded-xl bg-[#491907] text-white font-bold text-[10px] uppercase tracking-widest shadow-md hover:bg-[#6D260D] transition-all active:scale-95 text-center"
             >
               {t.nav.join}
             </Link>

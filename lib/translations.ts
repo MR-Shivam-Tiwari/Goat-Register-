@@ -27,7 +27,8 @@ export const translations = {
       accessDenied: 'Доступ запрещен',
       onlyAdmin: 'Только администратор имеет доступ к этой странице.',
       goHome: 'На главную',
-      notAvailable: 'Нет данных'
+      notAvailable: 'Нет данных',
+      edit: 'Редактировать'
     },
     users: {
       listTitle: 'Список зарегистрированных пользователей:',
@@ -93,7 +94,7 @@ export const translations = {
       q1: '«Мы все очень-очень разные: и внешне, и внутренне. Но есть точка соприкосновения - козы, наши любимицы.',
       q2: 'Когда собирается команда, то игра будет успешна только тогда, когда ВСЁ, кроме ОБЩЕЗНАЧИМОГО, уйдет на второй план.',
       q3: 'Если Петров в игре не даст шанса забить мяч Сидорову, потому что тот в раздевалке наступил ему на ногу - проиграла команда. Общая точка - мяч-игра-победа.',
-      q4: 'Наши мячи - наши козы, и если мы пытаемся играть командой чьим-то мячом и достигаем успеха - это здОрово.',
+      q4: 'Our balls are our goats, and if we try to play as a team with someone\'s ball and achieve success, that\'s great.',
       q5: 'Все уже давно забыли, чей мяч был на поле, идет тренировка на сыгранность команды. Иногда очень важно услышать мнение со стороны, именно услышать, и сопоставить со своим.',
       q6: 'Это не значит, что кто-то не прав, каждое мнение имеет право быть. Услышал, сопоставил, проанализировал и или лишний раз убедился, что идешь правильно, или ищешь другой путь.»',
       footerConsent: 'Использование материалов разрешено только с согласия автора.',
@@ -110,9 +111,11 @@ export const translations = {
       empty: 'Нет данных'
     },
     farms: {
-      title: 'Хозяйства Ассоциации',
-      desc: 'Список сертифицированных хозяйств и официальных членов Ассоциации.',
-      breadcrumbs: 'Хозяйства',
+      title: 'ФЕРМЕРСКИЕ ХОЗЯЙСТВА',
+      desc: 'Официальный реестр племенных хозяйств АПК',
+      breadcrumbs: 'ХОЗЯЙСТВА',
+      addFarm: 'ДОБАВИТЬ ХОЗЯЙСТВО +',
+      memberApk: 'MEMBER АПК',
       registry: 'РЕЕСТР УЧАСТНИКОВ',
       officialMember: 'ОФИЦИАЛЬНЫЙ ЧЛЕН АССОЦИАЦИИ',
       verifyCert: 'ПРОВЕРИТЬ СЕРТИФИКАТ',
@@ -120,7 +123,28 @@ export const translations = {
       memberId: 'ID УЧАСТНИКА',
       trustedBreeder: 'ПРОВЕРЕННЫЙ ЗАВОДЧИК',
       authenticatedMember: 'АУТЕНТИФИЦИРОВАННЫЙ УЧАСТНИК',
-      memberDirectory: 'СПИСОК ХОЗЯЙСТВ'
+      memberDirectory: 'СПИСОК ХОЗЯЙСТВ',
+      passedVerification: 'ФЕРМА ПРОШЛА ВЕРИФИКАЦИЮ',
+      certificate: 'СВИДЕТЕЛЬСТВО',
+      toFarmList: 'К СПИСКУ ФЕРМ',
+      viewAnimals: 'СМОТРЕТЬ ЖИВОТНЫХ'
+    },
+    rules: {
+      title: 'ПРОТОКОЛ РАЗВЕДЕНИЯ.',
+      desc: 'Наши официальные стандарты определяют превосходство молочного козоводства и классификацию реестра по всему миру.',
+      breadcrumbs: 'ПРАВИЛА И СТАНДАРТЫ',
+      sectionPrefix: 'СЕКЦИЯ ПРОТОКОЛА',
+      applyTitle: 'ПОДАТЬ ЗАЯВКУ НА ВЕРИФИКАЦИЮ.',
+      applyDesc: 'Обеспечьте соответствие ваших животных международным стандартам для официальной аутентификации и генетической сертификации.',
+      portalBtn: 'ПОРТАЛ АССОЦИАЦИИ ➔',
+      rhbTitle: 'ОСНОВНОЙ РЕЕСТР (RHB)',
+      rhbDesc: 'Для чистопородных животных с документально подтвержденным происхождением и высокой генетической ценностью в соответствии с международными стандартами.',
+      rcbTitle: 'УЛУЧШАЮЩИЙ (RCB)',
+      rcbDesc: 'Для животных, полученных в результате специальных программ скрещивания, нацеленных на поколения от F1 до F7.',
+      rfbTitle: 'ФЕНОТИП (RFB)',
+      rfbDesc: 'Регистрация на основе тщательной оценки физических характеристик на соответствие стандартам породы.',
+      rexbTitle: 'ЭКСПЕРИМЕНТАЛЬНЫЙ (RExB)',
+      rexbDesc: 'Документация новых линий крови, специализированных пользовательских кроссов и генетических экспериментов.'
     },
     auth: {
       loginTitle: 'ВХОД В СИСТЕМУ',
@@ -163,7 +187,8 @@ export const translations = {
       accessDenied: 'Access Denied',
       onlyAdmin: 'Only administrators can access this page.',
       goHome: 'Go Home',
-      notAvailable: 'Not available'
+      notAvailable: 'Not available',
+      edit: 'Edit'
     },
     users: {
       listTitle: 'List of registered users:',
@@ -246,9 +271,11 @@ export const translations = {
       empty: 'No Data'
     },
     farms: {
-      title: 'Association Farms',
-      desc: 'List of certified farms and official members of the Association.',
-      breadcrumbs: 'Farms',
+      title: 'ASSOCIATION FARMS',
+      desc: 'Official register of pedigree farms of the Association',
+      breadcrumbs: 'FARMS',
+      addFarm: 'ADD FARM +',
+      memberApk: 'APK MEMBER',
       registry: 'MEMBER REGISTRY',
       officialMember: 'OFFICIAL ASSOCIATION MEMBER',
       verifyCert: 'VERIFY CERTIFICATE',
@@ -256,7 +283,28 @@ export const translations = {
       memberId: 'MEMBER ID',
       trustedBreeder: 'TRUSTED BREEDER',
       authenticatedMember: 'AUTHENTICATED MEMBER',
-      memberDirectory: 'MEMBER DIRECTORY'
+      memberDirectory: 'MEMBER DIRECTORY',
+      passedVerification: 'FARM HAS PASSED VERIFICATION',
+      certificate: 'CERTIFICATE',
+      toFarmList: 'TO FARM LIST',
+      viewAnimals: 'VIEW ANIMALS'
+    },
+    rules: {
+      title: 'BREEDING PROTOCOL.',
+      desc: 'Our official standards define dairy goat excellence and registry classification worldwide.',
+      breadcrumbs: 'RULES & STANDARDS',
+      sectionPrefix: 'PROTOCOL SECTION',
+      applyTitle: 'APPLY FOR VERIFICATION.',
+      applyDesc: 'Ensure your animals meet international standards for official authentication and genetic certification.',
+      portalBtn: 'ASSOCIATION PORTAL ➔',
+      rhbTitle: 'MAIN REGISTER (RHB)',
+      rhbDesc: 'For purebred animals with documented origin and high genetic value in accordance with international standards.',
+      rcbTitle: 'IMPROVING (RCB)',
+      rcbDesc: 'For animals obtained as a result of special crossbreeding programs aimed at generations from F1 to F7.',
+      rfbTitle: 'PHENOTYPE (RFB)',
+      rfbDesc: 'Registration based on a thorough assessment of physical characteristics for compliance with breed standards.',
+      rexbTitle: 'EXPERIMENTAL (RExB)',
+      rexbDesc: 'Documentation of new blood lines, specialized user crosses and genetic experiments.'
     },
     auth: {
       loginTitle: 'LOGIN SYSTEM',

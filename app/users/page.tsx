@@ -62,7 +62,7 @@ export default async function UsersPage() {
                                 {users.map((user: any) => (
                                     <tr key={`user-${user.id}`} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <Link href={`/users/${user.id}/edit`} className="text-blue-600 font-medium hover:text-blue-800 hover:underline">
+                                            <Link href={`/users/${user.id}/edit`} className="text-[#491907] font-medium hover:text-[#6D260D] hover:underline">
                                                 {user.login}
                                             </Link>
                                         </td>
