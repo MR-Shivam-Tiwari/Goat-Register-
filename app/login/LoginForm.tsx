@@ -1,0 +1,89 @@
+'use client';
+
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { loginAction } from '@/lib/actions';
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button 
+      type="submit" 
+      disabled={pending}
+      className={`w-full bg-primary text-secondary py-3.5 rounded-xl font-black text-xs shadow-lg transition-all transform hover:-translate-y-1 uppercase tracking-[0.4em] italic mt-2 active:scale-95 duration-500 box-shadow-elite flex items-center justify-center gap-3 ${pending ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black'}`}
+    >
+      {pending ? (
+        <>
+          <div className="w-3.5 h-3.5 border-2 border-secondary/30 border-t-secondary rounded-full animate-spin"></div>
+          <span>ВХОД...</span>
+        </>
+      ) : (
+        'ВОЙТИ В ПОРТАЛ'
+      )}
+    </button>
+  );
+}
+
+export default function LoginForm() {
+  const [state, formAction] = useActionState(loginAction, null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push('/?loggedin=success');
+      router.refresh();
+    }
+  }, [state, router]);
+
+  return (
+    <div className="min-h-[80vh] flex items-center justify-center p-6 bg-gray-50">
+      <div className="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-gray-200">
+        
+        <header className="mb-8 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">Вход в систему</h2>
+            <p className="text-gray-500 text-lg">Авторизация для членов ассоциации</p>
+        </header>
+
+        {state?.error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2">
+                {state.error}
+            </div>
+        )}
+
+        <form action={formAction} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 block ml-1">Логин или Email</label>
+            <input 
+              name="login" 
+              type="text" 
+              className="w-full bg-white border-2 border-gray-200 px-5 py-4 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
+              placeholder="Введите логин" 
+              required 
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 block ml-1">Пароль</label>
+            <input 
+              name="password" 
+              type="password" 
+              className="w-full bg-white border-2 border-gray-200 px-5 py-4 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
+              placeholder="••••••••" 
+              required 
+            />
+          </div>
+          
+          <SubmitButton />
+        </form>
+
+        <div className="mt-8 pt-8 border-t border-gray-100 text-center">
+            <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-800 transition-colors text-base flex items-center justify-center gap-2">
+                Нет учетной записи? Регистрация
+                <span>➔</span>
+            </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
