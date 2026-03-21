@@ -80,6 +80,7 @@ export const translations = {
       withoutFarm: 'Без хозяйства'
     },
     home: {
+      subtitle: 'ОФИЦИАЛЬНЫЙ ПЛЕМЕННОЙ РЕЕСТР',
       heroHeader: 'Одна из важнейших задач козоводства в Украине - ведение племенного и зоотехнического учета.',
       p1: 'Племенной учёт имеет особое значение для успешного ведения племенной работы, в частности, при оценке, подборе и отборе животных.',
       p2: 'Отбор по комплексу признаков и всю племенную работу можно вести лишь при наличии в племенном и пользовательском козоводстве точных регистрационных данных, наиболее полно характеризующих племенных и пользовательских животных.',
@@ -240,6 +241,7 @@ export const translations = {
       withoutFarm: 'Without Farm'
     },
     home: {
+      subtitle: 'OFFICIAL BREED REGISTRY',
       heroHeader: 'One of the most important tasks of goat breeding in Ukraine is maintaining breeding and zootechnical records.',
       p1: 'Breeding accounting is of particular importance for the successful conduct of breeding work, in particular, when evaluating, matching and selecting animals.',
       p2: 'Selection by a complex of traits and all breeding work can be carried out only if there are accurate registration data in breeding and user goat breeding that most fully characterize breeding and user animals.',

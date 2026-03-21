@@ -65,17 +65,17 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
   const t = getTranslation(lang);
   const isAdmin = cookieStore.get('uid_token')?.value;
 
-  if (!farm) return <div className="p-40 text-center text-4xl font-black text-primary animate-pulse uppercase tracking-[1em]">Farm not found</div>;
+  if (!farm) return <div className="p-40 text-center text-4xl font-black text-[#491907] animate-pulse uppercase tracking-[1em]">Farm not found</div>;
 
   return (
-    <div className="min-h-screen bg-bg-site py-12 px-6 lg:px-24">
+    <div className="min-h-screen bg-[#FFFDF9] py-12 px-6 lg:px-24">
       <div className="max-w-6xl mx-auto space-y-12">
         <Breadcrumbs items={[{ label: t.farms.breadcrumbs, href: '/farms' }, { label: farm.name }]} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           <div className="lg:col-span-5 lg:sticky lg:top-32">
-            <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-primary/5">
+            <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-amber-900/5">
               <div className="aspect-[3/4] relative">
                 <img 
                   src={farm.displayAva || '/img/farm_placeholder.png'} 
