@@ -8,26 +8,30 @@ import crypto from 'crypto';
 export async function loginAction(prevState: any, formData: FormData) {
   const loginInput = formData.get('login') as string;
   const password = formData.get('password') as string;
-  let success = false;
 
   // MD5 Hashing (Standard for 32-char hashes)
   const hash = crypto.createHash('md5').update(password).digest('hex');
   
-  // Check both login and email
-  const result = await query(
-      'SELECT * FROM users WHERE (login = $1 OR email = $1) AND pass = $2', 
-      [loginInput, hash]
-  );
+  try {
+    // Check both login and email
+    const result = await query(
+        'SELECT * FROM users WHERE (login = $1 OR email = $1) AND pass = $2', 
+        [loginInput, hash]
+    );
 
-  if (result.rows.length > 0) {
-    const user = result.rows[0];
-    const cookieStore = await cookies();
-    cookieStore.set('uid_token', user.token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
-    cookieStore.set('user_login', user.login, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
-    return { success: true };
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
+      const cookieStore = await cookies();
+      cookieStore.set('uid_token', user.token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
+      cookieStore.set('user_login', user.login, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
+      return { success: true };
+    }
+
+    return { error: 'Неверный логин или пароль' };
+  } catch (e: any) {
+    console.error('Login Error:', e.message);
+    return { error: 'Ошибка сервера: ' + e.message };
   }
-
-  return { error: 'Неверный логин или пароль' };
 }
 
 export async function registerAction(prevState: any, formData: FormData) {

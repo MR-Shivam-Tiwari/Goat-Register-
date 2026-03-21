@@ -8,13 +8,13 @@ export default async function Header() {
   const t = getTranslation(lang);
 
   return (
-    <header className="bg-primary pt-6 pb-2 px-6 lg:px-12 text-white flex items-center justify-between relative z-[60]">
+    <header className="bg-primary pt-3 pb-2 px-6 lg:px-12 text-white flex items-center justify-between relative z-[60]">
       <div className="flex items-center gap-10 group">
-        <Link href="/" className="transition-all hover:scale-105 duration-500 relative bg-white rounded-xl p-3 shadow-2xl shrink-0">
+        <Link href="/" className="transition-all hover:scale-105 duration-500 relative bg-white rounded-xl p-1 shadow-2xl shrink-0">
           <img 
             src="/img/forum_kozovodstvo.jpg" 
             alt="Logo" 
-            className="w-[80px] h-auto object-contain rounded-lg"
+            className="w-[90px] h-auto object-contain rounded-lg"
           />
         </Link>
         <div className="hidden sm:block">
