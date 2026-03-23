@@ -18,52 +18,52 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
   const params = await paramsPromise;
   const breed = await getBreedData(params.alias);
   
-  if (!breed) return <div className="p-40 text-center text-5xl font-black text-primary uppercase">Breed not found</div>;
+  if (!breed) return <div className="p-40 text-center text-4xl font-black text-primary uppercase tracking-[1em]">Breed not found</div>;
 
   const pics = await getBreedPictures(params.alias);
 
   const categories = [
-    { id: 'female', name: 'Does (Females)', sex: 0, desc: 'Registered adult females and productivity records.', img: pics[0] || 'noimage.gif' },
-    { id: 'male', name: 'Bucks (Males)', sex: 1, desc: 'Registered breeding sires and genetic lines.', img: pics[1] || 'noimage.gif' },
-    { id: 'child', name: 'Kids (Young Stock)', sex: 2, desc: 'Kids, yearlings and upcoming breeding potential.', img: pics[2] || 'noimage.gif' }
+    { id: 'female', name: 'Does (Females)', sex: 0, desc: 'View Stock', img: pics[0] || 'noimage.gif' },
+    { id: 'male', name: 'Bucks (Males)', sex: 1, desc: 'View Stock', img: pics[1] || 'noimage.gif' },
+    { id: 'child', name: 'Kids (Young)', sex: 2, desc: 'View Stock', img: pics[2] || 'noimage.gif' }
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-16 px-6 md:px-12 lg:px-24">
-      <div className="max-w-6xl mx-auto space-y-16">
+    <div className="min-h-screen bg-[#FDFDFD] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
+      <div className="max-w-4xl mx-auto space-y-8">
         <Breadcrumbs items={[{ label: 'Catalog', href: '/catalog/goats' }, { label: breed.name }]} />
 
-        <header className="border-b border-primary/10 pb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter uppercase mb-4 leading-tight italic">
-              {breed.name} Registry
+        <header className="border-b border-gray-100 pb-3">
+            <h1 className="text-2xl font-black text-primary tracking-tighter uppercase leading-none italic">
+              {breed.name} STOCK
             </h1>
-            <p className="text-xl text-primary/80 font-medium leading-relaxed max-w-3xl">
-              Explore the official records for purebred {breed.name} goats. View genetic standards, productivity, and farm provenance.
+            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1 opacity-60">
+              Select category to view genetic database and records
             </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {categories.map((cat) => (
             <Link 
               key={cat.id}
               href={`/catalog/goats/${breed.alias.trim()}/${cat.id}`}
-              className="group flex flex-col bg-white border-2 border-primary/10 rounded-2xl overflow-hidden hover:border-secondary transition-colors"
+              className="group flex flex-col bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-black transition-all hover:shadow-xl"
             >
-              <div className="aspect-square bg-white flex items-center justify-center p-8 border-b-2 border-primary/10">
+              <div className="aspect-[3/2] bg-gray-50 flex items-center justify-center p-3 border-b border-gray-100">
                  <img 
                     src={`/img/${cat.img}`} 
                     alt={cat.name} 
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
 
-              <div className="p-8 flex flex-col flex-1">
-                <h3 className="text-2xl font-black text-primary mb-3 uppercase tracking-tight">{cat.name}</h3>
-                <p className="text-lg text-primary/70 mb-8 leading-snug">{cat.desc}</p>
+              <div className="p-4 flex flex-col flex-1 bg-[#E2F0D9]/5">
+                <h3 className="text-sm font-black text-primary uppercase tracking-tighter group-hover:text-blue-800 transition-colors italic leading-none">{cat.name}</h3>
+                <p className="text-[7px] font-black uppercase tracking-widest text-gray-300 mt-2 mb-4 italic leading-none">{cat.desc}</p>
                 
                 <div className="mt-auto">
-                   <div className="inline-block px-8 py-4 bg-primary text-secondary font-black text-sm uppercase tracking-widest rounded-xl hover:bg-black w-full text-center transition-colors">
-                     VIEW CATEGORY ➔
+                   <div className="inline-block px-4 py-2 bg-primary text-secondary font-black text-[8px] uppercase tracking-widest rounded-sm hover:bg-black w-full text-center transition-colors shadow-sm italic">
+                     ENTER ➔
                    </div>
                 </div>
               </div>
@@ -71,16 +71,16 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
           ))}
         </div>
 
-        <section className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-primary/10 pt-16 text-center">
+        <section className="mt-12 grid grid-cols-4 gap-4 border-t border-gray-100 pt-6 text-center">
             {[
-              { label: 'Registered', val: '12k+' },
+              { label: 'Registered', val: '12K+' },
               { label: 'Farms', val: '450' },
-              { label: 'Authenticated', val: '100%' },
-              { label: 'Standard', val: 'Global' }
+              { label: 'Data', val: '100%' },
+              { label: 'Standards', val: 'PRO' }
             ].map((s, i) => (
-                <div key={i} className="bg-primary/5 rounded-2xl p-8">
-                    <span className="block text-4xl md:text-5xl font-black text-primary mb-2">{s.val}</span>
-                    <span className="text-sm font-black text-secondary uppercase tracking-widest">{s.label}</span>
+                <div key={i} className="bg-gray-50 rounded-lg p-2 filter grayscale hover:grayscale-0 transition-all opacity-50 hover:opacity-100">
+                    <span className="block text-sm font-black text-primary mb-0.5 uppercase tracking-tighter leading-none italic">{s.val}</span>
+                    <span className="text-[7px] font-black text-secondary tracking-widest uppercase font-mono italic whitespace-nowrap">{s.label}</span>
                 </div>
             ))}
         </section>

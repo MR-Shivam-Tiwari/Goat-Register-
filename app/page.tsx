@@ -2,6 +2,9 @@ import { cookies } from 'next/headers';
 import Image from 'next/image';
 import { getTranslation, Locale } from '@/lib/translations';
 
+export const dynamic = 'force-dynamic';
+
+
 export default async function Home() {
   const cookieStore = await cookies();
   const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
@@ -15,13 +18,13 @@ export default async function Home() {
           {/* Left Column - Images */}
           <div className="hidden lg:flex lg:col-span-2 flex-col gap-6">
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_milk_nature.png" alt="Milk in Nature" fill className="object-cover" />
+              <Image src="/img/home_milk_nature.png" alt="Milk in Nature" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_motherhood_pure.png" alt="Motherhood and Health" fill className="object-cover" />
+              <Image src="/img/home_motherhood_pure.png" alt="Motherhood and Health" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_nursing_artistic.png" alt="Pure Life" fill className="object-cover" />
+              <Image src="/img/home_nursing_artistic.png" alt="Pure Life" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
           </div>
 
@@ -69,9 +72,9 @@ export default async function Home() {
             {/* Mobile Footer Images */}
             <div className="mt-8 text-center lg:hidden flex flex-col gap-4">
               <div className="grid grid-cols-3 gap-3">
-                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_lavender.png" alt="m1" fill className="object-cover"/></div>
-                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_goat_meadow.png" alt="m2" fill className="object-cover"/></div>
-                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_feeding_goat.png" alt="m3" fill className="object-cover"/></div>
+                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_lavender.png" alt="m1" fill sizes="33vw" className="object-cover"/></div>
+                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_goat_meadow.png" alt="m2" fill sizes="33vw" className="object-cover"/></div>
+                <div className="aspect-square relative rounded-lg overflow-hidden shadow-sm"><Image src="/img/home_child_feeding_goat.png" alt="m3" fill sizes="33vw" className="object-cover"/></div>
               </div>
             </div>
           </div>
@@ -79,13 +82,13 @@ export default async function Home() {
           {/* Right Column - Images */}
           <div className="hidden lg:flex lg:col-span-2 flex-col gap-6">
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_child_lavender.png" alt="Lavender Field" fill className="object-cover" />
+              <Image src="/img/home_child_lavender.png" alt="Lavender Field" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_child_goat_meadow.png" alt="Goat Meadow" fill className="object-cover" />
+              <Image src="/img/home_child_goat_meadow.png" alt="Goat Meadow" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
             <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
-              <Image src="/img/home_child_feeding_goat.png" alt="Feeding Goat" fill className="object-cover" />
+              <Image src="/img/home_child_feeding_goat.png" alt="Feeding Goat" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
           </div>
 

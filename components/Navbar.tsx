@@ -21,9 +21,11 @@ export default async function Navbar() {
 
   const navLinks = [
     { href: '/', label: t.nav.home },
+    { href: '/goats', label: t.nav.registry },
     { href: '/farms', label: t.nav.farms },
     { href: '/catalog/goats', label: t.nav.catalog },
-    { href: '/rules', label: t.nav.rules }
+    { href: '/rules', label: t.nav.rules },
+    { href: 'https://kozovodstvo.center/', label: t.nav.forum }
   ];
 
   // Admin and Auth specific links
@@ -35,9 +37,9 @@ export default async function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 px-6 lg:px-12 flex items-center justify-between shadow-sm font-sans">
-      <div className="flex items-center gap-12">
-        <div className="flex items-center gap-8 text-[11px] font-bold tracking-wider">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 py-2 px-6 lg:px-12 flex items-center justify-between shadow-sm font-sans">
+      <div className="flex items-center gap-10">
+        <div className="flex items-center gap-6 text-[10px] font-bold tracking-wider">
           {navLinks.map((link) => (
             <Link 
               key={link.href}

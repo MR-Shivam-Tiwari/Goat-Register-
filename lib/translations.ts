@@ -6,7 +6,10 @@ export const translations = {
       home: 'ГЛАВНАЯ',
       farms: 'ХОЗЯЙСТВА',
       catalog: 'КАТАЛОГ ПОРОД',
+      registry: 'СПИСОК КОЗ',
       rules: 'ПРАВИЛА',
+
+
       forum: 'ФОРУМ',
       portal: 'ПОРТАЛ',
       support: 'ОБРАТНАЯ СВЯЗЬ',
@@ -77,8 +80,21 @@ export const translations = {
       addToRegistry: 'Добавить в реестр',
       female: 'Самка (Коза)',
       male: 'Самец (Козел)',
-      withoutFarm: 'Без хозяйства'
+      withoutFarm: 'Без хозяйства',
+      searchLabel: 'Поиск по кличке или ID',
+      breedFilter: 'Все породы',
+      sexFilter: 'Любой пол',
+      resetFilters: 'Сбросить',
+      showAll: 'Все животные',
+      showX: 'Секция X',
+      showR: 'Секция R',
+      showDuplicates: 'Дубликаты',
+      showLiving: 'Живые',
+      showDead: 'Павшие',
+      noStatus: 'Без статуса'
     },
+
+
     home: {
       subtitle: 'ОФИЦИАЛЬНЫЙ ПЛЕМЕННОЙ РЕЕСТР',
       heroHeader: 'Одна из важнейших задач козоводства в Украине - ведение племенного и зоотехнического учета.',
@@ -167,7 +183,10 @@ export const translations = {
       home: 'HOME',
       farms: 'FARMS',
       catalog: 'BREED CATALOG',
+      registry: 'GOAT LIST',
       rules: 'RULES',
+
+
       forum: 'FORUM',
       portal: 'PORTAL',
       support: 'FEEDBACK',
@@ -238,8 +257,21 @@ export const translations = {
       addToRegistry: 'Add to Registry',
       female: 'Female',
       male: 'Male',
-      withoutFarm: 'Without Farm'
+      withoutFarm: 'Without Farm',
+      searchLabel: 'Search by nickname or ID',
+      breedFilter: 'All Breeds',
+      sexFilter: 'Any Sex',
+      resetFilters: 'Reset',
+      showAll: 'Show All',
+      showX: 'Show X',
+      showR: 'Show R',
+      showDuplicates: 'Show Duplicates',
+      showLiving: 'Show Living',
+      showDead: 'Dead Animals',
+      noStatus: 'No Status'
     },
+
+
     home: {
       subtitle: 'OFFICIAL BREED REGISTRY',
       heroHeader: 'One of the most important tasks of goat breeding in Ukraine is maintaining breeding and zootechnical records.',
