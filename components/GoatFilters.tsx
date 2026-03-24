@@ -13,96 +13,129 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
     const [breed, setBreed] = useState(searchParams.get('breed') || '');
     const [sex, setSex] = useState(searchParams.get('sex') || '');
     const [view, setView] = useState(searchParams.get('view') || 'all');
+    const [showX, setShowX] = useState(searchParams.get('view') === 'x');
+    const [showR, setShowR] = useState(searchParams.get('view') === 'r');
 
     useEffect(() => {
         const params = new URLSearchParams();
         if (search) params.set('q', search);
         if (breed) params.set('breed', breed);
         if (sex) params.set('sex', sex);
-        if (view && view !== 'all') params.set('view', view);
+        
+        let activeView = view;
+        if (showX) activeView = 'x';
+        else if (showR) activeView = 'r';
+        
+        if (activeView && activeView !== 'all') params.set('view', activeView);
         
         const queryString = params.toString();
         router.push(`/goats${queryString ? '?' + queryString : ''}`);
-    }, [search, breed, sex, view, router]);
-
-    const QuickFilter = ({ id, label, active }: { id: string, label: string, active: boolean }) => (
-        <button 
-            onClick={() => setView(id)}
-            className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${active ? 'text-[#491907] underline underline-offset-4' : 'text-blue-600 hover:text-blue-800'}`}
-        >
-            {label}
-        </button>
-    );
+    }, [search, breed, sex, view, showX, showR, router]);
 
     return (
-        <div className="space-y-6 mb-10">
-            {/* Quick Filter Links Row */}
-            <div className="flex flex-wrap items-center gap-3 text-[10px] bg-amber-50/50 p-3 rounded-lg border border-amber-900/5">
-                <Link href="/catalog/goats/add" className="text-blue-600 hover:text-blue-800 font-bold uppercase tracking-widest">
-                    + Add an animal
-                </Link>
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="all" label={t.goats.showAll} active={view === 'all'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="x" label={t.goats.showX} active={view === 'x'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="r" label={t.goats.showR} active={view === 'r'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="duplicates" label={t.goats.showDuplicates} active={view === 'duplicates'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="living" label={t.goats.showLiving} active={view === 'living'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="dead" label={t.goats.showDead} active={view === 'dead'} />
-                <span className="text-gray-300">•</span>
-                <QuickFilter id="nostatus" label={t.goats.noStatus} active={view === 'nostatus'} />
-            </div>
-
-            {/* Search & Selectors Case */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex flex-col md:flex-row gap-4 items-center">
-                    <div className="relative flex-1 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
-                        <input 
-                            type="text" 
-                            placeholder={t.goats.searchLabel} 
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#491907]/10 focus:border-[#491907] transition-all"
-                        />
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 w-full md:w-auto">
-                        <select 
-                            value={breed}
-                            onChange={(e) => setBreed(e.target.value)}
-                            className="flex-1 md:w-48 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#491907]/10 appearance-none cursor-pointer"
-                        >
-                            <option value="">{t.goats.breedFilter}</option>
-                            {breeds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                        </select>
-
-                        <select 
-                            value={sex}
-                            onChange={(e) => setSex(e.target.value)}
-                            className="flex-1 md:w-40 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#491907]/10 appearance-none cursor-pointer"
-                        >
-                            <option value="">{t.goats.sexFilter}</option>
-                            <option value="1">{t.goats.male}</option>
-                            <option value="2">{t.goats.female}</option>
-                        </select>
-
-                        {(search || breed || sex || (view && view !== 'all')) && (
-                            <button 
-                                onClick={() => { setSearch(''); setBreed(''); setSex(''); setView('all'); }}
-                                className="px-6 py-3 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-100 transition-colors flex items-center gap-2"
-                            >
-                                <X size={14} />
-                                {t.goats.resetFilters}
-                            </button>
-                        )}
-                    </div>
+        <div className="space-y-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+                {/* SEARCH BAR (Isolated) */}
+                <div className="relative flex-1 group">
+                    <Search className="absolute left-4 top-1/2 mt-0 -translate-y-1/2 text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder={t.goats.searchLabel} 
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all font-bold placeholder:font-normal"
+                    />
                 </div>
+
+                {/* FILTERS PANEL */}
+                <div className="flex flex-wrap items-center gap-4 ">
+                    {/* Breed & Sex Selectors */}
+                    <select 
+                        value={breed}
+                        onChange={(e) => setBreed(e.target.value)}
+                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                    >
+                        <option value="">{t.goats.breedFilter}</option>
+                        {breeds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                    </select>
+
+                    <select 
+                        value={sex}
+                        onChange={(e) => setSex(e.target.value)}
+                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                    >
+                        <option value="">{t.goats.sexFilter}</option>
+                        <option value="1">{t.goats.male}</option>
+                        <option value="2">{t.goats.female}</option>
+                    </select>
+
+                    {/* View Selector (Living, Dead, etc.) */}
+                    <select 
+                        value={view}
+                        onChange={(e) => {
+                            setView(e.target.value);
+                            if (e.target.value !== 'all') { setShowX(false); setShowR(false); }
+                        }}
+                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                    >
+                        <option value="all">-- {t.goats.showAll} --</option>
+                        <option value="living">{t.goats.showLiving}</option>
+                        <option value="dead">{t.goats.showDead}</option>
+                        <option value="duplicates">{t.goats.showDuplicates}</option>
+                        <option value="nostatus">{t.goats.noStatus}</option>
+                    </select>
+
+                    {/* Checkboxes for X and R */}
+                    <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                            <input 
+                                type="checkbox" 
+                                checked={showX} 
+                                onChange={(e) => { 
+                                    setShowX(e.target.checked); 
+                                    if (e.target.checked) { setShowR(false); setView('all'); }
+                                }}
+                                className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showX}</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                            <input 
+                                type="checkbox" 
+                                checked={showR} 
+                                onChange={(e) => { 
+                                    setShowR(e.target.checked); 
+                                    if (e.target.checked) { setShowX(false); setView('all'); }
+                                }}
+                                className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showR}</span>
+                        </label>
+                    </div>
+
+                    {(search || breed || sex || view !== 'all' || showX || showR) && (
+                        <button 
+                            onClick={() => { setSearch(''); setBreed(''); setSex(''); setView('all'); setShowX(false); setShowR(false); }}
+                            className="ml-auto text-red-600 hover:text-red-800 p-1"
+                            title={t.goats.resetFilters}
+                        >
+                            <X size={16} strokeWidth={3} />
+                        </button>
+                    )}
+                </div>
+            </div>
+            
+            <div className="flex justify-end">
+                <Link 
+                    href="/catalog/goats/add" 
+                    className="px-4 py-1.5 bg-[#4D2C1A] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
+                >
+                    + {t.nav.addGoat}
+                </Link>
             </div>
         </div>
     );
 }
+     
+

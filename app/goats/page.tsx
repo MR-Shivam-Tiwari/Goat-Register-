@@ -47,17 +47,20 @@ async function getAllGoats(filters: { q?: string, breed?: string, sex?: string, 
       }
   }
 
-  const result = await query(`
+    const result = await query(`
     SELECT 
       A.id, 
       A.name, 
-      Di.code_ua as unique_code, 
       A.sex, 
+      A.status, 
+      A.is_reg,
+      A.id_farm, 
+      A.id_user, 
+      A.time_added,
       B.name as breed_name, 
-      A.time_added, 
+      B.alias as breed_alias,
       U.login as operator,
-      (SELECT count(*) FROM animals WHERE id_mother = A.id) as daughters_count,
-      (SELECT count(*) FROM animals WHERE id_father = A.id) as sons_count
+      (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1) as main_photo
     FROM animals A
     JOIN goats_data Di ON A.id = Di.id_goat
     JOIN breeds B ON Di.id_breed = B.id
@@ -88,66 +91,88 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
   const t = getTranslation(lang);
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-12 px-2 md:px-6 lg:px-12 font-sans tracking-tight">
+    <div className="min-h-screen bg-[#FDFDFD] py-8 px-2 md:px-6 lg:px-8 font-sans leading-tight text-gray-800">
       <div className="max-w-[1700px] mx-auto space-y-6">
         <Breadcrumbs items={[{ label: t.nav.home, href: '/' }, { label: t.nav.registry }]} />
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b-2 border-primary/5">
             <div>
-                <h1 className="text-3xl font-black text-primary uppercase tracking-tighter italic leading-none">
+                <h1 className="text-2xl font-black text-primary uppercase tracking-tighter italic leading-none">
                     {t.nav.registry}
                 </h1>
-                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-2 font-mono">
-                    Global Stock Database • {goats.length} Records
+                <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mt-1 font-mono">
+                    Global Database • {goats.length} Records
                 </p>
             </div>
         </div>
 
         <GoatFilters breeds={breeds} lang={lang} t={t} />
 
-        <div className="bg-white shadow-2xl rounded-sm border border-gray-300 relative overflow-hidden">
-          <div className="overflow-x-auto max-h-[75vh] overflow-y-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1300px]">
-              <thead className="sticky top-0 z-20 bg-[#E2F0D9] text-gray-700 shadow-sm border-b border-gray-400">
-                <tr className="text-[12px] uppercase font-black tracking-widest leading-none">
-                  <th className="p-4 border-r border-gray-400 w-56 sticky left-0 bg-[#E2F0D9] z-30">Nickname / Кличка</th>
-                  <th className="p-4 border-r border-gray-400 w-40 text-center">Unique code</th>
-                  <th className="p-4 border-r border-gray-400 w-32 text-center">Sex / Пол</th>
-                  <th className="p-4 border-r border-gray-400 w-48 text-center">Breed / Порода</th>
-                  <th className="p-4 border-r border-gray-400 w-56 text-center">+Offspring</th>
-                  <th className="p-4 border-r border-gray-400 w-40 text-center">Added / Дата</th>
-                  <th className="p-4 border-r border-gray-400 w-36 text-center">Operator</th>
-                  <th className="p-4 text-center w-24">Ex.</th>
+        <div className="overflow-hidden border border-gray-300 shadow-sm transition-all duration-300">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse table-auto min-w-[1200px]">
+              <thead>
+                <tr className="text-[10px] font-black uppercase tracking-tight text-white bg-[#4D2C1A] text-center h-10 border-b border-gray-400">
+                  <th className="p-2 border-r border-white/10 w-64 sticky left-0 z-20 bg-[#491907]">Кличка</th>
+                  <th className="p-2 border-r border-white/10 w-40">Уникальный код</th>
+                  <th className="p-2 border-r border-white/10 w-32">Пол</th>
+                  <th className="p-2 border-r border-white/10 w-48">Порода</th>
+                  <th className="p-2 border-r border-white/10 w-56 text-[#E2F0D9]">+Потомство</th>
+                  <th className="p-2 border-r border-white/10 w-40">Добавлен</th>
+                  <th className="p-2 border-r border-white/10 w-40">Оператор</th>
+                  <th className="p-2 w-20">Упр</th>
                 </tr>
               </thead>
-              <tbody className="text-[11px] text-gray-800 font-bold uppercase tracking-tight divide-y divide-gray-200 bg-white">
-                {goats.map((goat: any) => (
-                  <tr key={goat.id} className="hover:bg-amber-50/50 transition-colors">
-                    <td className="p-3 border-r border-gray-100 font-black whitespace-nowrap sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
-                      <Link href={`/goats/${goat.id}`} className="text-blue-900 hover:text-red-700 hover:underline">
-                         ➔ {goat.name}
-                      </Link>
-                    </td>
-                    <td className="p-3 border-r border-gray-100 text-center font-mono opacity-60 truncate">{goat.unique_code || '-'}</td>
-                    <td className="p-3 border-r border-gray-100 text-center uppercase tracking-tighter">
-                      {goat.sex === 1 ? 'MALE / САМЕЦ' : 'FEMALE / САМКА'}
-                    </td>
-                    <td className="p-3 border-r border-gray-100 text-center font-black truncate text-primary/80">{goat.breed_name}</td>
-                    <td className="p-3 border-r border-gray-100 text-center font-black text-[#491907]">
-                       <span className="opacity-30 text-[9px]">S:</span>{goat.sons_count} <span className="opacity-30 text-[9px] ml-2">D:</span>{goat.daughters_count}
-                    </td>
-                    <td className="p-3 border-r border-gray-100 text-center whitespace-nowrap opacity-50 font-mono">
-                      {goat.time_added ? new Date(goat.time_added).toLocaleDateString('ru-RU') : '-'}
-                    </td>
-                    <td className="p-3 border-r border-gray-100 text-center font-black uppercase text-gray-400 text-[10px]">{goat.operator || 'SYSTEM'}</td>
-                    <td className="p-3 text-center">
-                      <Link href={`/goats/${goat.id}`} className="inline-block px-4 py-1.5 bg-primary text-secondary rounded-sm hover:bg-black transition-colors font-black text-[10px] tracking-widest shadow-sm">VIEW</Link>
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="text-[10px] uppercase font-bold text-gray-700 bg-white">
+                {goats.map((goat: any, idx: number) => {
+                  const uniqueCode = (goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id));
+                  let rowBg = 'bg-white';
+                  if (goat.status === 0) rowBg = 'bg-[#EF9A9A]/60';
+                  else if (goat.is_reg) rowBg = 'bg-[#D7FDB5]/60';
+                  else rowBg = 'bg-[#F3F1F1]/70';
+
+                  return (
+                    <tr key={goat.id} className={`h-11 border-b border-gray-200 hover:bg-blue-100 transition-all ${rowBg}`}>
+                      <td className={`p-1 border-r border-gray-100 flex items-center gap-3 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(0,0,0,0.05)] h-full`}>
+                          <div className="w-9 h-9 border border-gray-300 rounded overflow-hidden flex-shrink-0 bg-white shadow-sm ml-1">
+                              {goat.main_photo ? (
+                                  <img src={`/storage/gallery/${goat.main_photo}`} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                  <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 text-[8px]">NO IMG</div>
+                              )}
+                          </div>
+                          <Link href={`/goats/${goat.id}`} className="hover:text-amber-900 underline underline-offset-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                              {goat.name}
+                          </Link>
+                      </td>
+                      <td className="p-2 border-r border-gray-100 text-center font-mono text-gray-800 font-bold">{uniqueCode}</td>
+                      <td className="p-2 border-r border-gray-100 text-center font-black">
+                          {goat.sex === 1 ? 'Муж' : 'Жен'}
+                      </td>
+                      <td className="p-2 border-r border-gray-100 text-center font-black opacity-80">{goat.breed_alias || goat.breed_name}</td>
+                      <td className="p-2 border-r border-gray-100 text-center flex items-center justify-center gap-4 h-full">
+                          <Link href={`/goats/${goat.id}/offspring?sex=male`} className="text-blue-500 hover:underline">+Сын</Link>
+                          <Link href={`/goats/${goat.id}/offspring?sex=female`} className="text-blue-500 hover:underline">+Дочь</Link>
+                      </td>
+                      <td className="p-2 border-r border-gray-100 text-center opacity-60 font-mono">
+                        {goat.time_added ? new Date(goat.time_added).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                      </td>
+                      <td className="p-2 border-r border-gray-100 text-center text-gray-400 font-black">{goat.operator || 'SYSTEM'}</td>
+                      <td className="p-2 text-center">
+                        <Link 
+                          href={`/catalog/goats/fix/${goat.id}`} 
+                          className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-300 rounded-sm hover:border-amber-900 hover:text-amber-900 transition-colors shadow-sm font-black text-xs text-blue-600"
+                          title="Management / Edit"
+                        >
+                          P
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {goats.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="p-40 text-center text-gray-200 font-black uppercase tracking-[1em] text-2xl bg-white">
+                    <td colSpan={8} className="p-32 text-center text-gray-200 font-black uppercase tracking-[1em] text-2xl">
                       EMPTY REGISTRY
                     </td>
                   </tr>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import fs from 'fs';
 import path from 'path';
-import { Pencil, Eye, MapPin } from 'lucide-react';
+import { Pencil, Eye, MapPin, Shield, Plus } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
 
@@ -13,7 +13,6 @@ export const dynamic = 'force-dynamic';
 async function getFarms() {
     const result = await query('SELECT id, name, pic1 FROM farms ORDER BY id DESC');
     
-    // Resolve image paths on the server
     const farms = result.rows.map((farm: any) => {
         let displayPic = '/img/farm_placeholder.png';
         if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
@@ -46,79 +45,95 @@ export default async function FarmsPage() {
             <div className="max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-700">
                 <Breadcrumbs items={[{ label: t.farms.breadcrumbs }]} />
 
-                <header className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 pb-8 gap-8">
+                {/* PAGE HEADER */}
+                <header className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 pb-8 gap-6">
                     <div className="text-center md:text-left">
                         <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">{t.farms.title}</h1>
                         <p className="mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
                             Official Registry of Participating Farm Enterprises
                         </p>
                     </div>
-                    <Link href="/farms/add" className="px-8 py-3 bg-[#491907] text-white font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-95 duration-300">
-                        {t.farms.addFarm}
-                    </Link>
+                    <div className="flex items-center gap-4">
+                        <span className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest shadow-sm">
+                            {farms.length} {farms.length === 1 ? 'Farm' : 'Farms'} Registered
+                        </span>
+                        <Link
+                            href="/farms/add"
+                            className="flex items-center gap-2 px-6 py-3 bg-[#491907] text-white font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-95 duration-300"
+                        >
+                            <Plus size={14} />
+                            {t.farms.addFarm}
+                        </Link>
+                    </div>
                 </header>
 
-                <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden relative overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[900px]">
-                        <thead className="sticky top-0 z-20 bg-primary text-secondary shadow-md">
-                            <tr className="text-[10px] uppercase font-black tracking-widest">
-                                <th className="p-4 border-r border-white/10 w-20 text-center">ID</th>
-                                <th className="p-4 border-r border-white/10">Farm Name</th>
-                                <th className="p-4 border-r border-white/10">Location</th>
-                                <th className="p-4 border-r border-white/10 text-center">Status</th>
-                                <th className="p-4 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-[11px] font-medium text-gray-700">
-                            {farms.map((farm: any, idx: number) => (
-                                <tr key={farm.id} className="hover:bg-amber-50/50 border-b border-gray-100 transition-colors group">
-                                    <td className="p-4 border-r border-gray-100 text-center font-mono text-gray-400">#{farm.id}</td>
-                                    <td className="p-4 border-r border-gray-100">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shrink-0 bg-gray-50">
-                                                <Image 
-                                                    src={farm.displayPic} 
-                                                    alt={farm.name} 
-                                                    width={40}
-                                                    height={40}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                                                />
-                                            </div>
-                                            <Link href={`/farms/${farm.id}`} className="font-black text-blue-800 hover:text-red-700 transition-colors uppercase tracking-tight">
-                                                {farm.name}
-                                            </Link>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 border-r border-gray-100">
-                                        <div className="flex items-center gap-2 text-gray-400 font-bold uppercase tracking-tighter">
-                                            <MapPin size={12} className="text-[#491907]" />
-                                            Ukraine / Regional
-                                        </div>
-                                    </td>
-                                    <td className="p-4 border-r border-gray-100 text-center">
-                                       <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[8px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
-                                            {t.farms.memberApk}
-                                       </span>
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <Link href={`/farms/${farm.id}`} className="p-2.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-secondary transition-all shadow-sm group">
-                                                <Eye size={14} />
-                                            </Link>
-                                            {isAdmin && (
-                                                <Link href={`/farms/${farm.id}/edit`} className="p-2.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm">
-                                                    <Pencil size={14} />
-                                                </Link>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                {/* FARM CARDS GRID */}
+                {farms.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {farms.map((farm: any) => (
+                            <div
+                                key={farm.id}
+                                className="group bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                            >
+                                {/* CARD IMAGE */}
+                                <div className="relative h-48 bg-gray-100 overflow-hidden">
+                                    <Image
+                                        src={farm.displayPic}
+                                        alt={farm.name}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    {/* ID badge */}
+                                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg font-mono">
+                                        #{farm.id}
+                                    </div>
+                                    {/* Status badge */}
+                                    <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-green-200 text-green-700 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
+                                        <Shield size={9} className="fill-green-100" />
+                                        {t.farms.memberApk}
+                                    </div>
+                                    {/* Gradient overlay at bottom */}
+                                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+                                </div>
 
-                {farms.length === 0 && (
+                                {/* CARD BODY */}
+                                <div className="flex flex-col flex-1 p-4 gap-3">
+                                    {/* Farm name */}
+                                    <Link href={`/farms/${farm.id}`}>
+                                        <h2 className="text-[13px] font-black uppercase tracking-tight text-gray-900 leading-tight group-hover:text-[#491907] transition-colors line-clamp-2">
+                                            {farm.name}
+                                        </h2>
+                                    </Link>
+
+                                    {/* Location */}
+                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                        <MapPin size={11} className="text-[#491907] shrink-0" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">Ukraine / Regional</span>
+                                    </div>
+
+                                    {/* Divider */}
+                                    <div className="border-t border-gray-100 mt-auto pt-3 flex items-center justify-between gap-2">
+                                        <Link
+                                            href={`/farms/${farm.id}`}
+                                            className="flex items-center gap-1.5 flex-1 justify-center py-2 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm"
+                                        >
+                                            <Eye size={12} />
+                                            View
+                                        </Link>
+                                        {isAdmin && (
+                                            <Link
+                                                href={`/farms/${farm.id}/edit`}
+                                                className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-500 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-100 hover:text-amber-700 transition-all"
+                                            >
+                                                <Pencil size={12} />
+                                            </Link>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
                     <div className="bg-white rounded-2xl p-20 text-center border-2 border-dashed border-gray-200">
                         <p className="text-gray-400 font-bold uppercase tracking-[0.4em] text-lg">{t.common.notAvailable}</p>
                     </div>
