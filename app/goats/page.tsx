@@ -12,7 +12,7 @@ async function getBreeds() {
   return res.rows;
 }
 
-async function getAllGoats(filters: { q?: string, breed?: string, sex?: string, view?: string }) {
+async function getAllGoats(filters: { q?: string, breed?: string, sex?: string, view?: string, reg?: string }) {
   let whereClause = 'WHERE 1=1';
   const params: any[] = [];
   
@@ -32,14 +32,10 @@ async function getAllGoats(filters: { q?: string, breed?: string, sex?: string, 
   }
 
   if (filters.view) {
-      if (filters.view === 'r') {
-          whereClause += ` AND Di.id_stoodbook = 1`;
-      } else if (filters.view === 'x') {
-          whereClause += ` AND Di.id_stoodbook IN (10, 11, 12)`;
-      } else if (filters.view === 'living') {
-          whereClause += ` AND A.status = 1`;
+      if (filters.view === 'living') {
+          whereClause += ` AND A.status = '1'`;
       } else if (filters.view === 'dead') {
-          whereClause += ` AND A.status = 0`;
+          whereClause += ` AND A.status = '0'`;
       } else if (filters.view === 'nostatus') {
           whereClause += ` AND A.status IS NULL`;
       } else if (filters.view === 'duplicates') {
@@ -47,7 +43,15 @@ async function getAllGoats(filters: { q?: string, breed?: string, sex?: string, 
       }
   }
 
-    const result = await query(`
+  if (filters.reg) {
+      if (filters.reg === 'r') {
+          whereClause += ` AND A.is_reg = '1'`;
+      } else if (filters.reg === 'x') {
+          whereClause += ` AND A.is_reg = '0'`;
+      }
+  }
+
+  const result = await query(`
     SELECT 
       A.id, 
       A.name, 
@@ -78,7 +82,8 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
     q: searchParams.q,
     breed: searchParams.breed,
     sex: searchParams.sex,
-    view: searchParams.view
+    view: searchParams.view,
+    reg: searchParams.reg
   };
 
   const [goats, breeds] = await Promise.all([

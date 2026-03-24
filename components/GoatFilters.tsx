@@ -13,31 +13,26 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
     const [breed, setBreed] = useState(searchParams.get('breed') || '');
     const [sex, setSex] = useState(searchParams.get('sex') || '');
     const [view, setView] = useState(searchParams.get('view') || 'all');
-    const [showX, setShowX] = useState(searchParams.get('view') === 'x');
-    const [showR, setShowR] = useState(searchParams.get('view') === 'r');
+    const [regType, setRegType] = useState(searchParams.get('reg') || 'all');
 
     useEffect(() => {
         const params = new URLSearchParams();
         if (search) params.set('q', search);
         if (breed) params.set('breed', breed);
         if (sex) params.set('sex', sex);
-        
-        let activeView = view;
-        if (showX) activeView = 'x';
-        else if (showR) activeView = 'r';
-        
-        if (activeView && activeView !== 'all') params.set('view', activeView);
+        if (view && view !== 'all') params.set('view', view);
+        if (regType && regType !== 'all') params.set('reg', regType);
         
         const queryString = params.toString();
         router.push(`/goats${queryString ? '?' + queryString : ''}`);
-    }, [search, breed, sex, view, showX, showR, router]);
+    }, [search, breed, sex, view, regType, router]);
 
     return (
         <div className="space-y-4 mb-6">
             <div className="flex flex-col md:flex-row gap-4">
                 {/* SEARCH BAR (Isolated) */}
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-4 top-1/2 mt-0 -translate-y-1/2 text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
                     <input 
                         type="text" 
                         placeholder={t.goats.searchLabel} 
@@ -48,7 +43,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                 </div>
 
                 {/* FILTERS PANEL */}
-                <div className="flex flex-wrap items-center gap-4 ">
+                <div className="flex flex-wrap items-center gap-4 bg-white p-3 border border-gray-300 rounded shadow-sm">
                     {/* Breed & Sex Selectors */}
                     <select 
                         value={breed}
@@ -72,10 +67,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                     {/* View Selector (Living, Dead, etc.) */}
                     <select 
                         value={view}
-                        onChange={(e) => {
-                            setView(e.target.value);
-                            if (e.target.value !== 'all') { setShowX(false); setShowR(false); }
-                        }}
+                        onChange={(e) => setView(e.target.value)}
                         className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
                     >
                         <option value="all">-- {t.goats.showAll} --</option>
@@ -85,16 +77,13 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                         <option value="nostatus">{t.goats.noStatus}</option>
                     </select>
 
-                    {/* Checkboxes for X and R */}
+                    {/* Checkboxes for X and R (Exclusive but separate param) */}
                     <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input 
                                 type="checkbox" 
-                                checked={showX} 
-                                onChange={(e) => { 
-                                    setShowX(e.target.checked); 
-                                    if (e.target.checked) { setShowR(false); setView('all'); }
-                                }}
+                                checked={regType === 'x'} 
+                                onChange={(e) => setRegType(e.target.checked ? 'x' : 'all')}
                                 className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
                             />
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showX}</span>
@@ -103,20 +92,17 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                         <label className="flex items-center gap-2 cursor-pointer group">
                             <input 
                                 type="checkbox" 
-                                checked={showR} 
-                                onChange={(e) => { 
-                                    setShowR(e.target.checked); 
-                                    if (e.target.checked) { setShowX(false); setView('all'); }
-                                }}
+                                checked={regType === 'r'} 
+                                onChange={(e) => setRegType(e.target.checked ? 'r' : 'all')}
                                 className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
                             />
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showR}</span>
                         </label>
                     </div>
 
-                    {(search || breed || sex || view !== 'all' || showX || showR) && (
+                    {(search || breed || sex || view !== 'all' || regType !== 'all') && (
                         <button 
-                            onClick={() => { setSearch(''); setBreed(''); setSex(''); setView('all'); setShowX(false); setShowR(false); }}
+                            onClick={() => { setSearch(''); setBreed(''); setSex(''); setView('all'); setRegType('all'); }}
                             className="ml-auto text-red-600 hover:text-red-800 p-1"
                             title={t.goats.resetFilters}
                         >
