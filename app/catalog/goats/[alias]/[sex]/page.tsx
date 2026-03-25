@@ -156,8 +156,8 @@ async function getGoats(
 
   let sql = `
       SELECT 
-        A.name, A.sex, A.id AS reg_id, A.status, A.time_added, A.id_farm,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
+        A.id, A.is_reg, A.name, A.sex, A.id AS reg_id, A.status, A.time_added, A.id_farm,
+        Di.ava, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
@@ -176,10 +176,11 @@ async function getGoats(
         T.class AS cert_class, T.category,
 
         L.viewer, L.lact_no, L.lact_days, L.milk, L.fat, L.protein, L.milk_day, L.have_graph,
-
-        Frm.name AS farm_name
+        Frm.name AS farm_name,
+        B.name AS breed_name, B.alias AS breed_alias
       FROM animals A
       LEFT JOIN goats_data Di    ON A.id = Di.id_goat
+      LEFT JOIN breeds B         ON Di.id_breed = B.id
       LEFT JOIN animals M        ON A.id_mother = M.id
       LEFT JOIN goats_data Dm    ON M.id = Dm.id_goat
       LEFT JOIN animals F        ON A.id_father = F.id
@@ -495,7 +496,7 @@ export default async function GoatsListPage({
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <FilterCard 
                     label={lang === "ru" ? "Порода" : "Breed"}
                     param="breed"
@@ -525,7 +526,7 @@ export default async function GoatsListPage({
                         { id: 'all', name: lang === 'ru' ? 'Все' : 'All Ages' }
                     ]}
                 />
-                <Link href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`} className="px-6 py-3 bg-white border border-primary/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white transition-all shadow-sm flex items-center">
+                <Link href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`} className="px-6  bg-[#CFA97A] border h-8  mt-4 border-primary/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white transition-all shadow-sm flex items-center">
                     ← {lang === "ru" ? "СБРОС" : "RESET"}
                 </Link>
               </div>

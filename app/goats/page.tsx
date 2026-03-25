@@ -141,7 +141,13 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
                       <td className={`p-1 border-r border-gray-100 flex items-center gap-3 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(0,0,0,0.05)] h-full`}>
                           <div className="w-9 h-9 border border-gray-300 rounded overflow-hidden flex-shrink-0 bg-white shadow-sm ml-1">
                               {goat.main_photo ? (
-                                  <img src={`/storage/gallery/${goat.main_photo}`} alt="" className="w-full h-full object-cover" />
+                                  <img 
+                                    src={`/storage/gallery/${goat.main_photo}`} 
+                                    alt="" 
+                                    className="w-full h-full object-cover" 
+                                    loading="lazy"
+                                    decoding="async"
+                                  />
                               ) : (
                                   <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 text-[8px]">NO IMG</div>
                               )}

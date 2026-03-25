@@ -25,6 +25,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
         
         const queryString = params.toString();
         router.push(`/goats${queryString ? '?' + queryString : ''}`);
+        router.refresh();
     }, [search, breed, sex, view, regType, router]);
 
     return (

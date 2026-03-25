@@ -110,28 +110,38 @@ async function getLactation(id: string) {
   return result.rows;
 }
 
-async function getAncestors(
-  id: number | null,
-  level: number = 0,
-): Promise<any> {
-  if (level >= 4 || !id) return null;
-  const res = await query(
-    "SELECT id, name, id_father, id_mother, sex FROM animals WHERE id = $1",
-    [id],
-  );
-  if (res.rows.length === 0) return null;
-  const g = res.rows[0];
-  const dataRes = await query(
-    "SELECT code_ua FROM goats_data WHERE id_goat = $1",
-    [g.id],
-  );
-  g.code_ua = dataRes.rows[0]?.code_ua;
+async function getAncestors(rootId: number | null) {
+  if (!rootId) return null;
 
-  return {
-    ...g,
-    father: await getAncestors(g.id_father, level + 1),
-    mother: await getAncestors(g.id_mother, level + 1),
-  };
+  const res = await query(`
+    WITH RECURSIVE ancestry AS (
+      SELECT id, name, id_father, id_mother, sex, 0 as level 
+      FROM animals 
+      WHERE id = $1
+      UNION ALL
+      SELECT a.id, a.name, a.id_father, a.id_mother, a.sex, anc.level + 1
+      FROM animals a
+      JOIN ancestry anc ON (a.id = anc.id_mother OR a.id = anc.id_father)
+      WHERE anc.level < 4
+    )
+    SELECT a.*, d.code_ua 
+    FROM ancestry a
+    LEFT JOIN goats_data d ON a.id = d.id_goat
+  `, [rootId]);
+
+  const rows = res.rows;
+  const nodes = new Map();
+  rows.forEach(r => nodes.set(r.id, r));
+
+  function buildTree(id: number | null): any {
+    if (!id || !nodes.has(id)) return null;
+    const node = { ...nodes.get(id) };
+    node.father = buildTree(node.id_father);
+    node.mother = buildTree(node.id_mother);
+    return node;
+  }
+
+  return buildTree(rootId);
 }
 
 async function getOwnMilkProductivity(id: string) {
@@ -160,20 +170,7 @@ async function getOwnMilkProductivity(id: string) {
 
 async function getExpertAssessment(id: string) {
   const res = await query(
-    `SELECT 
-      who_expert, 
-      date_test, 
-      test_type, 
-      par_1 as height_wither, 
-      par_2 as height_rump, 
-      par_3 as chest_girth, 
-      par_4 as body_length, 
-      weight, 
-      score_total, 
-      class, 
-      category
-    FROM goats_test 
-    WHERE id_goat = $1`,
+    `SELECT * FROM goats_test WHERE id_goat = $1 ORDER BY date_test DESC`,
     [id],
   );
   return res.rows;
@@ -279,7 +276,7 @@ export default async function GoatDetailPage({
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] pb-20 font-sans tracking-tight">
-      <div className="max-w-[2000px] mx-auto p-4 md:p-8 space-y-12">
+      <div className="max-w-8xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <Breadcrumbs
           items={[
             { label: t.nav.registry, href: "/catalog/goats" },
@@ -287,228 +284,273 @@ export default async function GoatDetailPage({
           ]}
         />
 
-        {/* HEADER SECTION */}
-        <div className="space-y-4">
-          <h1 className="text-[#491907] text-2xl font-black uppercase tracking-tight">
-            {t.goats.goatInfo} {goat.name} ({goat.code_ua || goat.id})
-          </h1>
-
-          <div className="flex gap-4 text-[10px] font-bold">
-            {goat.f_id && (
-              <div className="flex items-center gap-1">
-                <span className="opacity-50 uppercase">
-                  {t.goats.fatherData}:
-                </span>
-                <Link
-                  href={`/goats/${goat.f_id}`}
-                  className="text-blue-700 hover:underline px-1.5 py-0.5 bg-blue-50 rounded"
-                >
-                  {goat.f_name} ({goat.f_code_ua || goat.f_id})
-                </Link>
+        {/* HEADER SECTION - PREMIUM CARD */}
+        <div className="bg-white rounded-lg shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+          <div className="relative h-32 bg-gradient-to-r from-[#491907] to-[#713117]">
+            <div className="absolute -bottom-1 left-8 flex items-end gap-6">
+              <div className="w-24 h-24 bg-white rounded-xl shadow-lg border-4 border-white overflow-hidden">
+                {goat.ava ? (
+                  <img src={goat.ava} className="w-full h-full object-cover" alt={goat.name} />
+                ) : (
+                  <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-300 font-black text-2xl lowercase">
+                    {goat.name[0]}
+                  </div>
+                )}
               </div>
-            )}
-            {goat.m_id && (
-              <div className="flex items-center gap-1">
-                <span className="opacity-50 uppercase">
-                  {t.goats.motherData}:
-                </span>
-                <Link
-                  href={`/goats/${goat.m_id}`}
-                  className="text-blue-700 hover:underline px-1.5 py-0.5 bg-pink-50 rounded"
-                >
-                  {goat.m_name} ({goat.m_code_ua || goat.m_id})
-                </Link>
+              <div className="pb-2">
+                <h1 className="text-3xl font-black text-white drop-shadow-sm tracking-tight">
+                  {goat.name}
+                </h1>
+                <p className="text-white/80 font-bold text-[10px] uppercase tracking-[0.2em]">
+                  {goat.breed_name} • {goat.sex === 1 ? t.goats.male : t.goats.female}
+                </p>
               </div>
-            )}
+            </div>
           </div>
 
-          <section className="space-y-1">
-            <h3 className="text-[#491907] text-[10px] font-black uppercase">
-              {t.goats.basicInfo}
-            </h3>
-            <div className="border border-[#491907]/10 rounded shadow-sm overflow-hidden bg-white">
-              <GoatTable goats={[goat]} t={t} isMain />
+          <div className="pt-14 pb-8 px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex gap-8 items-center text-[10px] font-black uppercase">
+               <div className="flex flex-col gap-0.5">
+                  <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.registryCode}</span>
+                  <span className="text-[#491907] font-black text-xs">{goat.code_ua || goat.id}</span>
+               </div>
+               {goat.f_id && (
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.fatherData}</span>
+                    <Link href={`/goats/${goat.f_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-blue-200">
+                      {goat.f_name}
+                    </Link>
+                  </div>
+                )}
+                {goat.m_id && (
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.motherData}</span>
+                    <Link href={`/goats/${goat.m_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-pink-200">
+                      {goat.m_name}
+                    </Link>
+                  </div>
+                )}
             </div>
-          </section>
+
+            <div className="flex gap-2">
+               <button className="px-4 py-2 bg-[#491907] text-white rounded-lg text-[10px] font-black tracking-widest uppercase hover:bg-black transition-all shadow-md active:scale-95">
+                  Print Certificate
+               </button>
+               <button className="px-4 py-2 bg-white border border-[#491907]/10 text-[#491907] rounded-lg text-[10px] font-black tracking-widest uppercase hover:bg-gray-50 transition-all shadow-sm active:scale-95">
+                  Edit Records
+               </button>
+            </div>
+          </div>
         </div>
 
-        {/* GALLERY SECTION (Image 2 style) */}
-        <section className="space-y-4">
-          <h2 className="text-[#491907] text-xs font-black uppercase border-b border-gray-100 pb-1">
-            {t.goats.gallery}
-          </h2>
-          <div className="flex flex-col gap-4">
+        {/* BASIC INFO TABLE SECTION */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.basicInfo}
+            </h3>
+          </div>
+          <div className="p-0 overflow-hidden">
+            <GoatTable goats={[goat]} t={t} isMain />
+          </div>
+        </section>
+
+        {/* GALLERY SECTION */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.gallery}
+            </h2>
             <div className="flex items-center gap-4 text-[10px]">
-              <span className="font-bold opacity-70">
-                Add a photo to gallery:
-              </span>
-              <input
-                type="file"
-                className="text-[10px] border border-gray-300 p-1 bg-white"
-              />
-              <button className="px-3 py-1 bg-gray-100 border border-gray-400 font-bold uppercase hover:bg-white active:bg-gray-200">
+              <label className="cursor-pointer bg-blue-50 text-blue-700 px-3 py-1 rounded-lg font-bold hover:bg-blue-100 transition-all flex items-center gap-2">
+                 <span>{t.goats.add} photo</span>
+                 <input type="file" className="hidden" />
+              </label>
+              <button className="text-gray-400 hover:text-[#491907] transition-all">
                 {t.goats.refresh}
               </button>
             </div>
-            <div className="flex flex-wrap gap-2">
+          </div>
+          <div className="p-6">
+            <div className="flex flex-wrap gap-4">
               {gallery.length > 0 ? (
                 gallery.map((p: any, idx: number) => (
                   <div
                     key={idx}
-                    className="w-24 aspect-[4/3] bg-white border border-gray-300 p-0.5 rounded shadow-sm group relative"
+                    className="w-32 aspect-[4/3] bg-white border border-gray-100 p-1 rounded-xl shadow-sm group relative overflow-hidden ring-1 ring-gray-200"
                   >
                     <img
                       src={`/img/${p.file}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all cursor-pointer"></div>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                       <span className="text-white text-[10px] font-black uppercase tracking-widest underline decoration-white/30 decoration-2">view</span>
+                    </div>
                   </div>
                 ))
               ) : (
-                <span className="text-[10px] italic opacity-30">
-                  No photos in gallery
-                </span>
+                <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
+                   <span className="text-[10px] italic opacity-40 uppercase tracking-widest">
+                     No photos in gallery
+                   </span>
+                </div>
               )}
             </div>
           </div>
         </section>
 
-        {/* PEDIGREE SECTION (Image 1 style) */}
-        <section className="space-y-2">
-          <h2 className="text-[#491907] text-xs font-black uppercase">
-            {t.goats.pedigree}: {goat.name}
-          </h2>
-          <div className="border border-gray-400 shadow-md overflow-hidden">
-            <PedigreeChart ancestry={ancestry} />
+        {/* PEDIGREE SECTION */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.pedigree}: {goat.name}
+            </h2>
+          </div>
+          <div className="p-6 md:p-10">
+            <div className="rounded-lg border border-gray-200 shadow-xl shadow-gray-100/50 overflow-hidden ring-1 ring-black/5">
+              <PedigreeChart ancestry={ancestry} />
+            </div>
           </div>
         </section>
 
-        {/* OFFSPRING & DESCENDANTS (Image 3 style) */}
-        <section className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-[#491907] text-xs font-black uppercase">
-              {t.goats.offspring}:
+        {/* OFFSPRING & DESCENDANTS */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.offspring}
             </h2>
-            <div className="overflow-x-auto border border-gray-400 shadow-sm">
-              <table className="w-full text-center text-[9px] border-collapse font-black uppercase">
-                <thead className="bg-[#10FF10] border-b border-gray-400">
-                  <tr className="divide-x divide-gray-400">
-                    <th className="p-1 px-4">{t.goats.sons}</th>
-                    <th className="p-1 px-4">{t.goats.daughters}</th>
-                    <th className="p-1 px-4">{t.goats.grandsons}</th>
-                    <th className="p-1 px-4">{t.goats.granddaughters}</th>
-                    <th className="p-1 px-4">{t.goats.grgrandsons}</th>
-                    <th className="p-1 px-4">{t.goats.grgranddaughters}</th>
-                    <th className="p-1 px-4">{t.goats.grgrgrandsons}</th>
-                    <th className="p-1 px-4">{t.goats.grgrgranddaughters}</th>
+          </div>
+          <div className="p-6 space-y-8">
+            <div className="overflow-x-auto rounded-lg border border-gray-100 shadow-sm">
+              <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
+                <thead className="bg-gray-50 border-b border-gray-100 text-[#491907]">
+                  <tr className="divide-x bg-red-200 divide-gray-100">
+                    <th className="p-3">{t.goats.sons}</th>
+                    <th className="p-3">{t.goats.daughters}</th>
+                    <th className="p-3">{t.goats.grandsons}</th>
+                    <th className="p-3">{t.goats.granddaughters}</th>
+                    <th className="p-3">{t.goats.grgrandsons}</th>
+                    <th className="p-3">{t.goats.grgranddaughters}</th>
+                    <th className="p-3">{t.goats.grgrgrandsons}</th>
+                    <th className="p-3">{t.goats.grgrgranddaughters}</th>
                   </tr>
                 </thead>
-                <tbody className="bg-[#E2F0D9] divide-x divide-gray-400">
+                <tbody className="bg-white divide-x divide-gray-100">
                   <tr>
-                    <td className="p-2">-</td>
-                    <td className="p-2">
-                      {descendants
-                        .filter((d) => d.sex === 0)
-                        .map((d) => (
-                          <Link
-                            key={d.id}
-                            href={`/goats/${d.id}`}
-                            className="text-blue-700 hover:underline mx-2"
-                          >
-                            {d.name}
+                    <td className="p-3">
+                      <div className="flex flex-col gap-1">
+                        {descendants.filter(d => d.sex === 1).length > 0 ? descendants.filter(d => d.sex === 1).map(d => (
+                          <Link key={d.id} href={`/goats/${d.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                            {d.nickname || d.name}
                           </Link>
-                        ))}
-                      {descendants.filter((d) => d.sex === 0).length === 0 &&
-                        "-"}
+                        )) : <span className="opacity-20">-</span>}
+                      </div>
                     </td>
-                    <td className="p-2">-</td>
-                    <td className="p-2">-</td>
-                    <td className="p-2">-</td>
-                    <td className="p-2">-</td>
-                    <td className="p-2">-</td>
-                    <td className="p-2">-</td>
+                    <td className="p-3">
+                      <div className="flex flex-col gap-1">
+                        {descendants.filter(d => d.sex === 0).length > 0 ? descendants.filter(d => d.sex === 0).map(d => (
+                          <Link key={d.id} href={`/goats/${d.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                            {d.nickname || d.name}
+                          </Link>
+                        )) : <span className="opacity-20">-</span>}
+                      </div>
+                    </td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <h2 className="text-[#491907] text-xs font-black uppercase">
-              {t.goats.directDescendantsTitle}:
-            </h2>
-            <div className="border border-gray-300 shadow-sm rounded overflow-hidden">
-              <GoatTable goats={descendants} t={t} />
+            <div className="space-y-2">
+              <h3 className="text-[#491907] text-[9px] font-black uppercase tracking-widest opacity-60">
+                {t.goats.directDescendantsTitle}
+              </h3>
+              <div className="rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+                <GoatTable goats={descendants} t={t} />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* OWN MILK PRODUCTIVITY (Image 4 style) */}
-        <section className="space-y-4">
-          <h2 className="text-[#491907] text-xs font-black uppercase flex items-center gap-2">
-            {t.goats.ownProductivityTitle}:
-            <button className="text-blue-600 text-xs hover:underline font-normal italic lowercase">
-              {t.goats.add}
+        {/* OWN MILK PRODUCTIVITY */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.ownProductivityTitle}
+            </h2>
+            <button className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-blue-100 transition-all">
+              {t.goats.add} record
             </button>
-          </h2>
-          <div className="overflow-x-auto border border-[#491907]/20 shadow-md bg-white">
+          </div>
+          <div className="overflow-x-auto">
             <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
-              <thead className="bg-[#10FF10] border-b border-gray-400">
-                <tr className="divide-x divide-gray-400">
-                  <th className="p-1 px-3">№</th>
-                  <th className="p-1 px-3">Номер лактации</th>
-                  <th className="p-1 px-3">Кол-во дней лактации</th>
-                  <th className="p-1 px-3">Удой (кг)</th>
-                  <th className="p-1 px-3">Молочный жир (%)</th>
-                  <th className="p-1 px-3">Молочный белок (%)</th>
-                  <th className="p-1 px-3">Лактоза (%)</th>
-                  <th className="p-1 px-3">Суточный пиковый удой (кг)</th>
-                  <th className="p-1 px-3">Среднесуточный удой (кг)</th>
-                  <th className="p-2 border-r border-gray-400">
-                    Плотность (кг)
-                  </th>
-                  <th className="p-2 border-r border-gray-400">
-                    Скорость молокоотдачи (кг/min)
-                  </th>
-                  <th className="p-1 px-3">График лактационной кривой</th>
-                  <th className="p-1 px-3">Источник полученной информации</th>
-                  <th className="p-1 px-3">Испр</th>
-                  <th className="p-1 px-3">Добавлен</th>
+              <thead className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100/50 text-emerald-800">
+                <tr className="divide-x divide-emerald-100">
+                  <th className="p-3">№</th>
+                  <th className="p-3">{t.goats.lactNo}</th>
+                  <th className="p-3">{t.goats.lactDays}</th>
+                  <th className="p-3">{t.goats.lactMilk}</th>
+                  <th className="p-3">{t.goats.lactFat}</th>
+                  <th className="p-3">{t.goats.lactProtein}</th>
+                  <th className="p-3">{t.goats.lactose}</th>
+                  <th className="p-3">{t.goats.peakMilk}</th>
+                  <th className="p-3">{t.goats.lactMilkDay}</th>
+                  <th className="p-3">{t.goats.density}</th>
+                  <th className="p-3">{t.goats.flowRate}</th>
+                  <th className="p-3">{t.goats.lactGraph}</th>
+                  <th className="p-3">{t.goats.source}</th>
+                  <th className="p-3">{t.goats.editShort}</th>
+                  <th className="p-3">{t.goats.added}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-300">
+              <tbody className="divide-y divide-gray-100">
                 {ownMilk.map((m: any, idx: number) => (
                   <tr
                     key={idx}
-                    className="divide-x divide-gray-300 hover:bg-green-50/50"
+                    className="divide-x divide-gray-100 hover:bg-emerald-50/20 transition-colors"
                   >
-                    <td className="p-2">{idx + 1}</td>
-                    <td className="p-2">{m.lact_no}</td>
-                    <td className="p-2">{m.lact_days}</td>
-                    <td className="p-2 text-red-700">{m.milk}</td>
-                    <td className="p-2">{m.fat}</td>
-                    <td className="p-2">{m.protein}</td>
-                    <td className="p-2">{m.lactose || "-"}</td>
-                    <td className="p-2">{m.peak_yield || "-"}</td>
-                    <td className="p-2">{m.avg_yield || "-"}</td>
-                    <td className="p-2">{m.density || "-"}</td>
-                    <td className="p-2">{m.flow_rate || "-"}</td>
-                    <td className="p-2">{m.have_graph ? "Да" : "Нет"}</td>
-                    <td className="p-2 truncate max-w-[120px]">
+                    <td className="p-3 text-gray-400">{idx + 1}</td>
+                    <td className="p-3">{m.lact_no}</td>
+                    <td className="p-3">{m.lact_days}</td>
+                    <td className="p-3 text-emerald-700 text-[11px] scale-110">{m.milk}</td>
+                    <td className="p-3">{m.fat}</td>
+                    <td className="p-3">{m.protein}</td>
+                    <td className="p-3">{m.lactose || "-"}</td>
+                    <td className="p-3">{m.peak_yield || "-"}</td>
+                    <td className="p-3">{m.avg_yield || "-"}</td>
+                    <td className="p-3">{m.density || "-"}</td>
+                    <td className="p-3">{m.flow_rate || "-"}</td>
+                    <td className="p-3">
+                        {m.have_graph ? (
+                           <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-sm">YES</span>
+                        ) : "-"}
+                    </td>
+                    <td className="p-3 truncate max-w-[120px] opacity-60">
                       {m.source || "-"}
                     </td>
-                    <td className="p-2 text-blue-600 underline cursor-pointer">
-                      ...
+                    <td className="p-3">
+                       <button className="text-blue-600 hover:text-blue-900 font-bold italic">...</button>
                     </td>
-                    <td className="p-2">
+                    <td className="p-3 text-gray-400">
                       {m.added ? new Date(m.added).toLocaleDateString() : "-"}
                     </td>
                   </tr>
                 ))}
                 {ownMilk.length === 0 && (
                   <tr>
-                    <td colSpan={15} className="p-8 text-gray-300 italic">
-                      No records found
+                    <td colSpan={15} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
+                      <span className="text-xl">🥛</span>
+                      {t.catalog.empty}
                     </td>
                   </tr>
                 )}
@@ -517,106 +559,130 @@ export default async function GoatDetailPage({
           </div>
         </section>
 
-        {/* EXPERT ASSESSMENT (Image 4 style) */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[#491907] text-xs font-black uppercase">
-              {t.goats.expertAssessment}:
+        {/* EXPERT ASSESSMENT */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.expertAssessment}
             </h2>
-            <button className="text-blue-600 text-xs hover:underline lowercase italic">
-              {t.goats.add}
-            </button>
+            {(goat.cert_no || goat.cert_serial) ? (
+              <div className="flex items-center gap-4">
+                <Link 
+                  href={`/goats/${goat.id}/assessment`}
+                  className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
+                >
+                  {expertTests.length > 0 ? t.goats.editShort : t.goats.add} {t.goats.expertAssessment.replace(':', '')}
+                </Link>
+                <div className="h-6 w-[1px] bg-gray-200"></div>
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#491907]/50">
+                   <Link href={`/goats/${goat.id}/certificate/1`} className="hover:text-blue-600 hover:underline">Certificate 1</Link>
+                   <span className="opacity-30">|</span>
+                   <Link href={`/goats/${goat.id}/certificate/2`} className="hover:text-blue-600 hover:underline">Certificate 2</Link>
+                </div>
+              </div>
+            ) : (
+              <div className="text-[10px] font-black uppercase text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 border-dashed">
+                {t.goats.certNo || 'Certificate'} Required for assessment
+              </div>
+            )}
           </div>
-
-          {expertTests.length > 0 && (
-            <div className="overflow-x-auto border border-gray-400 shadow-md bg-white">
+          <div className="overflow-x-auto">
+            {expertTests.length > 0 ? (
               <table className="w-full text-[9px] border-collapse text-center uppercase font-black whitespace-nowrap">
-                <thead className="bg-[#10FF10] border-b border-gray-400">
-                  <tr className="divide-x divide-gray-400">
-                    <th className="p-2 px-4 whitespace-nowrap">
-                      Зав. (Breeder)
-                    </th>
-                    <th className="p-2 px-4 whitespace-nowrap">Дата (Date)</th>
-                    <th className="p-2 px-4">Тип (Type)</th>
-                    <th className="p-2 px-3">Высота (Withers)</th>
-                    <th className="p-2 px-3">Крестец (Sacrum)</th>
-                    <th className="p-2 px-3">Грудь (Chest)</th>
-                    <th className="p-2 px-3">Длина (Length)</th>
-                    <th className="p-2 px-3">Вес (Weight)</th>
-                    <th className="p-2 px-4 text-red-700">Счет (Score)</th>
-                    <th className="p-2 px-3">Класс (Class)</th>
-                    <th className="p-2 px-3">Кат. (Cat)</th>
+                <thead className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 text-blue-800">
+                  <tr className="divide-x divide-blue-100">
+                    <th className="p-3">{t.goats.breeder}</th>
+                    <th className="p-3">{t.goats.added}</th>
+                    <th className="p-3">{t.goats.certType}</th>
+                    <th className="p-3">{t.goats.certHeightWithers}</th>
+                    <th className="p-3">{t.goats.certHeightSacrum}</th>
+                    <th className="p-3">{t.goats.certChestCirc}</th>
+                    <th className="p-3">{t.goats.certBodyLength}</th>
+                    <th className="p-3">Weight (kg)</th>
+                    <th className="p-3">{t.goats.certFinalScore}</th>
+                    <th className="p-3">{t.goats.certClass}</th>
+                    <th className="p-3">{t.goats.certCategory}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-300">
-                  {expertTests.map((test: any, i: number) => (
-                    <tr
-                      key={i}
-                      className="divide-x divide-gray-300 hover:bg-green-50/40 h-8"
-                    >
-                      <td className="p-1 px-4 truncate max-w-[120px]">
-                        {test.who_expert || "-"}
-                      </td>
-                      <td className="p-1 px-4 whitespace-nowrap">
-                        {test.date_test
-                          ? new Date(test.date_test).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="p-1 px-4">
-                        {test.test_type === 1 ? "Classical" : "Young"}
-                      </td>
-                      <td className="p-1 px-3">{test.par_1 || "-"}</td>
-                      <td className="p-1 px-3">{test.par_2 || "-"}</td>
-                      <td className="p-1 px-3">{test.par_3 || "-"}</td>
-                      <td className="p-1 px-3">{test.par_4 || "-"}</td>
-                      <td className="p-1 px-3">{test.weight || "-"}</td>
-                      <td className="p-1 px-4 text-red-700 font-black">
-                        {test.score_total}
-                      </td>
-                      <td className="p-1 px-3">{test.class}</td>
-                      <td className="p-1 px-3">{test.category}</td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-gray-100">
+                    {expertTests.map((test: any, i: number) => {
+                      const get = (key: string) => {
+                        const val = test[key] ?? test[key.charAt(0).toUpperCase() + key.slice(1)];
+                        return (val !== null && val !== undefined && val !== "") ? val : "-";
+                      };
+                      return (
+                        <tr
+                          key={i}
+                          className="divide-x divide-gray-100 hover:bg-blue-50/20 transition-colors"
+                        >
+                          <td className="p-3 truncate max-w-[150px] font-bold">
+                            {get('who_expert')}
+                          </td>
+                          <td className="p-3 text-gray-400">
+                            {test.date_test || test.Date_test
+                              ? new Date(test.date_test || test.Date_test).toLocaleDateString()
+                              : "-"}
+                          </td>
+                          <td className="p-3 opacity-60">
+                            {test.test_type === 1 || test.Test_type === 1 ? "Classical" : "Young"}
+                          </td>
+                          <td className="p-3">{get('par_1')}</td>
+                          <td className="p-3">{get('par_2')}</td>
+                          <td className="p-3">{get('par_3')}</td>
+                          <td className="p-3">{get('par_4')}</td>
+                          <td className="p-3">{get('weight')}</td>
+                          <td className="p-3 text-red-600 text-[11px] scale-105">
+                            {get('score_total')}
+                          </td>
+                          <td className="p-3">
+                             <span className="px-2 py-0.5 bg-gray-100 rounded-lg">{get('class')}</span>
+                          </td>
+                          <td className="p-3">{get('category')}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
-            </div>
-          )}
-          {expertTests.length === 0 && (
-            <div className="p-4 bg-gray-50 border border-gray-200 text-[9px] italic text-center text-gray-400">
-              No expert assessment records found
-            </div>
-          )}
+            ) : (
+              <div className="py-20 text-gray-300 italic flex flex-col items-center justify-center gap-1">
+                 <span className="text-xl">📋</span>
+                 {t.catalog.empty}
+              </div>
+            )}
+          </div>
         </section>
 
-        {/* CERT DATA SELECTOR (Image 4 style) */}
-        <section className="space-y-4 pt-6">
-          <div className="flex items-center gap-4">
-            <h2 className="text-[#491907] text-xs font-black uppercase">
-              {t.goats.certLactDataTitle}:
+        {/* CERT DATA SELECTOR */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.certLactDataTitle}
             </h2>
-            <button className="px-3 py-0.5 bg-gray-100 border border-gray-400 text-[9px] font-black uppercase rounded shadow-sm hover:bg-white active:bg-gray-200">
+            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
               {t.goats.refresh}
             </button>
           </div>
-          <div className="overflow-x-auto border border-gray-400 shadow-md">
-            <table className="w-full text-[9px] border-collapse font-black text-center uppercase">
-              <thead className="bg-[#10FF10] border-b border-gray-500">
-                <tr className="divide-x divide-gray-500">
-                  <th className="p-1 px-4">Кто</th>
-                  <th className="p-1 px-4 w-[25%] uppercase">Выбор</th>
-                  <th className="p-1 px-4">Номер лактации</th>
-                  <th className="p-1 px-4">Дней лактации</th>
-                  <th className="p-1 px-4">Удой за лактацию в кг</th>
-                  <th className="p-1 px-4">Жир %</th>
-                  <th className="p-1 px-4">Белок %</th>
-                  <th className="p-1 px-4">Среднесуточный удой (кг)</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-[9px] border-collapse font-black text-center uppercase whitespace-nowrap">
+              <thead className="bg-gray-100 border-b border-gray-200 text-[#491907]">
+                <tr className="divide-x divide-gray-200">
+                  <th className="p-3">{t.goats.lactViewer}</th>
+                  <th className="p-3 w-[25%] uppercase">{t.goats.certChoice}</th>
+                  <th className="p-3">{t.goats.lactNo}</th>
+                  <th className="p-3">{t.goats.lactDays}</th>
+                  <th className="p-3">{t.goats.lactMilk}</th>
+                  <th className="p-3">{t.goats.lactFat}</th>
+                  <th className="p-3">{t.goats.lactProtein}</th>
+                  <th className="p-3">{t.goats.lactMilkDay}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-400">
+              <tbody className="divide-y divide-gray-100">
                 <CertRows
                   label="П"
                   count={5}
-                  bgColor="bg-[#F6B8EB]"
+                  bgColor="bg-[#F6B8EB]/10"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="i"
@@ -625,7 +691,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="М"
                   count={3}
-                  bgColor="bg-[#F8DAB8]"
+                  bgColor="bg-[#F8DAB8]/20"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="m"
@@ -634,7 +700,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="О"
                   count={3}
-                  bgColor="bg-[#E89F98]"
+                  bgColor="bg-[#F8CBAD]/15"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="f"
@@ -643,7 +709,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="ММ"
                   count={3}
-                  bgColor="bg-[#F6ECB8]"
+                  bgColor="bg-gray-50"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="mm"
@@ -652,7 +718,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="ОМ"
                   count={3}
-                  bgColor="bg-[#F6BDB8]"
+                  bgColor="bg-gray-50/50"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="fm"
@@ -661,7 +727,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="МО"
                   count={3}
-                  bgColor="bg-[#F6ECB8]"
+                  bgColor="bg-gray-50"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="mf"
@@ -670,7 +736,7 @@ export default async function GoatDetailPage({
                 <CertRows
                   label="ОО"
                   count={3}
-                  bgColor="bg-[#F6BDB8]"
+                  bgColor="bg-gray-50/50"
                   certData={certData}
                   ancestorLacts={ancestorLacts}
                   pathPrefix="ff"
@@ -681,115 +747,83 @@ export default async function GoatDetailPage({
           </div>
         </section>
 
-        {/* 3RD GEN PRODUCTIVITY (Image 5 style) */}
-        <section className="space-y-4 pt-4 border-t border-gray-100">
-          <h2 className="text-[#491907] text-[10px] font-black uppercase">
-            {t.goats.thirdGenProductivity}:
-          </h2>
-          <div className="grid grid-cols-4 border border-gray-400 text-[9px] font-black uppercase">
-            {[
-              { l: "MMM", f: "id_mmm_row1" },
-              { l: "BMM", f: "id_fmm_row1" },
-              { l: "MBM", f: "id_mfm_row1" },
-              { l: "BBM", f: "id_ffm_row1" },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex flex-col border-r last:border-0 border-gray-400 text-center"
-              >
-                <div className="bg-[#10FF10] p-1 border-b border-gray-400">
-                  {item.l}
-                </div>
-                <div className="bg-[#E2F0D9] p-2 flex items-center justify-center min-h-[40px]">
-                  {certData[item.f] ? (
-                    <span className="text-red-700 font-black">
-                      {certData[item.f]}
-                    </span>
-                  ) : (
-                    <input
-                      type="text"
-                      className="w-full bg-white border border-gray-300 px-1 text-center h-5 outline-none focus:border-blue-500"
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+        {/* 3RD GEN PRODUCTIVITY */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.thirdGenProductivity}
+            </h2>
           </div>
-          <div className="grid grid-cols-4 border border-gray-400 text-[9px] font-black uppercase">
-            {[
-              { l: "MMB", f: "id_mmf_row1" },
-              { l: "BMB", f: "id_fmf_row1" },
-              { l: "MBB", f: "id_mff_row1" },
-              { l: "BBB", f: "id_fff_row1" },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex flex-col border-r last:border-0 border-gray-400 text-center"
-              >
-                <div className="bg-[#10FF10] p-1 border-b border-gray-400">
-                  {item.l}
-                </div>
-                <div className="bg-[#E2F0D9] p-2 flex items-center justify-center min-h-[40px]">
-                  {certData[item.f] ? (
-                    <span className="text-red-700 font-black">
-                      {certData[item.f]}
+          <div className="p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 border border-gray-100 rounded-lg overflow-hidden shadow-sm">
+               {[
+                 { l: "MMM", f: "id_mmm_row1" },
+                 { l: "BMM", f: "id_fmm_row1" },
+                 { l: "MBM", f: "id_mfm_row1" },
+                 { l: "BBM", f: "id_ffm_row1" },
+                 { l: "MMB", f: "id_mmf_row1" },
+                 { l: "BMB", f: "id_fmf_row1" },
+                 { l: "MBB", f: "id_mff_row1" },
+                 { l: "BBB", f: "id_fff_row1" },
+               ].map((item, i) => (
+                 <div key={i} className="bg-gray-300 p-4 flex flex-col items-center gap-2 group hover:bg-red-50/10 transition-colors">
+                    <span className="text-[10px] font-black text-[#491907] bg-red-300 px-3 py-1 rounded-full scale-95 shadow-sm">
+                       {item.l}
                     </span>
-                  ) : (
-                    <input
-                      type="text"
-                      className="w-full bg-white border border-gray-300 px-1 text-center h-5 outline-none focus:border-blue-500"
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+                    <div className="w-full">
+                       {certData[item.f] ? (
+                         <div className="text-center bg-red-200 py-2 text-emerald-600 font-black text-xs">
+                            {certData[item.f]}
+                         </div>
+                       ) : (
+                         <input
+                           type="text"
+                           placeholder="---"
+                           className="w-full text-[10px] font-black text-center bg-gray-50 border border-gray-100 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all shadow-inner"
+                         />
+                       )}
+                    </div>
+                 </div>
+               ))}
+            </div>
           </div>
         </section>
 
-        {/* MOVEMENT DATA SECTION (From Image 5) */}
-        <section className="space-y-4 pt-8 border-t border-gray-100">
-          <div className="text-[10px] font-bold space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[#491907] uppercase">
-                Движение животного:
-              </span>
-              <button className="text-blue-600 hover:underline">
-                Посмотреть движение
-              </button>
-              <span className="opacity-20">|</span>
-              <button className="text-blue-600 hover:underline">
-                Переместить
-              </button>
+        {/* MOVEMENT DATA SECTION */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              Animal Movement
+            </h2>
+          </div>
+          <div className="p-6 space-y-6">
+            <div className="flex items-center gap-4 text-[10px] font-black uppercase">
+               <button className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all">View Movement</button>
+               <button className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all">Move Animal</button>
             </div>
 
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex items-center gap-2">
-                <span>Инвайт на эту страницу: На сколько часов:</span>
-                <input
-                  type="text"
-                  defaultValue="1"
-                  className="w-8 border border-gray-300 px-1 text-center font-bold"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <span>Поколений:</span>
-                <input
-                  type="text"
-                  defaultValue="2"
-                  className="w-8 border border-gray-300 px-1 text-center font-bold"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2 flex gap-2">
-              <input
-                type="text"
-                className="w-full max-w-sm border border-gray-300 p-1 font-bold"
-                placeholder="Invite link will appear here..."
-              />
-              <button className="px-4 py-1 bg-gray-100 border border-gray-400 text-[9px] uppercase font-black hover:bg-white active:bg-gray-200">
-                Получить
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+               <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Share Invite (Hours)</span>
+                    <input type="text" defaultValue="1" className="w-16 border border-gray-200 rounded-lg p-2 font-black text-center focus:ring-2 focus:ring-blue-100 outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Generations</span>
+                    <input type="text" defaultValue="2" className="w-16 border border-gray-200 rounded-lg p-2 font-black text-center focus:ring-2 focus:ring-blue-100 outline-none" />
+                  </div>
+               </div>
+               <div className="flex items-end gap-2 pb-1">
+                  <div className="flex-1 flex flex-col gap-2">
+                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Invite Link</span>
+                     <input type="text" placeholder="Link will appear here..." className="w-full border border-gray-200 rounded-lg p-2 font-black bg-gray-50 text-gray-400 outline-none" />
+                  </div>
+                  <button className="h-[42px] px-6 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all">
+                    Generate
+                  </button>
+               </div>
             </div>
           </div>
         </section>
@@ -818,31 +852,30 @@ function CertRows({
     rows.push(
       <tr
         key={i}
-        className={`${bgColor} divide-x divide-gray-400 border-b border-gray-400 last:border-0 h-8`}
+        className={`${bgColor} divide-x divide-gray-100 border-b border-gray-100 last:border-0 hover:brightness-95 transition-all h-10`}
       >
-        <td className="p-1.5 font-black">{label}</td>
-        <td className="p-1 px-4 text-start">
+        <td className="p-1 px-3 font-black text-[#491907] w-12">{label}</td>
+        <td className="p-1.5 px-4 text-start min-w-[200px]">
           <select
-            className="w-full text-[9px] bg-white border border-gray-400 p-0.5 outline-none font-bold shadow-sm"
+            className="w-full text-[10px] bg-white border border-gray-200 rounded-md p-1.5 outline-none font-bold shadow-sm focus:ring-2 focus:ring-[#491907]/20 transition-all"
             defaultValue={selectedId || ""}
           >
             <option value="">-- select --</option>
             {node.lactations.map((l: any) => (
               <option key={l.id} value={l.id}>
-                {l.lact_no}/{l.lact_days}/{l.milk}/{l.fat}/{l.protein}/
-                {l.milk_day}
+                L{l.lact_no} • {l.lact_days}d • {l.milk}kg • {l.fat}% • {l.protein}%
               </option>
             ))}
           </select>
         </td>
-        <td className="p-1.5 font-bold">{selectedLact?.lact_no || "-"}</td>
-        <td className="p-1.5 font-bold">{selectedLact?.lact_days || "-"}</td>
-        <td className="p-1.5 font-black text-red-700">
+        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.lact_no || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.lact_days || "-"}</td>
+        <td className="p-1.5 font-black text-emerald-600 scale-110">
           {selectedLact?.milk || "-"}
         </td>
-        <td className="p-1.5 font-bold">{selectedLact?.fat || "-"}</td>
-        <td className="p-1.5 font-bold">{selectedLact?.protein || "-"}</td>
-        <td className="p-1.5 font-bold">{selectedLact?.milk_day || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.fat || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.protein || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-600">{selectedLact?.milk_day || "-"}</td>
       </tr>,
     );
   }
@@ -855,19 +888,8 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
   return (
     <div className="flex flex-col w-full text-[9px] uppercase font-black bg-white">
       {/* HEADER STRIPE */}
-      <div className="bg-[#491907] flex h-5 border-b border-gray-500">
-        <div className="flex-1 border-r border-white/20 flex items-center justify-center text-white text-[7px]">
-          •
-        </div>
-        <div className="flex-1 border-r border-white/20 flex items-center justify-center text-white text-[7px]">
-          •
-        </div>
-        <div className="flex-1 border-r border-white/20 flex items-center justify-center text-white text-[7px]">
-          •
-        </div>
-        <div className="flex-1 flex items-center justify-center text-white text-[7px]">
-          •
-        </div>
+      <div className="bg-[#491907] flex h-8 items-center border-b border-white/10 px-4">
+         <span className="text-white/40 text-[7px] tracking-widest font-black uppercase">Ancestral Lineage (4 Generations)</span>
       </div>
 
       <div className="flex divide-x divide-gray-400">

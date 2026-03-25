@@ -113,7 +113,7 @@ export const translations = {
       certCategory: 'Категория',
       // Productivity / Lactation columns
       productivitySection: 'Продуктивность собственная/по потомству/предкам (избранное)',
-      lactViewer: 'Потомок/предок',
+      lactViewer: 'Кто',
       lactNo: 'Номер лактации',
       lactDays: 'Дней лактации',
       lactMilk: 'Удой за лактацию в кг',
@@ -160,6 +160,8 @@ export const translations = {
       density: 'Плотность (кг)',
       flowRate: 'Скорость молокоотдачи (кг/мин)',
       added: 'Добавлен',
+      certChoice: 'Выбор',
+      certNo: 'Сертификат',
     },
 
 
@@ -358,13 +360,13 @@ export const translations = {
       certCategory: 'Category',
       // Productivity / Lactation columns
       productivitySection: 'Productivity of one\'s own/offspring/ancestors (selected)',
-      lactViewer: 'Descendant / ancestor',
-      lactNo: 'Lactation number',
-      lactDays: 'Days of lactation',
-      lactMilk: 'Milk yield per lactation in kg',
+      lactViewer: 'Who',
+      lactNo: 'Lactation no',
+      lactDays: 'Lactation days',
+      lactMilk: 'Lactation milk (kg)',
       lactFat: 'Fat %',
       lactProtein: 'Protein %',
-      lactMilkDay: 'Average daily milk yield (kg)',
+      lactMilkDay: 'Avg daily milk (kg)',
       lactGraph: 'Lactation curve graph',
       // Trailing columns
       dateAdded: 'Date of entry into the register',
@@ -384,12 +386,12 @@ export const translations = {
       offspring: 'Offspring:',
       sons: 'Sons',
       daughters: 'Daughters',
-      grandsons: 'Grandsons',
+      grandsons: 'Grandchildren',
       granddaughters: 'Granddaughters',
-      grgrandsons: 'Great-Grandsons',
-      grgranddaughters: 'Great-Granddaughters',
-      grgrgrandsons: 'Gr-Gr-Grandsons',
-      grgrgranddaughters: 'Gr-Gr-Granddaughters',
+      grgrandsons: 'Great-grandchildren',
+      grgranddaughters: 'Great-granddaughters',
+      grgrgrandsons: 'Great-great-grandchildren',
+      grgrgranddaughters: 'Great-great-granddaughters',
       directDescendantsTitle: 'Summary table for direct descendants (1st generation):',
       lactDataTitle: 'Lactation data:',
       ownProductivityTitle: 'Own milk productivity:',
@@ -405,6 +407,8 @@ export const translations = {
       density: 'Density (kg)',
       flowRate: 'Flow rate (kg/min)',
       added: 'Added',
+      certChoice: 'Choice',
+      certNo: 'Certificate',
     },
 
 

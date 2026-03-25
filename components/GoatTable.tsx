@@ -19,54 +19,54 @@ export default function GoatTable({
               colSpan={20}
               className="p-1 text-center border-r border-gray-100 bg-[#E2F0D9]"
             >
-              Animal Information
+              {isMain ? t.goats.showAll : t.catalog.title}
             </th>
             <th
               colSpan={2}
               className="p-1 text-center border-r border-gray-100 bg-[#F2F2F2]"
             >
-              Certificate
+                {t.goats.certSection}
             </th>
             <th
               colSpan={8}
               className="p-1 text-center border-r border-gray-100 bg-[#C5E0B4]"
             >
-              Mother's data
+              {t.goats.motherData}
             </th>
             <th
               colSpan={8}
               className="p-1 text-center border-r border-gray-100 bg-[#F8CBAD]"
             >
-              Father's details
+              {t.goats.fatherData}
             </th>
             <th
               colSpan={8}
               className="p-1 text-center border-r border-gray-100 bg-[#B4E0E0]"
             >
-              Certification
+              {t.goats.certSection}
             </th>
             <th
               colSpan={8}
               className="p-1 text-center border-r border-gray-100 bg-[#B4E0B4]"
             >
-              Productivity
+              {t.goats.productivitySection}
             </th>
             <th colSpan={4} className="p-1 text-center bg-[#F2F2F2]">
-              Metadata
+              {t.common.metadata || "Metadata"}
             </th>
           </tr>
           {/* BOTTOM HEADER - FIELDS */}
           <tr className="text-[8px] font-bold uppercase tracking-tight text-gray-700 border-b border-gray-300">
-            <th className="p-1 border-r border-gray-300 sticky left-0 bg-[#E2F0D9] z-40 min-w-[200px]">
+            <th className="p-1 border-r border-gray-300 sticky left-0 bg-white z-40 min-w-[100px] text-[#491907]">
               {t.goats.nickname}
             </th>
-            <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
+            <th className="p-1 border-r border-gray-200 bg-[#F0F7F0]/80 text-[#491907]">
               {t.goats.breed}
             </th>
-            <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
+            <th className="p-1 border-r border-gray-200 bg-[#F0F7F0]/80 text-[#491907]">
               {t.goats.sex}
             </th>
-            <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
+            <th className="p-1 border-r border-gray-200 bg-[#F0F7F0]/80 text-[#491907]">
               {t.goats.abgMember}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
@@ -106,161 +106,180 @@ export default function GoatTable({
               {t.goats.idAbg}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
-              ID по ФХ
+              {t.goats.idFx}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
-              ID Chip
+              {t.goats.chipId}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
-              ID International
+              {t.goats.idInt}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#E2F0D9]/80">
-              Brand
+              {t.goats.brand}
             </th>
 
             {/* Certificate Group */}
             <th className="p-1 border-r border-gray-100 bg-[#F2F2F2]">
-              Series
+              {t.goats.certSeries}
             </th>
             <th className="p-1 border-r border-gray-100 bg-[#F2F2F2]">
-              Number
+              {t.goats.certNum}
             </th>
 
             {/* Mother Group */}
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              Nickname
+              {t.goats.nickname} (M)
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              Reg Code
+              {t.goats.registryCode}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              ID UA
+              {t.goats.idUa}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              ID ABG
+              {t.goats.idAbg}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              ID по ФХ
+              {t.goats.idFx}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              ID Chip
+              {t.goats.chipId}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              ID Int
+              {t.goats.idInt}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#C5E0B4]/60">
-              Brand
+              {t.goats.brand}
             </th>
 
             {/* Father Group */}
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              Nickname
+              {t.goats.nickname} (F)
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              Reg Code
+              {t.goats.registryCode}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              ID UA
+              {t.goats.idUa}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              ID ABG
+              {t.goats.idAbg}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              ID по ФХ
+              {t.goats.idFx}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              ID Chip
+              {t.goats.chipId}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              ID Int
+              {t.goats.idInt}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F8CBAD]/60">
-              Brand
+              {t.goats.brand}
             </th>
 
             {/* Cert Group */}
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Type
+              {t.goats.certType}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Score
+              {t.goats.score}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Withers
+              {t.goats.certHeightWithers}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Sacrum
+              {t.goats.certHeightSacrum}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Chest
+              {t.goats.certChestCirc}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Length
+              {t.goats.certBodyLength}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Class
+              {t.goats.certClass}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0E0]/60">
-              Category
+              {t.goats.certCategory}
             </th>
 
             {/* Productivity Group */}
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Actor
+              {t.goats.lactViewer}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Lact No.
+              {t.goats.lactNo}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Days
+              {t.goats.lactDays}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Milk (kg)
+              {t.goats.lactMilk}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Fat (%)
+              {t.goats.lactFat}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Protein (%)
+              {t.goats.lactProtein}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Avg Daily
+              {t.goats.lactMilkDay}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#B4E0B4]/60">
-              Graph
+              {t.goats.lactGraph}
             </th>
 
             {/* Meta Group */}
             <th className="p-1 border-r border-gray-200 bg-[#F2F2F2]">
-              Entry Date
+              {t.goats.dateAdded}
             </th>
             <th className="p-1 border-r border-gray-200 bg-[#F2F2F2]">
-              Source
+              {t.goats.source}
             </th>
             <th className="p-1 min-w-[80px] bg-[#4D2C1A] text-white border-l border-white/20">
               {t.goats.status}
             </th>
-            <th className="p-1 border-r border-gray-200 bg-[#F2F2F2]">Notes</th>
+            <th className="p-1 border-r border-gray-200 bg-[#F2F2F2]">
+              {t.goats.notes}
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {goats.map((g, idx) => (
-            <tr
-              key={idx}
-              className="divide-x divide-gray-200 hover:bg-green-50/40 text-[8px] font-bold text-gray-800 h-8"
-            >
-              <td className="p-1 sticky left-0 bg-white z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)] whitespace-nowrap">
-                <Link
-                  href={`/goats/${g.id}`}
-                  className="hover:text-blue-600 underline text-[#491907]"
-                >
-                  {g.name}
-                </Link>
+          {goats.map((g, idx) => {
+            let rowBg = 'bg-white';
+            if (g.status === 0) rowBg = 'bg-[#EF9A9A]/30';
+            else if (g.is_reg === 1 || g.is_reg === true) rowBg = 'bg-[#D7FDB5]/30';
+            else rowBg = 'bg-[#F3F1F1]/40';
+
+            return (
+              <tr
+                key={idx}
+                className={`divide-x divide-gray-200 hover:bg-blue-100/50 transition-all text-[8px] font-bold text-gray-800 h-8 ${rowBg}`}
+              >
+                <td className={`p-1 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.05)] whitespace-nowrap bg-inherit`}>
+                  <div className="flex items-center gap-1.5 min-h-[20px]">
+                    {g.ava ? (
+                      <img
+                        src={g.ava}
+                        alt=""
+                        className="w-6 h-4 object-cover rounded-sm border border-gray-200"
+                      />
+                    ) : (
+                      <div className="w-6 h-4 bg-gray-100/50 rounded-sm border border-gray-200" />
+                    )}
+                    <Link
+                      href={`/goats/${g.id}`}
+                      className="hover:text-blue-600 underline text-[#491907]"
+                    >
+                      {g.name}
+                    </Link>
+                  </div>
+                </td>
+              <td className="p-1 text-center font-black opacity-80 uppercase leading-tight">
+                {g.breed_name || g.breed_alias}
               </td>
-              <td className="p-1 text-center font-mono">
-                {g.breed_alias || g.breed_name}
-              </td>
-              <td className="p-1 text-center">
+              <td className="p-1 text-center font-black">
                 {g.sex === 1 ? "Buck" : "Doe"}
               </td>
               <td className="p-1 text-center">{g.is_abg ? "Yes" : "No"}</td>
@@ -269,18 +288,30 @@ export default function GoatTable({
               </td>
               <td className="p-1 truncate max-w-[150px]">{g.manuf || "-"}</td>
               <td className="p-1 truncate max-w-[150px]">{g.owner || "-"}</td>
-              <td className="p-1 text-center whitespace-nowrap font-mono">
-                {g.date_born ? new Date(g.date_born).toLocaleDateString() : "-"}
+              <td className="p-1 text-center whitespace-nowrap font-mono text-[9px] min-w-[120px]">
+                {g.date_born
+                  ? new Date(g.date_born).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : "-"}
               </td>
               <td className="p-1 text-center font-mono">
                 {g.born_weight || "-"}
               </td>
               <td className="p-1 text-center font-mono">{g.born_qty || "-"}</td>
-              <td className="p-1 text-center">{g.horns_type || "-"}</td>
-              <td className="p-1 text-center">{g.have_gen || "-"}</td>
+              <td className="p-1 text-center font-black">
+                {g.horns_type === 1 || g.horns_type === '1' ? "TO" : 
+                 g.horns_type === 2 || g.horns_type === '2' ? "ABOUT" : 
+                 g.horns_type === 3 || g.horns_type === '3' ? "R" : "-"}
+              </td>
+              <td className="p-1 text-center">
+                {g.have_gen === 1 || g.have_gen === '1' || g.have_gen === true ? "Yes" : "No"}
+              </td>
               <td className="p-1 text-center">{g.gen_mat || "-"}</td>
               <td className="p-1 text-center text-red-700 font-black">
-                {g.id_stoodbook || "-"}
+                {(g.is_reg === '1' || g.is_reg === 1 || g.is_reg === true ? "R" : "X") + (10000 + Number(g.id || g.reg_id))}
               </td>
               <td className="p-1 text-center font-mono">{g.code_ua || "-"}</td>
               <td className="p-1 text-center font-mono">{g.code_abg || "-"}</td>
@@ -422,22 +453,33 @@ export default function GoatTable({
               </td>
 
               {/* Meta fields */}
-              <td className="p-1 text-center text-gray-500 font-mono">
+              <td className="p-1 text-center font-mono text-[9px] min-w-[120px]">
                 {g.time_added
-                  ? new Date(g.time_added).toLocaleDateString()
+                  ? new Date(g.time_added).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })
                   : "-"}
               </td>
               <td className="p-1 truncate max-w-[150px] italic">
                 {g.source || "-"}
               </td>
-              <td className="p-1 min-w-[80px] text-center bg-[#4D2C1A] text-white border-l border-[#4D2C1A]">
-                {g.status === 1 ? "Live" : g.status === 2 ? "Dead" : "-"}
+              <td className="p-1 min-w-[80px] text-center font-bold">
+                {g.status === 1 || g.status === "1" ? (
+                  <span className="text-green-600">Alive</span>
+                ) : g.status === 0 || g.status === "0" ? (
+                  <span className="text-red-600">Dead</span>
+                ) : (
+                  <span className="text-gray-500">No info</span>
+                )}
               </td>
               <td className="p-1 min-w-[250px] italic text-[7px] truncate max-w-[300px] border-l border-gray-200">
                 {g.special || "-"}
               </td>
             </tr>
-          ))}
+          );
+        })}
         </tbody>
       </table>
     </div>
