@@ -4,236 +4,22 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import GoatTable from "@/components/GoatTable";
+import InviteSection from "@/components/InviteSection";
+import PedigreeNode from "@/components/PedigreeNode";
+
+import { 
+  getGoatData, 
+  getOffspringDetailed, 
+  getGallery, 
+  getLactation, 
+  getAncestors, 
+  getOwnMilkProductivity, 
+  getExpertAssessment, 
+  getCertData, 
+  getAncestorLactations 
+} from "@/lib/goats-data";
 
 export const dynamic = "force-dynamic";
-
-async function getGoatData(id: string) {
-  const result = await query(
-    `
-      SELECT 
-        A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm, A.id_mother, A.id_father,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
-        Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
-        Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
-        Di.source, Di.special, Di.cert_serial, Di.cert_no,
-
-        M.name  AS m_name,  M.id AS m_id,
-        Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,
-        Dm.code_farm AS m_code_farm, Dm.code_chip AS m_code_chip,
-        Dm.code_int AS m_code_int, Dm.code_brand AS m_code_brand,
-
-        F.name  AS f_name,  F.id AS f_id,
-        Df.code_ua AS f_code_ua, Df.code_abg AS f_code_abg,
-        Df.code_farm AS f_code_farm, Df.code_chip AS f_code_chip,
-        Df.code_int AS f_code_int, Df.code_brand AS f_code_brand,
-
-        T.test_type, T.score_total, T.par_1, T.par_2, T.par_3, T.par_4,
-        T.class AS cert_class, T.category,
-
-        L.viewer, L.lact_no, L.lact_days, L.milk, L.fat, L.protein, L.milk_day, L.have_graph,
-
-        Frm.name AS farm_name,
-        B.name as breed_name, B.alias as breed_alias,
-        S.name as studbook_name
-      FROM animals A
-      LEFT JOIN goats_data Di    ON A.id = Di.id_goat
-      LEFT JOIN breeds B         ON Di.id_breed = B.id
-      LEFT JOIN animals M        ON A.id_mother = M.id
-      LEFT JOIN goats_data Dm    ON M.id = Dm.id_goat
-      LEFT JOIN animals F        ON A.id_father = F.id
-      LEFT JOIN goats_data Df    ON F.id = Df.id_goat
-      LEFT JOIN goats_test T     ON A.id = T.id_goat
-      LEFT JOIN goats_lact L     ON L.id = Di.id_lact_show
-      LEFT JOIN farms Frm        ON A.id_farm = Frm.id
-      LEFT JOIN stoodbook S      ON Di.id_stoodbook = S.id
-      WHERE A.id = $1
-  `,
-    [id],
-  );
-  return result.rows[0];
-}
-
-async function getOffspringDetailed(id: string) {
-  const result = await query(
-    `
-      SELECT 
-        A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
-        Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
-        Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
-        Di.source, Di.special, Di.cert_serial, Di.cert_no,
-
-        M.name  AS m_name,  M.id AS m_id,
-        Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,
-
-        F.name  AS f_name,  F.id AS f_id,
-        Df.code_ua AS f_code_ua, Df.code_abg AS f_code_abg,
-
-        T.test_type, T.score_total, T.par_1, T.par_2, T.par_3, T.par_4,
-        T.class AS cert_class, T.category,
-
-        L.viewer, L.lact_no, L.lact_days, L.milk, L.fat, L.protein, L.milk_day, L.have_graph,
-
-        Frm.name AS farm_name,
-        B.name as breed_name
-      FROM animals A
-      LEFT JOIN goats_data Di    ON A.id = Di.id_goat
-      LEFT JOIN breeds B         ON Di.id_breed = B.id
-      LEFT JOIN animals M        ON A.id_mother = M.id
-      LEFT JOIN goats_data Dm    ON M.id = Dm.id_goat
-      LEFT JOIN animals F        ON A.id_father = F.id
-      LEFT JOIN goats_data Df    ON F.id = Df.id_goat
-      LEFT JOIN goats_test T     ON A.id = T.id_goat
-      LEFT JOIN goats_lact L     ON L.id = Di.id_lact_show
-      LEFT JOIN farms Frm        ON A.id_farm = Frm.id
-      WHERE (A.id_mother = $1 OR A.id_father = $1)
-      ORDER BY A.time_added DESC
-  `,
-    [id],
-  );
-  return result.rows;
-}
-
-async function getGallery(id: string) {
-  const result = await query(
-    "SELECT file FROM goats_pic WHERE id_goat = $1 ORDER BY time_added DESC",
-    [id],
-  );
-  return result.rows;
-}
-
-async function getLactation(id: string) {
-  const result = await query(
-    "SELECT * FROM goats_lact WHERE id_goat = $1 ORDER BY lact_no ASC",
-    [id],
-  );
-  return result.rows;
-}
-
-async function getAncestors(rootId: number | null) {
-  if (!rootId) return null;
-
-  const res = await query(`
-    WITH RECURSIVE ancestry AS (
-      SELECT id, name, id_father, id_mother, sex, 0 as level 
-      FROM animals 
-      WHERE id = $1
-      UNION ALL
-      SELECT a.id, a.name, a.id_father, a.id_mother, a.sex, anc.level + 1
-      FROM animals a
-      JOIN ancestry anc ON (a.id = anc.id_mother OR a.id = anc.id_father)
-      WHERE anc.level < 4
-    )
-    SELECT a.*, d.code_ua 
-    FROM ancestry a
-    LEFT JOIN goats_data d ON a.id = d.id_goat
-  `, [rootId]);
-
-  const rows = res.rows;
-  const nodes = new Map();
-  rows.forEach(r => nodes.set(r.id, r));
-
-  function buildTree(id: number | null): any {
-    if (!id || !nodes.has(id)) return null;
-    const node = { ...nodes.get(id) };
-    node.father = buildTree(node.id_father);
-    node.mother = buildTree(node.id_mother);
-    return node;
-  }
-
-  return buildTree(rootId);
-}
-
-async function getOwnMilkProductivity(id: string) {
-  const res = await query(
-    `SELECT 
-      par_0 as lact_no, 
-      par_1 as lact_days, 
-      par_2 as milk, 
-      par_3 as fat, 
-      par_4 as protein,
-      par_5 as lactose,
-      par_6 as peak_yield,
-      par_7 as avg_yield,
-      par_8 as density,
-      par_9 as flow_rate,
-      have_graph,
-      source,
-      time_added as added
-    FROM goats_milk 
-    WHERE id_goat = $1 
-    ORDER BY par_0 ASC`,
-    [id],
-  );
-  return res.rows;
-}
-
-async function getExpertAssessment(id: string) {
-  const res = await query(
-    `SELECT * FROM goats_test WHERE id_goat = $1 ORDER BY date_test DESC`,
-    [id],
-  );
-  return res.rows;
-}
-
-async function getCertData(id: string) {
-  const result = await query("SELECT * FROM goats_cert WHERE id_goat = $1", [
-    id,
-  ]);
-  return result.rows[0] || {};
-}
-
-async function getAncestorLactations(id: string) {
-  const treeRes = await query(
-    `
-    WITH RECURSIVE ancestry AS (
-      SELECT id, name, id_mother, id_father, 0 as level, 'ME' as path FROM animals WHERE id = $1
-      UNION ALL
-      SELECT a.id, a.name, a.id_mother, a.id_father, anc.level + 1,
-             CASE 
-               WHEN a.id = anc.id_mother THEN anc.path || 'M' 
-               WHEN a.id = anc.id_father THEN anc.path || 'F'
-             END
-      FROM animals a
-      JOIN ancestry anc ON (a.id = anc.id_mother OR a.id = anc.id_father)
-      WHERE anc.level < 4
-    )
-    SELECT id, name, path FROM ancestry
-  `,
-    [id],
-  );
-
-  const ids = treeRes.rows.map((r: any) => r.id);
-  if (ids.length === 0) return {};
-
-  const lactRes = await query(
-    `
-    SELECT L.*, A.name as goat_name 
-    FROM goats_lact L 
-    JOIN animals A ON L.id_goat = A.id 
-    WHERE L.id_goat = ANY($1)
-    ORDER BY L.lact_no ASC
-  `,
-    [ids],
-  );
-
-  const groups: any = {};
-  lactRes.rows.forEach((l: any) => {
-    if (!groups[l.id_goat]) groups[l.id_goat] = [];
-    groups[l.id_goat].push(l);
-  });
-
-  const pathMap: any = {};
-  treeRes.rows.forEach((r: any) => {
-    pathMap[r.path] = {
-      id: r.id,
-      name: r.name,
-      lactations: groups[r.id] || [],
-    };
-  });
-
-  return pathMap;
-}
 
 export default async function GoatDetailPage({
   params: paramsPromise,
@@ -488,9 +274,12 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.ownProductivityTitle}
             </h2>
-            <button className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-blue-100 transition-all">
+            <Link 
+              href={`/goats/${goat.id}/milk`}
+              className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
+            >
               {t.goats.add} record
-            </button>
+            </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
@@ -539,7 +328,12 @@ export default async function GoatDetailPage({
                       {m.source || "-"}
                     </td>
                     <td className="p-3">
-                       <button className="text-blue-600 hover:text-blue-900 font-bold italic">...</button>
+                        <Link 
+                          href={`/goats/${goat.id}/milk?row=${m.id}`}
+                          className="text-blue-600 hover:text-blue-900 font-bold italic"
+                        >
+                          {t.goats.editShort}
+                        </Link>
                     </td>
                     <td className="p-3 text-gray-400">
                       {m.added ? new Date(m.added).toLocaleDateString() : "-"}
@@ -799,32 +593,22 @@ export default async function GoatDetailPage({
             </h2>
           </div>
           <div className="p-6 space-y-6">
-            <div className="flex items-center gap-4 text-[10px] font-black uppercase">
-               <button className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all">View Movement</button>
-               <button className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all">Move Animal</button>
-            </div>
+             <div className="flex items-center gap-4 text-[10px] font-black uppercase">
+                <Link 
+                  href={`/goats/${goat.id}/move?mode=view`}
+                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                >
+                  View Movement
+                </Link>
+                <Link 
+                  href={`/goats/${goat.id}/move?mode=add`}
+                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                >
+                  Move Animal
+                </Link>
+             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-50">
-               <div className="space-y-4">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Share Invite (Hours)</span>
-                    <input type="text" defaultValue="1" className="w-16 border border-gray-200 rounded-lg p-2 font-black text-center focus:ring-2 focus:ring-blue-100 outline-none" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Generations</span>
-                    <input type="text" defaultValue="2" className="w-16 border border-gray-200 rounded-lg p-2 font-black text-center focus:ring-2 focus:ring-blue-100 outline-none" />
-                  </div>
-               </div>
-               <div className="flex items-end gap-2 pb-1">
-                  <div className="flex-1 flex flex-col gap-2">
-                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Invite Link</span>
-                     <input type="text" placeholder="Link will appear here..." className="w-full border border-gray-200 rounded-lg p-2 font-black bg-gray-50 text-gray-400 outline-none" />
-                  </div>
-                  <button className="h-[42px] px-6 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all">
-                    Generate
-                  </button>
-               </div>
-            </div>
+            <InviteSection goatId={goat.id} t={t} />
           </div>
         </section>
       </div>
@@ -893,14 +677,14 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
       </div>
 
       <div className="flex divide-x divide-gray-400">
-        <div className="flex-1 flex flex-col">
-          <CompactNode
+        <div className="flex-1 flex-col flex">
+          <PedigreeNode
             node={ancestry.father}
             prefix="O:"
             color="bg-[#C5E0B4]"
             border
           />
-          <CompactNode
+          <PedigreeNode
             node={ancestry.mother}
             prefix="M:"
             color="bg-[#F8CBAD]"
@@ -913,13 +697,13 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
               key={i}
               className="flex-1 flex flex-col border-b last:border-0 border-gray-400"
             >
-              <CompactNode
+              <PedigreeNode
                 node={p?.father}
                 prefix="O:"
                 color="bg-[#E2F0D9]"
                 border
               />
-              <CompactNode
+              <PedigreeNode
                 node={p?.mother}
                 prefix="M:"
                 color="bg-[#F6B8EB]/50"
@@ -935,13 +719,13 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
                 key={`${i}-${j}`}
                 className="flex-1 flex flex-col border-b last:border-0 border-gray-400"
               >
-                <CompactNode
+                <PedigreeNode
                   node={gp?.father}
                   prefix="O:"
                   color="bg-[#E2F0D9]/40"
                   border
                 />
-                <CompactNode
+                <PedigreeNode
                   node={gp?.mother}
                   prefix="M:"
                   color="bg-[#F6B8EB]/30"
@@ -959,13 +743,13 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
                   key={`${i}-${j}-${k}`}
                   className="flex-1 flex flex-col border-b last:border-0 border-gray-300"
                 >
-                  <CompactNode
+                  <PedigreeNode
                     node={ggp?.father}
                     prefix="O:"
                     color="bg-gray-100"
                     border
                   />
-                  <CompactNode
+                  <PedigreeNode
                     node={ggp?.mother}
                     prefix="M:"
                     color="bg-gray-50"
@@ -976,33 +760,6 @@ function PedigreeChart({ ancestry }: { ancestry: any }) {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function CompactNode({ node, prefix, color, border }: any) {
-  return (
-    <div
-      className={`flex-1 min-h-[32px] p-1.5 flex items-center gap-1 leading-tight ${color} ${border ? "border-b border-gray-400" : ""}`}
-    >
-      {node ? (
-        <>
-          <span className={prefix === "O:" ? "text-blue-600" : "text-pink-600"}>
-            {prefix}
-          </span>
-          <Link
-            href={`/goats/${node.id}`}
-            className="hover:underline truncate max-w-[110px]"
-          >
-            {node.name}
-          </Link>
-          <span className="opacity-50 text-[7px] font-bold">
-            ({node.code_ua || node.id})
-          </span>
-        </>
-      ) : (
-        <span className="opacity-10">-</span>
-      )}
     </div>
   );
 }
