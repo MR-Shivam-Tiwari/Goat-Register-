@@ -4,10 +4,12 @@ export default function GoatTable({
   goats,
   t,
   isMain,
+  isGuest,
 }: {
   goats: any[];
   t: any;
   isMain?: boolean;
+  isGuest?: boolean;
 }) {
   return (
     <div className="overflow-x-auto w-full bg-white border border-gray-300 shadow-sm custom-scrollbar">
@@ -268,12 +270,16 @@ export default function GoatTable({
                     ) : (
                       <div className="w-6 h-4 bg-gray-100/50 rounded-sm border border-gray-200" />
                     )}
-                    <Link
-                      href={`/goats/${g.id}`}
-                      className="hover:text-blue-600 underline text-[#491907]"
-                    >
-                      {g.name}
-                    </Link>
+                    {isGuest ? (
+                      <span className="text-[#491907] font-bold">{g.name}</span>
+                    ) : (
+                      <Link
+                        href={`/goats/${g.id}`}
+                        className="hover:text-blue-600 underline text-[#491907]"
+                      >
+                        {g.name}
+                      </Link>
+                    )}
                   </div>
                 </td>
               <td className="p-1 text-center font-black opacity-80 uppercase leading-tight">
@@ -335,9 +341,13 @@ export default function GoatTable({
               {/* Mother fields */}
               <td className="p-1 text-blue-600 truncate max-w-[120px] bg-[#C5E0B4]/10">
                 {g.m_id ? (
-                  <Link href={`/goats/${g.m_id}`} className="hover:underline">
-                    {g.m_name}
-                  </Link>
+                  isGuest ? (
+                    <span className="text-gray-700">{g.m_name}</span>
+                  ) : (
+                    <Link href={`/goats/${g.m_id}`} className="hover:underline">
+                      {g.m_name}
+                    </Link>
+                  )
                 ) : (
                   "-"
                 )}
@@ -367,9 +377,13 @@ export default function GoatTable({
               {/* Father fields */}
               <td className="p-1 text-blue-600 truncate max-w-[120px] bg-[#F8CBAD]/10">
                 {g.f_id ? (
-                  <Link href={`/goats/${g.f_id}`} className="hover:underline">
-                    {g.f_name}
-                  </Link>
+                  isGuest ? (
+                    <span className="text-gray-700">{g.f_name}</span>
+                  ) : (
+                    <Link href={`/goats/${g.f_id}`} className="hover:underline">
+                      {g.f_name}
+                    </Link>
+                  )
                 ) : (
                   "-"
                 )}

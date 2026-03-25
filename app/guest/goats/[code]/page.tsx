@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import { 
   getGoatData, 
+  getOffspringDetailed,
   getGallery, 
   getAncestors, 
   getOwnMilkProductivity, 
@@ -57,17 +58,21 @@ export default async function GuestGoatPage({
   );
 
   const [
+    descendants,
     gallery,
     ancestry,
     ownMilk,
     expertTests,
     certData,
+    ancestorLacts,
   ] = await Promise.all([
+    getOffspringDetailed(id),
     getGallery(id),
     getAncestors(parseInt(id), maxGens),
     getOwnMilkProductivity(id),
     getExpertAssessment(id),
     getCertData(id),
+    getAncestorLactations(id, maxGens),
   ]);
 
   const cookieStore = await cookies();
@@ -78,6 +83,7 @@ export default async function GuestGoatPage({
     <div className="min-h-screen bg-[#FDFDFD] pb-20 font-sans tracking-tight">
       <div className="max-w-8xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
         <Breadcrumbs
+          isGuest
           items={[
             { label: 'GUEST ACCESS ACCOUNT' },
             { label: goat.name },
@@ -178,18 +184,138 @@ export default async function GuestGoatPage({
           </div>
         </section>
 
+        {/* OFFSPRING & DESCENDANTS */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              Offspring:
+            </h2>
+          </div>
+          <div className="p-6 space-y-8">
+            <div className="overflow-x-auto rounded-lg border border-gray-100 shadow-sm">
+              <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
+                <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
+                  <tr className="divide-x divide-gray-100">
+                    <th className="p-3">{t.goats.sons}</th>
+                    <th className="p-3">{t.goats.daughters}</th>
+                    <th className="p-3">{t.goats.grandsons}</th>
+                    <th className="p-3">{t.goats.granddaughters}</th>
+                    <th className="p-3">{t.goats.grgrandsons}</th>
+                    <th className="p-3">{t.goats.grgranddaughters}</th>
+                    <th className="p-3">{t.goats.grgrgrandsons}</th>
+                    <th className="p-3">{t.goats.grgrgranddaughters}</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-x divide-gray-100">
+                  <tr className="divide-x divide-gray-100">
+                    <td className="p-3 min-h-[40px]">
+                      <div className="flex flex-col gap-1">
+                        {descendants.filter(d => d.sex === 1).length > 0 ? descendants.filter(d => d.sex === 1).map(d => (
+                          <span key={d.id} className="text-[#491907] font-bold">
+                            {d.nickname || d.name}
+                          </span>
+                        )) : <span className="opacity-20">-</span>}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex flex-col gap-1">
+                        {descendants.filter(d => d.sex === 0).length > 0 ? descendants.filter(d => d.sex === 0).map(d => (
+                          <span key={d.id} className="text-[#491907] font-bold">
+                            {d.nickname || d.name}
+                          </span>
+                        )) : <span className="opacity-20">-</span>}
+                      </div>
+                    </td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                    <td className="p-3 opacity-20">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="space-y-0">
+              <h3 className="text-[#491907] text-[10px] font-black uppercase tracking-widest bg-[#00FF00] px-4 py-2 border border-gray-100 border-b-0 w-fit">
+                Summary table of direct descendants (1st generation):
+              </h3>
+              <div className="border border-gray-100 shadow-sm overflow-hidden bg-white">
+                <GoatTable goats={descendants} t={t} isGuest />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* LACTATION DATA */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
+            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              Lactation data:
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
+              <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
+                <tr className="divide-x divide-green-200">
+                  <th className="p-3 text-start">Descendant/ancestor</th>
+                  <th className="p-3">{t.goats.lactNo}</th>
+                  <th className="p-3">{t.goats.lactDays}</th>
+                  <th className="p-3">{t.goats.lactMilk}</th>
+                  <th className="p-3">{t.goats.lactFat}</th>
+                  <th className="p-3">{t.goats.lactProtein}</th>
+                  <th className="p-3">Avg yield (kg)</th>
+                  <th className="p-3">{t.goats.lactGraph}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {Object.entries(ancestorLacts).map(([path, node]: [string, any]) => 
+                  node.lactations.map((l: any, i: number) => {
+                    const level = path.length - 2;
+                    const label = path === 'ME' ? 'ME' : `Pr: (${level})`;
+                    return (
+                      <tr key={`${path}-${i}`} className="divide-x divide-gray-100 hover:bg-green-50 transition-colors">
+                        <td className="p-2 px-4 text-start font-black text-[#491907] bg-green-50/30">
+                           <span className="text-[#491907]/60 mr-2">{label}</span> {node.name}
+                        </td>
+                        <td className="p-2">{l.lact_no}</td>
+                        <td className="p-2">{l.lact_days}</td>
+                        <td className="p-2 text-emerald-700 font-bold">{l.milk}</td>
+                        <td className="p-2">{l.fat}</td>
+                        <td className="p-2">{l.protein}</td>
+                        <td className="p-2">{l.avg_yield || "-"}</td>
+                        <td className="p-2">{l.have_graph ? 'YES' : '-'}</td>
+                      </tr>
+                    );
+                  })
+                )}
+                {Object.keys(ancestorLacts).length === 0 && (
+                   <tr>
+                     <td colSpan={8} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
+                       No record
+                     </td>
+                   </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* OWN MILK */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.ownProductivityTitle}
+              {t.goats.ownProductivityTitle}:
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
-              <thead className="bg-[#f0f9f0] border-b border-emerald-100 text-emerald-800">
-                <tr className="divide-x divide-emerald-100">
+              <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
+                <tr className="divide-x divide-green-200">
                   <th className="p-3">№</th>
                   <th className="p-3">{t.goats.lactNo}</th>
                   <th className="p-3">{t.goats.lactDays}</th>
@@ -205,7 +331,7 @@ export default async function GuestGoatPage({
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {ownMilk.map((m: any, idx: number) => (
-                  <tr key={idx} className="divide-x divide-gray-100 hover:bg-emerald-50/20 transition-colors">
+                  <tr key={idx} className="divide-x divide-gray-100 hover:bg-emerald-50/10 transition-colors">
                     <td className="p-3 text-gray-400">{idx + 1}</td>
                     <td className="p-3">{m.lact_no}</td>
                     <td className="p-3">{m.lact_days}</td>
@@ -237,14 +363,14 @@ export default async function GuestGoatPage({
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
             <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.expertAssessment}
+              {t.goats.expertAssessment}:
             </h2>
           </div>
           <div className="overflow-x-auto">
             {expertTests.length > 0 ? (
               <table className="w-full text-[9px] border-collapse text-center uppercase font-black whitespace-nowrap">
-                <thead className="bg-[#f0f4f9] border-b border-blue-100 text-blue-800">
-                  <tr className="divide-x divide-blue-100">
+                <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
+                  <tr className="divide-x divide-green-200">
                     <th className="p-3">{t.goats.breeder}</th>
                     <th className="p-3">{t.goats.added}</th>
                     <th className="p-3">{t.goats.certType}</th>
@@ -265,7 +391,7 @@ export default async function GuestGoatPage({
                         return (val !== null && val !== undefined && val !== "") ? val : "-";
                       };
                       return (
-                        <tr key={i} className="divide-x divide-gray-100 hover:bg-blue-50/20 transition-colors">
+                        <tr key={i} className="divide-x divide-gray-100 hover:bg-blue-50/10 transition-colors">
                           <td className="p-3 truncate max-w-[150px] font-bold">{get('who_expert')}</td>
                           <td className="p-3 text-gray-400">
                             {test.date_test || test.Date_test ? new Date(test.date_test || test.Date_test).toLocaleDateString() : "-"}
