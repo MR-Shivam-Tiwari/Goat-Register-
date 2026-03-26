@@ -20,14 +20,14 @@ export default async function RulesPage() {
               {t.rules.title}
             </h1>
             <p className="text-gray-400 text-xs font-black uppercase tracking-[0.4em] mt-4 opacity-40 italic">
-              Official Association Protocol & Standards
+              {t.rules.protocolStandards}
             </p>
         </header>
 
         {/* Main Content Box - Clean & Minimal */}
         <div className="bg-white border rounded-sm shadow-2xl flex overflow-hidden min-h-[300px]">
             <div className="flex-1 p-16 flex flex-col justify-center">
-                <h2 className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em] mb-6 italic opacity-60">Association Protocol</h2>
+                <h2 className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em] mb-6 italic opacity-60">{t.rules.associationProtocol}</h2>
                 <div className="text-primary text-2xl font-black leading-relaxed max-w-4xl italic uppercase tracking-tighter">
                     {t.rules.desc}
                 </div>

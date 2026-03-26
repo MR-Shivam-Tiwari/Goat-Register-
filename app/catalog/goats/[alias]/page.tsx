@@ -22,19 +22,18 @@ async function getBreedPictures(alias: string) {
 export default async function BreedPage({ params: paramsPromise }: { params: Promise<{ alias: string }> }) {
   const params = await paramsPromise;
   const breed = await getBreedData(params.alias);
-  
-  if (!breed) return <div className="p-40 text-center text-4xl font-black text-primary uppercase tracking-[1em]">Breed not found</div>;
-
-  const pics = await getBreedPictures(params.alias);
-
   const cookieStore = await cookies();
   const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
   const t = getTranslation(lang);
 
+  if (!breed) return <div className="p-40 text-center text-4xl font-black text-primary uppercase tracking-[1em]">{t.catalog.breedNotFound}</div>;
+
+  const pics = await getBreedPictures(params.alias);
+
   const categories = [
-    { id: 'female', name: t.goats.female, sex: 0, desc: 'STOCK RECORDS', img: pics[0] || 'noimage.gif', color: 'bg-[#E2F0D9]/20' },
-    { id: 'male',   name: t.goats.male,   sex: 1, desc: 'BREEDING SIRES', img: pics[1] || 'noimage.gif', color: 'bg-[#C5E0B4]/20' },
-    { id: 'child',  name: lang === 'ru' ? 'Молодняк' : 'Kids (Young)', sex: 2, desc: 'OFFSPRING', img: pics[2] || 'noimage.gif', color: 'bg-[#F8CBAD]/20' },
+    { id: 'female', name: t.goats.female, sex: 0, desc: t.goats.stockRecords, img: pics[0] || 'noimage.gif', color: 'bg-[#E2F0D9]/20' },
+    { id: 'male',   name: t.goats.male,   sex: 1, desc: t.goats.breedingSires, img: pics[1] || 'noimage.gif', color: 'bg-[#C5E0B4]/20' },
+    { id: 'child',  name: t.goats.kidsYoung, sex: 2, desc: t.goats.offspringDesc, img: pics[2] || 'noimage.gif', color: 'bg-[#F8CBAD]/20' },
   ];
 
   return (
@@ -45,11 +44,11 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
         <header className="border-b border-gray-100 pb-4 flex flex-col md:flex-row justify-between items-end gap-4">
             <div>
                 <h1 className="text-3xl font-black text-primary tracking-tighter uppercase italic leading-none">
-                  {breed.name} STOCK
+                  {breed.name} {t.goats.stockSuffix}
                 </h1>
                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-2 opacity-80 flex items-center gap-2">
                   <LayoutGrid size={10} className="text-secondary" />
-                  Official Genetic Database
+                  {t.goats.officialGeneticDb}
                 </p>
             </div>
             <div className="hidden md:flex gap-6 items-center">
@@ -57,14 +56,14 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
                     <TrendingUp size={16} className="text-primary/20" />
                     <div className="text-right">
                         <span className="block text-xl font-black text-primary leading-none tracking-tighter italic">12K+</span>
-                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">RECS</span>
+                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">{t.goats.records}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <ShieldCheck size={16} className="text-secondary/30" />
                     <div className="text-right">
                         <span className="block text-xl font-black text-secondary leading-none tracking-tighter italic">100%</span>
-                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">CERT</span>
+                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">{t.farms.certificate}</span>
                     </div>
                 </div>
             </div>
@@ -112,7 +111,7 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
                 <MovementLink 
                     href={`/catalog/goats/${breed.alias.trim()}/female/dead`}
                     label={t.goats.eliminatedGoats}
-                    sub={lang === 'ru' ? 'ВЫБРАКОВАННЫЕ' : 'CULLED'}
+                    sub={t.goats.culledShort}
                     icon={<Skull size={18} />}
                     theme="bg-[#491907]"
                     textColor="text-white"
@@ -120,7 +119,7 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
                 <MovementLink 
                     href={`/catalog/goats/${breed.alias.trim()}/male/dead`}
                     label={t.goats.retiredGoats}
-                    sub={lang === 'ru' ? 'ВЫВЕДЕННЫЕ' : 'RETIRED'}
+                    sub={t.goats.retiredShort}
                     icon={<History size={18} />}
                     theme="bg-white border-primary/5 hover:border-primary/20"
                     textColor="text-primary"
@@ -128,7 +127,7 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
                 <MovementLink 
                     href={`/catalog/goats/${breed.alias.trim()}/child/dead`}
                     label={t.goats.departedYoung}
-                    sub={lang === 'ru' ? 'ВЫБЫВШИЕ' : 'DEPARTED'}
+                    sub={t.goats.departedShort}
                     icon={<LogOut size={18} />}
                     theme="bg-amber-50/10 border-amber-100/50 hover:border-amber-300"
                     textColor="text-amber-900"
@@ -137,7 +136,7 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
         </section>
 
         <footer className="border-t border-gray-100 pt-8 pb-10 text-center opacity-30">
-            <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter">© {new Date().getFullYear()} ASSOCIATION OF BREEDING GOATS</span>
+            <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter">© {new Date().getFullYear()} {t.home.footerCopyright}</span>
         </footer>
       </div>
     </div>

@@ -86,9 +86,9 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-semibold text-gray-700">{t.goats.studbook}</label>
                             <select name="studbook" className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
-                                <option value="main">Main Register</option>
-                                <option value="f1">RCB F1</option>
-                                <option value="ex">Experimental</option>
+                                <option value="main">{t.goats.mainRegister}</option>
+                                <option value="f1">{t.goats.rcbF1}</option>
+                                <option value="ex">{t.goats.experimental}</option>
                             </select>
                         </div>
 
@@ -96,9 +96,9 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                             <div className="flex flex-col gap-1.5 flex-1">
                                 <label className="text-sm font-semibold text-gray-700">{t.goats.status}</label>
                                 <select name="status" className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                                    <option value="no_info">No info</option>
-                                    <option value="alive">Alive</option>
-                                    <option value="dead">Dead</option>
+                                    <option value="no_info">{t.goats.noInfo}</option>
+                                    <option value="alive">{t.goats.alive}</option>
+                                    <option value="dead">{t.goats.dead}</option>
                                 </select>
                             </div>
                             <div className="flex flex-col gap-1.5 flex-1">
@@ -113,7 +113,7 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                 </div>
 
                 <div className="border-t border-gray-200 mt-6 pt-6">
-                    <h3 className="text-base font-bold text-gray-800 mb-4">Assessment & Dates</h3>
+                    <h3 className="text-base font-bold text-gray-800 mb-4">{t.goats.assessmentDates}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="flex flex-col gap-1.5">
                              <label className="text-sm font-medium text-gray-600">{t.goats.birthDate}</label>
@@ -135,7 +135,7 @@ export default function AddGoatForm({ breeds, farms, lang }: { breeds: any[], fa
                 </div>
 
                 <div className="border-t border-gray-200 mt-6 pt-6">
-                    <h3 className="text-base font-bold text-gray-800 mb-4">Ownership & Identification</h3>
+                    <h3 className="text-base font-bold text-gray-800 mb-4">{t.goats.ownershipId}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div className="flex flex-col gap-1.5">
                              <label className="text-sm font-medium text-gray-600">{t.goats.breeder}</label>

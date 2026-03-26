@@ -87,17 +87,17 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
   const { id } = params;
   const farm = await getFarmData(id);
   
-  if (!farm) return <div className="p-40 text-center text-4xl font-black text-[#491907] animate-pulse uppercase tracking-[1em]">Farm not found</div>;
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const t = getTranslation(lang);
+  const isAdmin = cookieStore.get('uid_token')?.value;
+
+  if (!farm) return <div className="p-40 text-center text-4xl font-black text-[#491907] animate-pulse uppercase tracking-[1em]">{t.farms.farmNotFound}</div>;
 
   const [goats, displaced] = await Promise.all([
     getFarmGoats(id),
     getDisplacedGoats(id, farm.name)
   ]);
-
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
-  const t = getTranslation(lang);
-  const isAdmin = cookieStore.get('uid_token')?.value;
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 md:px-12 lg:px-24 tracking-tight">
@@ -119,7 +119,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             <div className="flex-1 p-8 flex flex-col">
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-gray-100 pb-6 mb-6">
                     <div>
-                        <span className="text-[12px] font-black uppercase text-gray-300 tracking-[0.3em] font-mono leading-none">Official ID #{farm.id} / {t.farms.officialMember}</span>
+                        <span className="text-[12px] font-black uppercase text-gray-300 tracking-[0.3em] font-mono leading-none">{t.farms.officialIdPrefix}{farm.id} / {t.farms.officialMember}</span>
                         <h1 className="text-3xl md:text-5xl font-black text-primary uppercase italic tracking-tighter leading-none mt-2">{farm.name}</h1>
                     </div>
                     {isAdmin && (
@@ -149,15 +149,15 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
 
             {/* STATS COLUMN */}
             <div className="md:w-56 lg:w-72 bg-[#E2F0D9] p-8 text-center flex flex-col justify-center border-l border-gray-100 italic">
-                <span className="text-[11px] font-black uppercase text-gray-500 tracking-[0.2em] mb-4 font-mono">Stock Analysis</span>
+                <span className="text-[11px] font-black uppercase text-gray-500 tracking-[0.2em] mb-4 font-mono">{t.farms.stockAnalysis}</span>
                 <div className="space-y-6">
                     <div>
                         <span className="block text-5xl font-black text-primary leading-none tracking-tighter">{goats.length}</span>
-                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-[0.3em] mt-2 block">Active Records</span>
+                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-[0.3em] mt-2 block">{t.farms.activeRecords}</span>
                     </div>
                     <div className="pt-6 border-t border-primary/10">
                         <span className="block text-2xl font-black text-amber-800 leading-none tracking-tighter italic">{displaced.length}</span>
-                        <span className="text-[9px] font-black uppercase text-amber-800 tracking-[0.3em] mt-2 block opacity-60">Displaced</span>
+                        <span className="text-[9px] font-black uppercase text-amber-800 tracking-[0.3em] mt-2 block opacity-60">{t.farms.displaced}</span>
                     </div>
                 </div>
             </div>
@@ -167,19 +167,19 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
         <div className="space-y-12">
             {/* CURRENT STOCK */}
             <div className="space-y-4">
-                <h2 className="text-[11px] font-black uppercase tracking-[0.6em] text-gray-300 border-b border-gray-200 pb-2 italic">Active Stock Registry</h2>
+                <h2 className="text-[11px] font-black uppercase tracking-[0.6em] text-gray-300 border-b border-gray-200 pb-2 italic">{t.farms.activeStockRegistry}</h2>
                 <div className="bg-white border rounded-sm overflow-hidden shadow-2xl relative min-h-[300px]">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse min-w-[1300px]">
                             <thead className="sticky top-0 z-10 bg-[#E2F0D9] text-gray-700 shadow-sm border-b border-gray-400">
                                 <tr className="text-[12px] font-black uppercase tracking-widest leading-none">
-                                    <th className="p-4 border-r border-gray-400 w-56 sticky left-0 bg-[#E2F0D9] z-20">Nickname</th>
-                                    <th className="p-4 border-r border-gray-400 w-44 text-center">Breed / Порода</th>
-                                    <th className="p-4 border-r border-gray-400 w-24 text-center">Sex / Пол</th>
-                                    <th className="p-4 border-r border-gray-400 w-28 text-center">ID ABG</th>
-                                    <th className="p-4 border-r border-gray-400 w-56">Breeder / Заводчик</th>
-                                    <th className="p-4 border-r border-gray-400 w-56">Owner / Владелец</th>
-                                    <th className="p-4 text-center w-36">Born / Дата</th>
+                                    <th className="p-4 border-r border-gray-400 w-56 sticky left-0 bg-[#E2F0D9] z-20">{t.goats.nickname}</th>
+                                    <th className="p-4 border-r border-gray-400 w-44 text-center">{t.goats.breed}</th>
+                                    <th className="p-4 border-r border-gray-400 w-24 text-center">{t.goats.sex}</th>
+                                    <th className="p-4 border-r border-gray-400 w-28 text-center">{t.goats.idAbg}</th>
+                                    <th className="p-4 border-r border-gray-400 w-56">{t.goats.breeder}</th>
+                                    <th className="p-4 border-r border-gray-400 w-56">{t.goats.owner}</th>
+                                    <th className="p-4 text-center w-36">{t.goats.birthDate || 'Born'}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-[11px] font-black uppercase tracking-tight divide-y divide-gray-200 bg-white">
@@ -189,15 +189,15 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                                             <Link href={`/goats/${goat.id}`} className="hover:underline italic leading-none truncate block">➔ {goat.name}</Link>
                                         </td>
                                         <td className="p-3 border-r border-gray-100 text-center text-primary font-black opacity-80">{goat.breed_name}</td>
-                                        <td className="p-3 border-r border-gray-100 text-center font-bold text-gray-500">{goat.sex === 1 ? 'MALE / SAMEC' : 'FEMALE / SAMKA'}</td>
-                                        <td className="p-3 border-r border-gray-100 text-center font-mono text-[10px]">{goat.is_abg === 1 ? 'YES' : 'NO'}</td>
+                                        <td className="p-3 border-r border-gray-100 text-center font-bold text-gray-500">{goat.sex === 1 ? t.goats.male : t.goats.female}</td>
+                                        <td className="p-3 border-r border-gray-100 text-center font-mono text-[10px]">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
                                         <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60 italic">{goat.manuf}</td>
                                         <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60 italic">{goat.owner}</td>
                                         <td className="p-3 text-center font-mono opacity-50 whitespace-nowrap">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
                                     </tr>
                                 ))}
                                 {goats.length === 0 && (
-                                    <tr><td colSpan={7} className="p-40 text-center font-black uppercase opacity-20 text-3xl tracking-widest italic">EMPTY STOCK</td></tr>
+                                    <tr><td colSpan={7} className="p-40 text-center font-black uppercase opacity-20 text-3xl tracking-widest italic">{t.farms.emptyStock}</td></tr>
                                 )}
                             </tbody>
                         </table>
@@ -208,19 +208,19 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             {/* DISPLACED STOCK */}
             {displaced.length > 0 && (
             <div className="space-y-4">
-                <h2 className="text-[11px] font-black uppercase tracking-[0.6em] text-gray-300 border-b border-gray-200 pb-2 italic">Displaced Stock / Продано</h2>
+                <h2 className="text-[11px] font-black uppercase tracking-[0.6em] text-gray-300 border-b border-gray-200 pb-2 italic">{t.farms.displacedStock}</h2>
                 <div className="bg-white border rounded-sm overflow-hidden shadow-xl relative opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse min-w-[1300px]">
                             <thead className="sticky top-0 z-10 bg-gray-50 text-gray-400 shadow-sm border-b border-gray-200">
                                 <tr className="text-[12px] font-black uppercase tracking-widest leading-none">
-                                    <th className="p-4 border-r border-gray-200 w-56 sticky left-0 bg-gray-50 z-20">Nickname</th>
-                                    <th className="p-4 border-r border-gray-200 w-44 text-center">Breed / Порода</th>
-                                    <th className="p-4 border-r border-gray-200 w-24 text-center">Sex</th>
-                                    <th className="p-4 border-r border-gray-200 w-28 text-center">ABG</th>
-                                    <th className="p-4 border-r border-gray-200 w-56">Breeder</th>
-                                    <th className="p-4 border-r border-gray-200 w-56">Owner</th>
-                                    <th className="p-4 text-center w-36">Born / Дата</th>
+                                    <th className="p-4 border-r border-gray-200 w-56 sticky left-0 bg-gray-50 z-20">{t.goats.nickname}</th>
+                                    <th className="p-4 border-r border-gray-200 w-44 text-center">{t.goats.breed}</th>
+                                    <th className="p-4 border-r border-gray-200 w-24 text-center">{t.goats.sex}</th>
+                                    <th className="p-4 border-r border-gray-200 w-28 text-center">{t.goats.idAbg}</th>
+                                    <th className="p-4 border-r border-gray-200 w-56">{t.goats.breeder}</th>
+                                    <th className="p-4 border-r border-gray-200 w-56">{t.goats.owner}</th>
+                                    <th className="p-4 text-center w-36">{t.goats.birthDate || 'Born'}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-[11px] font-black uppercase tracking-tight divide-y divide-gray-100">
@@ -231,7 +231,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                                         </td>
                                         <td className="p-3 border-r border-gray-100 text-center font-mono opacity-80">{goat.breed_name}</td>
                                         <td className="p-3 border-r border-gray-100 text-center font-black">{goat.sex === 1 ? 'M' : 'F'}</td>
-                                        <td className="p-3 border-r border-gray-100 text-center">{goat.is_abg === 1 ? 'YES' : 'NO'}</td>
+                                        <td className="p-3 border-r border-gray-100 text-center">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
                                         <td className="p-3 border-r border-gray-100 truncate text-[10px] italic">{goat.manuf}</td>
                                         <td className="p-3 border-r border-gray-100 truncate text-[10px] italic">{goat.owner}</td>
                                         <td className="p-3 text-center font-mono whitespace-nowrap opacity-40">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
@@ -250,7 +250,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             <div className="w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-2xl border border-gray-100 relative grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100">
                 <img src={farm.displayPic2} alt="Farm Detail View" className="w-full h-full object-cover aspect-video" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                    <span className="text-[12px] font-black uppercase text-white tracking-[0.5em] italic leading-none shadow-sm">Verified Farm Infrastructure Database View</span>
+                    <span className="text-[12px] font-black uppercase text-white tracking-[0.5em] italic leading-none shadow-sm">{t.farms.verifiedInfrastructure}</span>
                 </div>
             </div>
         )}

@@ -33,18 +33,20 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
             <div className="flex flex-col md:flex-row gap-4">
                 {/* SEARCH BAR (Isolated) */}
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Search className="text-gray-400 group-focus-within:text-[#491907] transition-colors" size={18} />
+                    </div>
                     <input 
                         type="text" 
                         placeholder={t.goats.searchLabel} 
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all font-bold placeholder:font-normal"
+                        className="w-full pl-11 pr-4 h-8 bg-white border border-gray-300 rounded shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all font-bold placeholder:font-normal"
                     />
                 </div>
 
                 {/* FILTERS PANEL */}
-                <div className="flex flex-wrap items-center gap-4 bg-white p-3 border border-gray-300 rounded shadow-sm">
+                <div className="flex flex-wrap items-center gap-4  ">
                     {/* Breed & Sex Selectors */}
                     <select 
                         value={breed}

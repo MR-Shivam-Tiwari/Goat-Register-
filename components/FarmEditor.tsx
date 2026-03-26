@@ -27,7 +27,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false, showCont
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Farm Name */}
             <div className="space-y-1.5">
-                <label className="text-sm font-bold text-[#491907] block">Farm name:</label>
+                <label className="text-sm font-bold text-[#491907] block">{t.farms.farmNameLabel}</label>
                 <input 
                     name="name"
                     type="text" 
@@ -39,7 +39,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false, showCont
 
             {/* Farm Description with Mock Editor Toolbar */}
             <div className="space-y-1.5">
-                <label className="text-sm font-bold text-[#491907] block">Farm description:</label>
+                <label className="text-sm font-bold text-[#491907] block">{t.farms.farmDescriptionLabel}</label>
                 <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
                     {/* Toolbar Placeholder */}
                     <div className="bg-[#F8F8F8] border-b border-gray-200 p-1.5 flex flex-wrap gap-1 items-center grayscale opacity-60 scale-90 origin-left">
@@ -63,7 +63,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false, showCont
             {/* File Uploads - Conditional for New Farm usually, but keeping for both if needed */}
             <div className="space-y-4 pt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">Photo out window:</label>
+                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">{t.farms.photoWindow}</label>
                     <input 
                         type="file" 
                         className="text-[11px] text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-[11px] file:font-bold file:bg-gray-50 file:text-gray-600 hover:file:bg-gray-100 cursor-pointer"
@@ -71,7 +71,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false, showCont
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">Photos per page:</label>
+                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">{t.farms.photosPage}</label>
                     <input 
                         type="file" 
                         className="text-[11px] text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-[11px] file:font-bold file:bg-gray-50 file:text-gray-600 hover:file:bg-gray-100 cursor-pointer"
@@ -98,7 +98,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false, showCont
             <div className="max-w-4xl mx-auto border border-[#D2B48C]/30 rounded-xl p-8 bg-white shadow-sm space-y-6 animate-in fade-in duration-500">
                 {/* Back Link */}
                 <Link href="/farms" className="text-[#491907]/60 hover:text-[#491907] text-xs font-bold uppercase tracking-widest inline-flex items-center gap-2 mb-2 transition-colors">
-                    ← Back
+                    ← {t.common.back}
                 </Link>
                 {content}
             </div>

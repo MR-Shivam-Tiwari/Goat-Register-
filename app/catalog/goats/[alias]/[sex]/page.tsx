@@ -483,7 +483,7 @@ export default async function GoatsListPage({
           <section className="space-y-6">
             <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
               <div>
-                <h2 className="text-3xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
+                <h2 className="text-xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
                   {breed.name} /{" "}
                   {reg
                     ? REGISTER_NAMES[reg]

@@ -50,12 +50,12 @@ export default async function FarmsPage() {
                     <div className="text-center md:text-left">
                         <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">{t.farms.title}</h1>
                         <p className="mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                            Official Registry of Participating Farm Enterprises
+                            {t.farms.registryDesc}
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest shadow-sm">
-                            {farms.length} {farms.length === 1 ? 'Farm' : 'Farms'} Registered
+                            {farms.length} {farms.length === 1 ? t.farms.farmSingle : t.farms.farmPlural} {t.farms.registeredSuffix}
                         </span>
                         <Link
                             href="/farms/add"
@@ -108,7 +108,7 @@ export default async function FarmsPage() {
                                     {/* Location */}
                                     <div className="flex items-center gap-1.5 text-gray-400">
                                         <MapPin size={11} className="text-[#491907] shrink-0" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest">Ukraine / Regional</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">{t.farms.ukraineRegional}</span>
                                     </div>
 
                                     {/* Divider */}
@@ -118,7 +118,7 @@ export default async function FarmsPage() {
                                             className="flex items-center gap-1.5 flex-1 justify-center py-2 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm"
                                         >
                                             <Eye size={12} />
-                                            View
+                                            {t.farms.view}
                                         </Link>
                                         {isAdmin && (
                                             <Link

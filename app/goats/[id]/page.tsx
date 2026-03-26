@@ -27,12 +27,16 @@ export default async function GoatDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await paramsPromise;
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
+  const t = getTranslation(lang);
+
   const goat = await getGoatData(id);
 
   if (!goat)
     return (
       <div className="p-40 text-center text-4xl font-black text-primary uppercase bg-[#F0F4F0] min-h-screen">
-        ANIMAL NOT FOUND
+        {t.goats.animalNotFound}
       </div>
     );
 
@@ -55,10 +59,6 @@ export default async function GoatDetailPage({
     getCertData(id),
     getAncestorLactations(id),
   ]);
-
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
-  const t = getTranslation(lang);
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] pb-20 font-sans tracking-tight">
@@ -95,14 +95,14 @@ export default async function GoatDetailPage({
           </div>
 
           <div className="pt-14 pb-8 px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex gap-8 items-center text-[10px] font-black uppercase">
+            <div className="flex gap-8 items-center text-sm font-black uppercase">
                <div className="flex flex-col gap-0.5">
-                  <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.registryCode}</span>
+                  <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.registryCode}</span>
                   <span className="text-[#491907] font-black text-xs">{goat.code_ua || goat.id}</span>
                </div>
                {goat.f_id && (
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.fatherData}</span>
+                    <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.fatherData}</span>
                     <Link href={`/goats/${goat.f_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-blue-200">
                       {goat.f_name}
                     </Link>
@@ -110,7 +110,7 @@ export default async function GoatDetailPage({
                 )}
                 {goat.m_id && (
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-gray-400 font-bold text-[8px] tracking-widest">{t.goats.motherData}</span>
+                    <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.motherData}</span>
                     <Link href={`/goats/${goat.m_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-pink-200">
                       {goat.m_name}
                     </Link>
@@ -119,11 +119,11 @@ export default async function GoatDetailPage({
             </div>
 
             <div className="flex gap-2">
-               <button className="px-4 py-2 bg-[#491907] text-white rounded-lg text-[10px] font-black tracking-widest uppercase hover:bg-black transition-all shadow-md active:scale-95">
-                  Print Certificate
+               <button className="px-4 py-2 bg-[#491907] text-white rounded-lg text-sm font-black tracking-widest uppercase hover:bg-black transition-all shadow-md active:scale-95">
+                  {t.goats.printCertificate}
                </button>
-               <button className="px-4 py-2 bg-white border border-[#491907]/10 text-[#491907] rounded-lg text-[10px] font-black tracking-widest uppercase hover:bg-gray-50 transition-all shadow-sm active:scale-95">
-                  Edit Records
+               <button className="px-4 py-2 bg-white border border-[#491907]/10 text-[#491907] rounded-lg text-sm font-black tracking-widest uppercase hover:bg-gray-50 transition-all shadow-sm active:scale-95">
+                  {t.goats.editRecords}
                </button>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default async function GoatDetailPage({
         {/* BASIC INFO TABLE SECTION */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-3 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h3 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.basicInfo}
             </h3>
@@ -145,13 +145,13 @@ export default async function GoatDetailPage({
         {/* GALLERY SECTION */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.gallery}
             </h2>
             <div className="flex items-center gap-4 text-[10px]">
               <label className="cursor-pointer bg-blue-50 text-blue-700 px-3 py-1 rounded-lg font-bold hover:bg-blue-100 transition-all flex items-center gap-2">
-                 <span>{t.goats.add} photo</span>
+                 <span>{t.goats.add} {t.goats.photoShort}</span>
                  <input type="file" className="hidden" />
               </label>
               <button className="text-gray-400 hover:text-[#491907] transition-all">
@@ -172,14 +172,14 @@ export default async function GoatDetailPage({
                       className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                       <span className="text-white text-[10px] font-black uppercase tracking-widest underline decoration-white/30 decoration-2">view</span>
+                       <span className="text-white text-[10px] font-black uppercase tracking-widest underline decoration-white/30 decoration-2">{t.goats.viewShort}</span>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
                    <span className="text-[10px] italic opacity-40 uppercase tracking-widest">
-                     No photos in gallery
+                     {t.goats.noPhotos}
                    </span>
                 </div>
               )}
@@ -190,14 +190,14 @@ export default async function GoatDetailPage({
         {/* PEDIGREE SECTION */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.pedigree}: {goat.name}
             </h2>
           </div>
-          <div className="p-6 md:p-10">
+          <div className="p-3 md:p-5">
             <div className="rounded-lg border border-gray-200 shadow-xl shadow-gray-100/50 overflow-hidden ring-1 ring-black/5">
-              <PedigreeChart ancestry={ancestry} />
+              <PedigreeChart ancestry={ancestry} t={t} />
             </div>
           </div>
         </section>
@@ -205,14 +205,14 @@ export default async function GoatDetailPage({
         {/* OFFSPRING & DESCENDANTS */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.offspring}
             </h2>
           </div>
           <div className="p-6 space-y-8">
             <div className="overflow-x-auto rounded-lg border border-gray-100 shadow-sm">
-              <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
+              <table className="w-full text-center text-sm border-collapse font-black uppercase whitespace-nowrap">
                 <thead className="bg-gray-50 border-b border-gray-100 text-[#491907]">
                   <tr className="divide-x bg-red-200 divide-gray-100">
                     <th className="p-3">{t.goats.sons}</th>
@@ -257,7 +257,7 @@ export default async function GoatDetailPage({
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-[#491907] text-[9px] font-black uppercase tracking-widest opacity-60">
+              <h3 className="text-[#491907] text-sm font-black uppercase tracking-widest opacity-60">
                 {t.goats.directDescendantsTitle}
               </h3>
               <div className="rounded-lg border border-gray-100 shadow-sm overflow-hidden">
@@ -270,19 +270,19 @@ export default async function GoatDetailPage({
         {/* OWN MILK PRODUCTIVITY */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.ownProductivityTitle}
             </h2>
-            <Link 
+            <Link
               href={`/goats/${goat.id}/milk`}
               className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
             >
-              {t.goats.add} record
+              {t.goats.add} {t.goats.recordShort}
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
+            <table className="w-full text-center text-sm border-collapse font-black uppercase whitespace-nowrap">
               <thead className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100/50 text-emerald-800">
                 <tr className="divide-x divide-emerald-100">
                   <th className="p-3">№</th>
@@ -321,14 +321,14 @@ export default async function GoatDetailPage({
                     <td className="p-3">{m.flow_rate || "-"}</td>
                     <td className="p-3">
                         {m.have_graph ? (
-                           <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-sm">YES</span>
+                           <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-sm">{t.goats.yesBig}</span>
                         ) : "-"}
                     </td>
                     <td className="p-3 truncate max-w-[120px] opacity-60">
                       {m.source || "-"}
                     </td>
                     <td className="p-3">
-                        <Link 
+                        <Link
                           href={`/goats/${goat.id}/milk?row=${m.id}`}
                           className="text-blue-600 hover:text-blue-900 font-bold italic"
                         >
@@ -356,13 +356,13 @@ export default async function GoatDetailPage({
         {/* EXPERT ASSESSMENT */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.expertAssessment}
             </h2>
             {(goat.cert_no || goat.cert_serial) ? (
               <div className="flex items-center gap-4">
-                <Link 
+                <Link
                   href={`/goats/${goat.id}/assessment`}
                   className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
                 >
@@ -377,13 +377,13 @@ export default async function GoatDetailPage({
               </div>
             ) : (
               <div className="text-[10px] font-black uppercase text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 border-dashed">
-                {t.goats.certNo || 'Certificate'} Required for assessment
+                {t.goats.certNo || 'Certificate'} {t.goats.certRequired}
               </div>
             )}
           </div>
           <div className="overflow-x-auto">
             {expertTests.length > 0 ? (
-              <table className="w-full text-[9px] border-collapse text-center uppercase font-black whitespace-nowrap">
+              <table className="w-full text-sm border-collapse text-center uppercase font-black whitespace-nowrap">
                 <thead className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 text-blue-800">
                   <tr className="divide-x divide-blue-100">
                     <th className="p-3">{t.goats.breeder}</th>
@@ -393,7 +393,7 @@ export default async function GoatDetailPage({
                     <th className="p-3">{t.goats.certHeightSacrum}</th>
                     <th className="p-3">{t.goats.certChestCirc}</th>
                     <th className="p-3">{t.goats.certBodyLength}</th>
-                    <th className="p-3">Weight (kg)</th>
+                    <th className="p-3">{t.goats.weightKg}</th>
                     <th className="p-3">{t.goats.certFinalScore}</th>
                     <th className="p-3">{t.goats.certClass}</th>
                     <th className="p-3">{t.goats.certCategory}</th>
@@ -418,8 +418,8 @@ export default async function GoatDetailPage({
                               ? new Date(test.date_test || test.Date_test).toLocaleDateString()
                               : "-"}
                           </td>
-                          <td className="p-3 opacity-60">
-                            {test.test_type === 1 || test.Test_type === 1 ? "Classical" : "Young"}
+                           <td className="p-3 opacity-60">
+                            { (test.test_type === 1 || test.Test_type === 1) ? t.goats.classical : t.goats.young }
                           </td>
                           <td className="p-3">{get('par_1')}</td>
                           <td className="p-3">{get('par_2')}</td>
@@ -450,16 +450,16 @@ export default async function GoatDetailPage({
         {/* CERT DATA SELECTOR */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.certLactDataTitle}
             </h2>
-            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
+            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-sm font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
               {t.goats.refresh}
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-[9px] border-collapse font-black text-center uppercase whitespace-nowrap">
+            <table className="w-full text-sm border-collapse font-black text-center uppercase whitespace-nowrap">
               <thead className="bg-gray-100 border-b border-gray-200 text-[#491907]">
                 <tr className="divide-x divide-gray-200">
                   <th className="p-3">{t.goats.lactViewer}</th>
@@ -481,6 +481,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="i"
                   pathKey="ME"
+                  t={t}
                 />
                 <CertRows
                   label="М"
@@ -490,6 +491,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="m"
                   pathKey="MEM"
+                  t={t}
                 />
                 <CertRows
                   label="О"
@@ -499,6 +501,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="f"
                   pathKey="MEF"
+                  t={t}
                 />
                 <CertRows
                   label="ММ"
@@ -508,6 +511,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="mm"
                   pathKey="MEMM"
+                  t={t}
                 />
                 <CertRows
                   label="ОМ"
@@ -517,6 +521,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="fm"
                   pathKey="MEMF"
+                  t={t}
                 />
                 <CertRows
                   label="МО"
@@ -526,6 +531,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="mf"
                   pathKey="MEFM"
+                  t={t}
                 />
                 <CertRows
                   label="ОО"
@@ -535,6 +541,7 @@ export default async function GoatDetailPage({
                   ancestorLacts={ancestorLacts}
                   pathPrefix="ff"
                   pathKey="MEFF"
+                  t={t}
                 />
               </tbody>
             </table>
@@ -544,7 +551,7 @@ export default async function GoatDetailPage({
         {/* 3RD GEN PRODUCTIVITY */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.thirdGenProductivity}
             </h2>
@@ -562,7 +569,7 @@ export default async function GoatDetailPage({
                  { l: "BBB", f: "id_fff_row1" },
                ].map((item, i) => (
                  <div key={i} className="bg-gray-300 p-4 flex flex-col items-center gap-2 group hover:bg-red-50/10 transition-colors">
-                    <span className="text-[10px] font-black text-[#491907] bg-red-300 px-3 py-1 rounded-full scale-95 shadow-sm">
+                    <span className="text-sm font-black text-[#491907] bg-red-300 px-3 py-1 rounded-full scale-95 shadow-sm">
                        {item.l}
                     </span>
                     <div className="w-full">
@@ -574,7 +581,7 @@ export default async function GoatDetailPage({
                          <input
                            type="text"
                            placeholder="---"
-                           className="w-full text-[10px] font-black text-center bg-gray-50 border border-gray-100 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all shadow-inner"
+                           className="w-full text-sm font-black text-center bg-gray-50 border border-gray-100 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all shadow-inner"
                          />
                        )}
                     </div>
@@ -587,24 +594,24 @@ export default async function GoatDetailPage({
         {/* MOVEMENT DATA SECTION */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
-            <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              Animal Movement
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
+               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.animalMovement}
             </h2>
           </div>
           <div className="p-6 space-y-6">
-             <div className="flex items-center gap-4 text-[10px] font-black uppercase">
-                <Link 
+             <div className="flex items-center gap-4 text-sm font-black uppercase">
+                <Link
                   href={`/goats/${goat.id}/move?mode=view`}
-                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                   className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
                 >
-                  View Movement
+                  {t.goats.viewMovement}
                 </Link>
-                <Link 
+                <Link
                   href={`/goats/${goat.id}/move?mode=add`}
-                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                   className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
                 >
-                  Move Animal
+                  {t.goats.moveAnimal}
                 </Link>
              </div>
 
@@ -624,6 +631,7 @@ function CertRows({
   ancestorLacts,
   pathPrefix,
   pathKey,
+  t,
 }: any) {
   const rows = [];
   const node = ancestorLacts[pathKey] || { name: "?", lactations: [] };
@@ -641,10 +649,10 @@ function CertRows({
         <td className="p-1 px-3 font-black text-[#491907] w-12">{label}</td>
         <td className="p-1.5 px-4 text-start min-w-[200px]">
           <select
-            className="w-full text-[10px] bg-white border border-gray-200 rounded-md p-1.5 outline-none font-bold shadow-sm focus:ring-2 focus:ring-[#491907]/20 transition-all"
+            className="w-full text-sm bg-white border border-gray-200 rounded-md p-1.5 outline-none font-bold shadow-sm focus:ring-2 focus:ring-[#491907]/20 transition-all"
             defaultValue={selectedId || ""}
           >
-            <option value="">-- select --</option>
+            <option value="">-- {t.goats.select} --</option>
             {node.lactations.map((l: any) => (
               <option key={l.id} value={l.id}>
                 L{l.lact_no} • {l.lact_days}d • {l.milk}kg • {l.fat}% • {l.protein}%
@@ -666,14 +674,14 @@ function CertRows({
   return <>{rows}</>;
 }
 
-function PedigreeChart({ ancestry }: { ancestry: any }) {
+function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
   if (!ancestry) return null;
 
   return (
-    <div className="flex flex-col w-full text-[9px] uppercase font-black bg-white">
+    <div className="flex flex-col w-full text-xs uppercase font-black bg-white">
       {/* HEADER STRIPE */}
       <div className="bg-[#491907] flex h-8 items-center border-b border-white/10 px-4">
-         <span className="text-white/40 text-[7px] tracking-widest font-black uppercase">Ancestral Lineage (4 Generations)</span>
+         <span className="text-white/40 text-xs tracking-widest font-black uppercase">{t.goats.ancestralLineage}</span>
       </div>
 
       <div className="flex divide-x divide-gray-400">

@@ -31,10 +31,10 @@ export default async function CatalogPage() {
 
         <header className="border-b border-gray-100 pb-4">
             <h1 className="text-2xl font-black text-primary uppercase tracking-tighter italic">
-               Breed Catalog
+               {t.catalog.breedCatalog}
             </h1>
             <p className="text-gray-400 text-[8px] font-bold uppercase tracking-[0.3em] mt-0.5">
-               Registry Database • {breeds.length} Official Breeds
+               {t.catalog.registryDb} • {breeds.length} {t.catalog.officialBreedsSuffix}
             </p>
         </header>
 
@@ -63,11 +63,11 @@ export default async function CatalogPage() {
               <div className="mt-4 flex gap-4 text-[9px] font-black uppercase text-gray-400 border-t border-gray-100 pt-3 w-full justify-center">
                 <div className="leading-none">
                     <span className="block text-primary">{breed.total_animals}</span>
-                    <span className="text-[7px] opacity-50">Total</span>
+                    <span className="text-[7px] opacity-50">{t.catalog.total}</span>
                 </div>
                 <div className="leading-none border-l border-gray-100 pl-4">
                     <span className="block text-green-600">{breed.living_animals}</span>
-                    <span className="text-[7px] opacity-50">Live</span>
+                    <span className="text-[7px] opacity-50">{t.catalog.live}</span>
                 </div>
               </div>
 
@@ -80,10 +80,10 @@ export default async function CatalogPage() {
 
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-8 border-t border-gray-100 mt-12 bg-gray-50/50 p-4 rounded-xl">
              {[
-               { val: breeds.length, label: 'TOTAL BREEDS' },
-               { val: breeds.reduce((acc, b) => acc + parseInt(b.total_animals), 0), label: 'TOTAL RECORDS' },
-               { val: 'VERIFIED', label: 'ACCURACY' },
-               { val: 'ACTIVE', label: 'STATUS' }
+               { val: breeds.length, label: t.catalog.totalBreeds },
+               { val: breeds.reduce((acc, b) => acc + parseInt(b.total_animals), 0), label: t.catalog.totalRecords },
+               { val: t.catalog.verified, label: t.catalog.accuracy },
+               { val: t.catalog.active, label: t.catalog.status }
              ].map((s, i) => (
                 <div key={i} className="text-center">
                     <span className="block text-xl font-black text-primary mb-0.5 uppercase tracking-tighter italic">{s.val}</span>

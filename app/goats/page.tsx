@@ -106,7 +106,7 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
                     {t.nav.registry}
                 </h1>
                 <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mt-1 font-mono">
-                    Global Database • {goats.length} Records
+                    {t.goats.globalDatabase} • {goats.length} {t.goats.records}
                 </p>
             </div>
         </div>
@@ -114,18 +114,18 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
         <GoatFilters breeds={breeds} lang={lang} t={t} />
 
         <div className="overflow-hidden border border-gray-300 shadow-sm transition-all duration-300">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar">
             <table className="w-full text-left border-collapse table-auto min-w-[1200px]">
-              <thead>
+              <thead className="sticky top-0 z-30 shadow-sm transition-all duration-300">
                 <tr className="text-[10px] font-black uppercase tracking-tight text-white bg-[#4D2C1A] text-center h-10 border-b border-gray-400">
-                  <th className="p-2 border-r border-white/10 w-64 sticky left-0 z-20 bg-[#491907]">Кличка</th>
-                  <th className="p-2 border-r border-white/10 w-40">Уникальный код</th>
-                  <th className="p-2 border-r border-white/10 w-32">Пол</th>
-                  <th className="p-2 border-r border-white/10 w-48">Порода</th>
-                  <th className="p-2 border-r border-white/10 w-56 text-[#E2F0D9]">+Потомство</th>
-                  <th className="p-2 border-r border-white/10 w-40">Добавлен</th>
-                  <th className="p-2 border-r border-white/10 w-40">Оператор</th>
-                  <th className="p-2 w-20">Упр</th>
+                  <th className="p-2 border-r border-white/10 w-64 sticky left-0 z-40 bg-[#491907]">{t.goats.nickname}</th>
+                  <th className="p-2 border-r border-white/10 w-40">{t.goats.uniqueCode}</th>
+                  <th className="p-2 border-r border-white/10 w-32">{t.goats.sex}</th>
+                  <th className="p-2 border-r border-white/10 w-48">{t.goats.breed}</th>
+                  <th className="p-2 border-r border-white/10 w-56 text-[#E2F0D9]">{t.goats.offspringPlus}</th>
+                  <th className="p-2 border-r border-white/10 w-40">{t.goats.added}</th>
+                  <th className="p-2 border-r border-white/10 w-40">{t.goats.operator}</th>
+                  <th className="p-2 w-20">{t.goats.managementShort}</th>
                 </tr>
               </thead>
               <tbody className="text-[10px] uppercase font-bold text-gray-700 bg-white">
@@ -158,15 +158,15 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
                       </td>
                       <td className="p-2 border-r border-gray-100 text-center font-mono text-gray-800 font-bold">{uniqueCode}</td>
                       <td className="p-2 border-r border-gray-100 text-center font-black">
-                          {goat.sex === 1 ? 'Муж' : 'Жен'}
+                          {goat.sex === 1 ? t.goats.maleShort : t.goats.femaleShort}
                       </td>
                       <td className="p-2 border-r border-gray-100 text-center font-black opacity-80">{goat.breed_alias || goat.breed_name}</td>
                       <td className="p-2 border-r border-gray-100 text-center flex items-center justify-center gap-4 h-full">
-                          <Link href={`/goats/${goat.id}/offspring?sex=male`} className="text-blue-500 hover:underline">+Сын</Link>
-                          <Link href={`/goats/${goat.id}/offspring?sex=female`} className="text-blue-500 hover:underline">+Дочь</Link>
+                          <Link href={`/goats/${goat.id}/offspring?sex=male`} className="text-blue-500 hover:underline">{t.goats.sonPlus}</Link>
+                          <Link href={`/goats/${goat.id}/offspring?sex=female`} className="text-blue-500 hover:underline">{t.goats.daughterPlus}</Link>
                       </td>
                       <td className="p-2 border-r border-gray-100 text-center opacity-60 font-mono">
-                        {goat.time_added ? new Date(goat.time_added).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                        {goat.time_added ? new Date(goat.time_added).toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                       </td>
                       <td className="p-2 border-r border-gray-100 text-center text-gray-400 font-black">{goat.operator || 'SYSTEM'}</td>
                       <td className="p-2 text-center">
@@ -184,7 +184,7 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
                 {goats.length === 0 && (
                   <tr>
                     <td colSpan={8} className="p-32 text-center text-gray-200 font-black uppercase tracking-[1em] text-2xl">
-                      EMPTY REGISTRY
+                      {t.goats.emptyRegistry}
                     </td>
                   </tr>
                 )}

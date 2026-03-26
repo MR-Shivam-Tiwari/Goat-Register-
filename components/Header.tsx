@@ -18,7 +18,7 @@ export default async function Header() {
           />
         </Link>
         <div className="hidden sm:block">
-          <h1 className="text-xl md:text-2xl font-black text-white tracking-tighter leading-none m-0 uppercase italic opacity-40">Breed Register</h1>
+          <h1 className="text-xl md:text-2xl font-black text-white tracking-tighter leading-none m-0 uppercase italic opacity-40">{t.nav.breedRegister}</h1>
           <h2 className="text-md md:text-lg font-black text-secondary uppercase tracking-[0.02em] mt-2 leading-tight drop-shadow-lg">
             {t.home.subtitle}
           </h2>
@@ -27,7 +27,7 @@ export default async function Header() {
       
       <div className="flex items-center gap-8 text-right">
           <div className="hidden lg:flex flex-col border-l border-white/10 pl-8">
-              <span className="text-[9px] opacity-40 uppercase tracking-[0.4em] font-black mb-1 leading-none italic uppercase">CONTACT</span>
+              <span className="text-[9px] opacity-40 uppercase tracking-[0.4em] font-black mb-1 leading-none italic uppercase">{t.nav.contact}</span>
               <span className="text-lg font-black text-secondary tracking-tighter uppercase whitespace-nowrap">+7 (000) 000-00-00</span>
           </div>
       </div>

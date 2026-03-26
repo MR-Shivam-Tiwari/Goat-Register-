@@ -1,6 +1,8 @@
 import { query } from '@/lib/db';
 import Link from 'next/link';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { cookies } from 'next/headers';
+import { getTranslation, Locale } from '@/lib/translations';
 
 async function searchData(q: string) {
   const goatsRes = await query(
@@ -25,21 +27,25 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
   const q = searchParams.q || '';
   const results = q ? await searchData(q) : { goats: [], farms: [] };
 
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const t = getTranslation(lang);
+
   return (
     <div className="min-h-screen bg-bg-site py-24 px-10 lg:px-24">
       <div className="max-w-7xl mx-auto">
-        <Breadcrumbs items={[{ label: 'Registry Search' }]} />
+        <Breadcrumbs items={[{ label: t.search.title }]} />
 
         <header className="mb-24 text-left group">
-            <h2 className="text-7xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">Search <br/> Results.</h2>
+            <h2 className="text-7xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">{t.search.results.split(' ')[0]} <br/> {t.search.results.split(' ')[1]}.</h2>
             <div className="h-2 w-32 bg-secondary rounded-full mb-8 group-hover:w-64 transition-all duration-1000 shadow-xl"></div>
-            <p className="text-gray-400 font-bold text-3xl italic tracking-tighter">Querying for "{q}" in global databases.</p>
+            <p className="text-gray-400 font-bold text-3xl italic tracking-tighter">{t.search.querying} "{q}" {t.search.inDatabases}</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mt-20">
             <section className="space-y-12">
                 <header className="flex items-center justify-between border-b-4 border-primary/5 pb-8 group cursor-pointer hover:border-secondary transition-all">
-                    <h3 className="text-5xl font-black text-primary uppercase tracking-tighter">Registered Goats</h3>
+                    <h3 className="text-5xl font-black text-primary uppercase tracking-tighter">{t.search.registeredGoats}</h3>
                     <span className="text-4xl font-black text-secondary group-hover:scale-110 transition-transform">{results.goats.length}</span>
                 </header>
                 {results.goats.length === 0 ? (
@@ -47,7 +53,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.415-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                         </svg>
-                        <p className="font-black uppercase tracking-[0.5em] text-xs">No Genetic Matches Found</p>
+                        <p className="font-black uppercase tracking-[0.5em] text-xs">{t.search.noMatches}</p>
                     </div>
                 ) : (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -56,7 +62,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
                                 <div className="space-y-2">
                                     <h4 className="text-3xl font-black text-primary group-hover:text-secondary transition-colors uppercase tracking-tighter">{goat.name}</h4>
                                     <div className="flex items-center gap-4">
-                                      <span className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em]">Identity Profile</span>
+                                      <span className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em]">{t.search.identityProfile}</span>
                                       <span className="bg-primary/5 text-primary px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/10">#{goat.id}</span>
                                     </div>
                                 </div>
@@ -73,7 +79,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
 
             <section className="space-y-12">
                  <header className="flex items-center justify-between border-b-4 border-primary/5 pb-8 group cursor-pointer hover:border-secondary transition-all">
-                    <h3 className="text-5xl font-black text-primary uppercase tracking-tighter">Association Farms</h3>
+                    <h3 className="text-5xl font-black text-primary uppercase tracking-tighter">{t.search.associationFarms}</h3>
                     <span className="text-4xl font-black text-secondary group-hover:scale-110 transition-transform">{results.farms.length}</span>
                 </header>
                 {results.farms.length === 0 ? (
@@ -81,7 +87,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
-                        <p className="font-black uppercase tracking-[0.5em] text-xs">No Institutional Records Found</p>
+                        <p className="font-black uppercase tracking-[0.5em] text-xs">{t.search.noInstitutional}</p>
                     </div>
                 ) : (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
@@ -90,8 +96,8 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
                                 <div className="space-y-2">
                                     <h4 className="text-3xl font-black text-primary group-hover:text-secondary transition-colors uppercase tracking-tighter leading-none">{farm.name}</h4>
                                     <div className="flex items-center gap-4">
-                                      <span className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em]">Farm Record Entry</span>
-                                      <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-secondary/20">MEMBER ID #{farm.id}</span>
+                                      <span className="text-[10px] font-black text-primary/30 uppercase tracking-[0.5em]">{t.search.farmEntry}</span>
+                                      <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-secondary/20">{t.search.memberId}{farm.id}</span>
                                     </div>
                                 </div>
                                 <div className="w-16 h-16 border-4 border-primary/5 rounded-[2rem] flex items-center justify-center text-primary group-hover:bg-secondary group-hover:border-secondary group-hover:text-primary group-hover:-rotate-12 transition-all duration-700 shadow-2xl group-hover:shadow-secondary/30 scale-125">
