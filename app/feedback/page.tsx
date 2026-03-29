@@ -25,7 +25,7 @@ export default function FeedbackPage() {
                       </div>
                       <div>
                         <span className="block text-[11px] font-black uppercase text-secondary tracking-[0.6em] mb-2 scale-110 origin-left">Primary Contact</span>
-                        <span className="text-4xl font-black text-primary group-hover:translate-x-2 block transition-all tracking-tighter leading-none">+380 (000) 000-00-00</span>
+                        <span className="text-4xl font-black text-primary group-hover:translate-x-2 block transition-all tracking-tighter leading-none">+380 99 123 45 67</span>
                       </div>
                    </div>
 
