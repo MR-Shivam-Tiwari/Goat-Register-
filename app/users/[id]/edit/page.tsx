@@ -94,7 +94,7 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
                             <input 
                                 name="phone"
                                 type="text" 
-                                placeholder="+7 (___) ___-____"
+                                placeholder="+380 (___) ___-____"
                                 className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>

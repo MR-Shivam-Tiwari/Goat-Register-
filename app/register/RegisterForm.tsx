@@ -98,7 +98,7 @@ export default function RegisterForm() {
               name="phone" 
               type="text" 
               className="w-full bg-white border-2 border-gray-200 px-5 py-3.5 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
-              placeholder="+7 (___) ___-____" 
+              placeholder="+380 (___) ___-____" 
             />
           </div>
 

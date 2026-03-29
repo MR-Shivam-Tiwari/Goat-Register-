@@ -28,7 +28,7 @@ export default async function Header() {
       <div className="flex items-center gap-8 text-right">
           <div className="hidden lg:flex flex-col border-l border-white/10 pl-8">
               <span className="text-[9px] opacity-40 uppercase tracking-[0.4em] font-black mb-1 leading-none italic uppercase">{t.nav.contact}</span>
-              <span className="text-lg font-black text-secondary tracking-tighter uppercase whitespace-nowrap">+7 (000) 000-00-00</span>
+              <span className="text-lg font-black text-secondary tracking-tighter uppercase whitespace-nowrap">+380 (000) 000-00-00</span>
           </div>
       </div>
     </header>
