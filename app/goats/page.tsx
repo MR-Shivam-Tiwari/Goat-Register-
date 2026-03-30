@@ -142,7 +142,7 @@ export default async function AllGoatsPage({ searchParams: searchParamsPromise }
                           <div className="w-9 h-9 border border-gray-300 rounded overflow-hidden flex-shrink-0 bg-white shadow-sm ml-1">
                               {goat.main_photo ? (
                                   <img 
-                                    src={`/storage/gallery/${goat.main_photo}`} 
+                                    src={`/uploads/${goat.main_photo}`} 
                                     alt="" 
                                     className="w-full h-full object-cover" 
                                     loading="lazy"

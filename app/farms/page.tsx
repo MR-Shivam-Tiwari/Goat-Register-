@@ -17,12 +17,19 @@ async function getFarms() {
         let displayPic = '/img/farm_placeholder.png';
         if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
             const pathsToCheck = [
+                path.join(process.cwd(), 'public', 'uploads', farm.pic1),
                 path.join(process.cwd(), 'public', 'img', 'farm', farm.pic1),
                 path.join(process.cwd(), 'public', 'img', farm.pic1)
             ];
             for (const p of pathsToCheck) {
                 if (fs.existsSync(p)) {
-                    displayPic = p.includes('public/img/farm/') ? `/img/farm/${farm.pic1}` : `/img/${farm.pic1}`;
+                    if (p.includes('public/uploads/')) {
+                        displayPic = `/uploads/${farm.pic1}`;
+                    } else if (p.includes('public/img/farm/')) {
+                        displayPic = `/img/farm/${farm.pic1}`;
+                    } else {
+                        displayPic = `/img/${farm.pic1}`;
+                    }
                     break;
                 }
             }

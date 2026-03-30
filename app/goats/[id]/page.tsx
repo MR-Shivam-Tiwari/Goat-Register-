@@ -168,7 +168,7 @@ export default async function GoatDetailPage({
                     className="w-32 aspect-[4/3] bg-white border border-gray-100 p-1 rounded-xl shadow-sm group relative overflow-hidden ring-1 ring-gray-200"
                   >
                     <img
-                      src={`/img/${p.file}`}
+                      src={`/uploads/${p.file}`}
                       className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">

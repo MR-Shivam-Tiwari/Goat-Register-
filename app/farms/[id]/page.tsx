@@ -28,12 +28,19 @@ async function getFarmData(id: string): Promise<Farm | null> {
   
   if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
     const pathsToCheck = [
+      path.join(process.cwd(), 'public', 'uploads', farm.pic1),
       path.join(process.cwd(), 'public', 'img', 'farm', farm.pic1),
       path.join(process.cwd(), 'public', 'img', farm.pic1)
     ];
     for (const p of pathsToCheck) {
       if (fs.existsSync(p)) {
-        finalAva = p.includes('public/img/farm/') ? `/img/farm/${farm.pic1}` : `/img/${farm.pic1}`;
+        if (p.includes('public/uploads/')) {
+          finalAva = `/uploads/${farm.pic1}`;
+        } else if (p.includes('public/img/farm/')) {
+          finalAva = `/img/farm/${farm.pic1}`;
+        } else {
+          finalAva = `/img/${farm.pic1}`;
+        }
         break;
       }
     }
@@ -42,12 +49,19 @@ async function getFarmData(id: string): Promise<Farm | null> {
   let finalPic2 = null;
   if (farm.pic2 && farm.pic2 !== 'no_pic.png') {
     const pathsToCheck2 = [
+      path.join(process.cwd(), 'public', 'uploads', farm.pic2),
       path.join(process.cwd(), 'public', 'img', 'farm', farm.pic2),
       path.join(process.cwd(), 'public', 'img', farm.pic2)
     ];
     for (const p of pathsToCheck2) {
       if (fs.existsSync(p)) {
-        finalPic2 = p.includes('public/img/farm/') ? `/img/farm/${farm.pic2}` : `/img/${farm.pic2}`;
+        if (p.includes('public/uploads/')) {
+          finalPic2 = `/uploads/${farm.pic2}`;
+        } else if (p.includes('public/img/farm/')) {
+          finalPic2 = `/img/farm/${farm.pic2}`;
+        } else {
+          finalPic2 = `/img/${farm.pic2}`;
+        }
         break;
       }
     }

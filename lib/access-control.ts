@@ -15,7 +15,7 @@ export async function getSessionUser() {
 export async function adminOnly() {
     const user = await getSessionUser();
     
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== 10) {
         redirect('/unauthorized');
     }
     
