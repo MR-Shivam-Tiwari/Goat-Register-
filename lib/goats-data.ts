@@ -9,6 +9,7 @@ export async function getGoatData(id: string) {
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
+        COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as ava,
 
         M.name  AS m_name,  M.id AS m_id,
         Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,
@@ -55,6 +56,7 @@ export async function getOffspringDetailed(id: string) {
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
+        COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as ava,
 
         M.name  AS m_name,  M.id AS m_id,
         Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,

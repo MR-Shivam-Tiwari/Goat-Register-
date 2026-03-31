@@ -28,9 +28,13 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
         'use server';
         const name = formData.get('name') as string;
         const email = formData.get('email') as string;
+        const phone = formData.get('phone') as string;
+        const is_apk = parseInt(formData.get('is_apk') as string);
+        const roleValue = parseInt(formData.get('role') as string);
+        
         await query(
-            'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-            [name, email, id]
+            'UPDATE users SET name = $1, email = $2, phone = $3, is_apk = $4, role = $5 WHERE id = $6',
+            [name, email, phone, is_apk, roleValue, id]
         );
         redirect('/users');
     }
@@ -54,17 +58,25 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-semibold text-gray-700">{t.users.memberApk}</label>
-                                <select className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option>{t.users.no}</option>
-                                    <option>{t.users.yes}</option>
+                                <select 
+                                    name="is_apk"
+                                    defaultValue={user.is_apk || 0}
+                                    className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="0">{t.users.no}</option>
+                                    <option value="1">{t.users.yes}</option>
                                 </select>
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">{t.users.active}</label>
-                                <select className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option>{t.users.yes}</option>
-                                    <option>{t.users.no}</option>
+                                <label className="text-sm font-semibold text-gray-700">{t.auth.roleLabel}</label>
+                                <select 
+                                    name="role"
+                                    defaultValue={user.role || 1}
+                                    className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="1">{t.auth.memberRole}</option>
+                                    <option value="10">{t.auth.adminRole}</option>
                                 </select>
                             </div>
                         </div>
@@ -94,6 +106,7 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
                             <input 
                                 name="phone"
                                 type="text" 
+                                defaultValue={user.phone || ''}
                                 placeholder="+380 (___) ___-____"
                                 className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />

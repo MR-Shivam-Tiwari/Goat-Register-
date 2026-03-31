@@ -309,12 +309,14 @@ export default function GoatTable({
                   <div className="flex items-center gap-1.5 min-h-[20px]">
                     {g.ava ? (
                       <img
-                        src={g.ava}
+                        src={g.ava.startsWith('http') || g.ava.startsWith('/') ? g.ava : `/uploads/${g.ava}`}
                         alt=""
-                        className="w-6 h-4 object-cover rounded-sm border border-gray-200"
+                        className="w-10 h-8 object-cover rounded shadow-sm border border-gray-100"
                       />
                     ) : (
-                      <div className="w-6 h-4 bg-gray-100/50 rounded-sm border border-gray-200" />
+                      <div className="w-10 h-8 bg-gray-100 rounded border border-gray-100 flex items-center justify-center text-[10px] text-gray-300 font-black">
+                        NO IMG
+                      </div>
                     )}
                     {isGuest ? (
                       <span className="text-[#491907] font-bold">{g.name}</span>

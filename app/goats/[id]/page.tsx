@@ -6,6 +6,8 @@ import { getTranslation, Locale } from "@/lib/translations";
 import GoatTable from "@/components/GoatTable";
 import InviteSection from "@/components/InviteSection";
 import PedigreeNode from "@/components/PedigreeNode";
+import AddPhotoGallery from "@/components/AddPhotoGallery";
+import GalleryItem from "@/components/GalleryItem";
 
 import { 
   getGoatData, 
@@ -65,7 +67,7 @@ export default async function GoatDetailPage({
       <div className="max-w-8xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <Breadcrumbs
           items={[
-            { label: t.nav.registry, href: "/catalog/goats" },
+            { label: t.nav.registry, href: "/goats" },
             { label: goat.name },
           ]}
         />
@@ -76,7 +78,11 @@ export default async function GoatDetailPage({
             <div className="absolute -bottom-1 left-8 flex items-end gap-6">
               <div className="w-24 h-24 bg-white rounded-xl shadow-lg border-4 border-white overflow-hidden">
                 {goat.ava ? (
-                  <img src={goat.ava} className="w-full h-full object-cover" alt={goat.name} />
+                  <img 
+                    src={goat.ava.startsWith('http') || goat.ava.startsWith('/') ? goat.ava : `/uploads/${goat.ava}`} 
+                    className="w-full h-full object-cover" 
+                    alt={goat.name} 
+                  />
                 ) : (
                   <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-300 font-black text-2xl lowercase">
                     {goat.name[0]}
@@ -117,15 +123,6 @@ export default async function GoatDetailPage({
                   </div>
                 )}
             </div>
-
-            <div className="flex gap-2">
-               <button className="px-4 py-2 bg-[#491907] text-white rounded-lg text-sm font-black tracking-widest uppercase hover:bg-black transition-all shadow-md active:scale-95">
-                  {t.goats.printCertificate}
-               </button>
-               <button className="px-4 py-2 bg-white border border-[#491907]/10 text-[#491907] rounded-lg text-sm font-black tracking-widest uppercase hover:bg-gray-50 transition-all shadow-sm active:scale-95">
-                  {t.goats.editRecords}
-               </button>
-            </div>
           </div>
         </div>
 
@@ -149,32 +146,13 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.gallery}
             </h2>
-            <div className="flex items-center gap-4 text-[10px]">
-              <label className="cursor-pointer bg-blue-50 text-blue-700 px-3 py-1 rounded-lg font-bold hover:bg-blue-100 transition-all flex items-center gap-2">
-                 <span>{t.goats.add} {t.goats.photoShort}</span>
-                 <input type="file" className="hidden" />
-              </label>
-              <button className="text-gray-400 hover:text-[#491907] transition-all">
-                {t.goats.refresh}
-              </button>
-            </div>
+            <AddPhotoGallery goatId={id} t={t} />
           </div>
           <div className="p-6">
             <div className="flex flex-wrap gap-4">
               {gallery.length > 0 ? (
                 gallery.map((p: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="w-32 aspect-[4/3] bg-white border border-gray-100 p-1 rounded-xl shadow-sm group relative overflow-hidden ring-1 ring-gray-200"
-                  >
-                    <img
-                      src={`/uploads/${p.file}`}
-                      className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                       <span className="text-white text-[10px] font-black uppercase tracking-widest underline decoration-white/30 decoration-2">{t.goats.viewShort}</span>
-                    </div>
-                  </div>
+                  <GalleryItem key={p.id || idx} file={p.file} goatId={id} t={t} />
                 ))
               ) : (
                 <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
@@ -360,7 +338,7 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.expertAssessment}
             </h2>
-            {(goat.cert_no || goat.cert_serial) ? (
+            {(goat.cert_no || goat.cert_serial || certData.id) ? (
               <div className="flex items-center gap-4">
                 <Link
                   href={`/goats/${goat.id}/assessment`}
@@ -370,9 +348,9 @@ export default async function GoatDetailPage({
                 </Link>
                 <div className="h-6 w-[1px] bg-gray-200"></div>
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#491907]/50">
-                   <Link href={`/goats/${goat.id}/certificate/1`} className="hover:text-blue-600 hover:underline">Certificate 1</Link>
+                   <Link href={`/goats/${goat.id}/certificate/1`} target="_blank" className="hover:text-blue-600 hover:underline">{t.goats.cert1}</Link>
                    <span className="opacity-30">|</span>
-                   <Link href={`/goats/${goat.id}/certificate/2`} className="hover:text-blue-600 hover:underline">Certificate 2</Link>
+                   <Link href={`/goats/${goat.id}/certificate/2`} target="_blank" className="hover:text-blue-600 hover:underline">{t.goats.cert2}</Link>
                 </div>
               </div>
             ) : (

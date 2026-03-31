@@ -130,11 +130,11 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             </div>
 
             {/* INFO COLUMN */}
-            <div className="flex-1 p-8 flex flex-col">
+            <div className="flex-1 p-8 flex flex-col min-w-0">
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-gray-100 pb-6 mb-6">
-                    <div>
+                    <div className="min-w-0 flex-1">
                         <span className="text-[12px] font-black uppercase text-gray-300 tracking-[0.3em] font-mono leading-none">{t.farms.officialIdPrefix}{farm.id} / {t.farms.officialMember}</span>
-                        <h1 className="text-3xl md:text-5xl font-black text-primary uppercase italic tracking-tighter leading-none mt-2">{farm.name}</h1>
+                        <h1 className="text-3xl md:text-5xl font-black text-primary uppercase italic tracking-tighter leading-none mt-2 break-words">{farm.name}</h1>
                     </div>
                     {isAdmin && (
                         <Link href={`/farms/${farm.id}/edit`} className="flex items-center gap-2 px-6 py-3 bg-[#491907] text-white rounded-lg font-black text-[11px] uppercase tracking-widest shadow-md hover:bg-black transition-all group">
@@ -147,7 +147,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                 <div className="flex-1 overflow-auto max-h-[250px] mb-6">
                     <div 
                         dangerouslySetInnerHTML={{ __html: farm.tmpl }} 
-                        className="farm-tmpl-content text-gray-500 font-bold leading-relaxed text-[12px] uppercase italic opacity-80 [&_p]:mb-2 [&_span]:!text-inherit"
+                        className="farm-tmpl-content text-gray-500 font-bold leading-relaxed text-[12px] uppercase italic opacity-80 [&_p]:mb-2 [&_span]:!text-inherit break-words"
                     />
                 </div>
 
@@ -162,7 +162,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             </div>
 
             {/* STATS COLUMN */}
-            <div className="md:w-56 lg:w-72 bg-[#E2F0D9] p-8 text-center flex flex-col justify-center border-l border-gray-100 italic">
+            <div className="md:w-56 lg:w-72 shrink-0 bg-[#E2F0D9] p-8 text-center flex flex-col justify-center border-l border-gray-100 italic">
                 <span className="text-[11px] font-black uppercase text-gray-500 tracking-[0.2em] mb-4 font-mono">{t.farms.stockAnalysis}</span>
                 <div className="space-y-6">
                     <div>

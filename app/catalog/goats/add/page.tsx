@@ -1,7 +1,7 @@
 import { query } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import AddGoatForm from '@/components/AddGoatForm';
+import GoatForm from '@/components/GoatForm';
 import { Locale } from '@/lib/translations';
 
 async function getBreeds() {
@@ -25,9 +25,9 @@ export default async function AddGoatPage() {
     const farms = await getFarms();
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-6 md:px-12 lg:px-24">
-            <div className="max-w-5xl mx-auto">
-                <AddGoatForm breeds={breeds} farms={farms} lang={lang} />
+        <div className="min-h-screen bg-gray-50 py-12 px-6 md:px-12 lg:px-24 font-sans tracking-tight">
+            <div className="max-w-5xl mx-auto space-y-12">
+                <GoatForm breeds={breeds} farms={farms} lang={lang} />
             </div>
         </div>
     );

@@ -1,113 +1,214 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { getTranslation, Locale } from '@/lib/translations';
+import { addFarmAction, updateFarmAction } from '@/lib/actions';
+import { Save, ChevronLeft, Loader2, Upload, Layout, FileText, Image as ImageIcon } from 'lucide-react';
+import 'react-quill-new/dist/quill.snow.css';
+
+// Dynamic import for ReactQuill
+const ReactQuill = dynamic(() => import('react-quill-new'), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-gray-50 border-2 border-gray-200 rounded-sm flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs italic">Загрузка редактора...</div>
+});
 
 interface FarmEditorProps {
     lang: Locale;
     initialData?: {
+        id?: number | string;
         name?: string;
-        description?: string;
+        tmpl?: string;
+        pic1?: string;
+        pic2?: string;
     };
     isEdit?: boolean;
-    showContainer?: boolean;
 }
 
-export default function FarmEditor({ lang, initialData, isEdit = false, showContainer = true }: FarmEditorProps) {
+export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEditorProps) {
     const router = useRouter();
     const t = getTranslation(lang);
+    
+    const [name, setName] = useState(initialData?.name || '');
+    const [description, setDescription] = useState(initialData?.tmpl || '');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const [pic1, setPic1] = useState<File | null>(null);
+    const [pic2, setPic2] = useState<File | null>(null);
+
+    const quillModules = useMemo(() => ({
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'clean'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }]
+        ],
+    }), []);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        router.push('/farms?success=1');
+        setIsSubmitting(true);
+        setError(null);
+
+        const formData = new FormData(e.currentTarget);
+        formData.set('description', description);
+        if (pic1) formData.set('pic1', pic1);
+        if (pic2) formData.set('pic2', pic2);
+
+        if (isEdit && initialData?.id) {
+            formData.set('farmId', initialData.id.toString());
+        }
+
+        try {
+            const action = isEdit ? updateFarmAction : addFarmAction;
+            const res = await action(formData);
+            
+            if (res.success) {
+                router.push('/farms');
+                router.refresh();
+            } else {
+                setError(res.error || 'Something went wrong');
+                setIsSubmitting(false);
+            }
+        } catch (err: any) {
+            setError(err.message || 'An error occurred');
+            setIsSubmitting(false);
+        }
     };
 
-    const content = (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Farm Name */}
-            <div className="space-y-1.5">
-                <label className="text-sm font-bold text-[#491907] block">{t.farms.farmNameLabel}</label>
-                <input 
-                    name="name"
-                    type="text" 
-                    defaultValue={initialData?.name}
-                    className="w-full border border-amber-200 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-100 transition-all bg-white shadow-inner"
-                    required
-                />
-            </div>
-
-            {/* Farm Description with Mock Editor Toolbar */}
-            <div className="space-y-1.5">
-                <label className="text-sm font-bold text-[#491907] block">{t.farms.farmDescriptionLabel}</label>
-                <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
-                    {/* Toolbar Placeholder */}
-                    <div className="bg-[#F8F8F8] border-b border-gray-200 p-1.5 flex flex-wrap gap-1 items-center grayscale opacity-60 scale-90 origin-left">
-                        {['B', 'I', 'U', 'abc', 'x2', 'Tx', 'H1', '¶'].map((btn, i) => (
-                            <button key={i} type="button" className="px-1.5 py-0.5 border border-gray-300 bg-white rounded text-[9px] font-bold hover:bg-gray-100 min-w-[20px]">{btn}</button>
-                        ))}
-                        <div className="h-3 w-px bg-gray-300 mx-0.5" />
-                        {['≡', '≡', '≡'].map((btn, i) => (
-                            <button key={`align-${i}`} type="button" className="px-1.5 py-0.5 border border-gray-300 bg-white rounded text-[9px] hover:bg-gray-100 min-w-[20px]">{btn}</button>
-                        ))}
-                    </div>
-                    <textarea 
-                        name="description"
-                        rows={isEdit ? 8 : 10}
-                        defaultValue={initialData?.description}
-                        className="w-full p-4 outline-none text-sm text-gray-800 resize-none font-sans"
-                    />
-                </div>
-            </div>
-
-            {/* File Uploads - Conditional for New Farm usually, but keeping for both if needed */}
-            <div className="space-y-4 pt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">{t.farms.photoWindow}</label>
-                    <input 
-                        type="file" 
-                        className="text-[11px] text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-[11px] file:font-bold file:bg-gray-50 file:text-gray-600 hover:file:bg-gray-100 cursor-pointer"
-                    />
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider w-36">{t.farms.photosPage}</label>
-                    <input 
-                        type="file" 
-                        className="text-[11px] text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-[11px] file:font-bold file:bg-gray-50 file:text-gray-600 hover:file:bg-gray-100 cursor-pointer"
-                    />
-                </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4 flex justify-end">
-                <button 
-                    type="submit" 
-                    className="bg-[#491907] text-white px-8 py-2.5 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-[#6D260D] active:scale-95 transition-all shadow-md"
-                >
-                    {isEdit ? t.common.save : t.common.writeDown}
-                </button>
-            </div>
-        </form>
-    );
-
-    if (!showContainer) return content;
-
     return (
-        <div className="min-h-screen bg-[#FFFDF9] py-12 px-6 lg:px-24 font-sans text-amber-950">
-            <div className="max-w-4xl mx-auto border border-[#D2B48C]/30 rounded-xl p-8 bg-white shadow-sm space-y-6 animate-in fade-in duration-500">
-                {/* Back Link */}
-                <Link href="/farms" className="text-[#491907]/60 hover:text-[#491907] text-xs font-bold uppercase tracking-widest inline-flex items-center gap-2 mb-2 transition-colors">
-                    ← {t.common.back}
-                </Link>
-                {content}
+        <div className="min-h-screen bg-gray-50 md:py-12 px-2 md:px-12 lg:px-24 font-sans text-gray-900 tracking-tight">
+            <div className="max-w-4xl mx-auto space-y-6">
+                
+                <header className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 md:p-8 rounded-sm border-2 border-gray-100 shadow-sm">
+                    <div className="text-center md:text-left space-y-1">
+                        <Link href="/farms" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline mb-2 transition-all">
+                            <ChevronLeft size={16} /> {t.common.back}
+                        </Link>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase text-[#491907] flex items-center justify-center md:justify-start gap-3">
+                            <Layout size={28} />
+                            {isEdit ? t.farms.editTitle : t.farms.addTitle}
+                        </h1>
+                    </div>
+                </header>
+
+                {error && (
+                    <div className="p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-sm text-sm font-bold shadow-sm animate-in shake duration-500">
+                        ⚠️ {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="bg-white p-4 md:p-8 rounded-sm border-2 border-gray-100 shadow-sm space-y-8">
+                        <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                <FileText size={14} className="text-[#491907]" />
+                                {t.farms.farmNameLabel}
+                            </label>
+                            <input 
+                                name="name"
+                                type="text" 
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder={t.farms.placeholderName}
+                                className="w-full bg-gray-50 border-2 border-gray-200 rounded-sm px-6 py-4 text-base font-black text-gray-900 focus:border-[#491907] outline-none"
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                <Layout size={14} className="text-[#491907]" />
+                                {t.farms.farmDescriptionLabel}
+                            </label>
+                            <div className="rounded-sm overflow-hidden border-2 border-gray-200">
+                                <ReactQuill 
+                                    theme="snow" 
+                                    value={description} 
+                                    onChange={setDescription} 
+                                    modules={quillModules}
+                                    className="bg-white"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Minimalist Upload Section */}
+                    <div className="bg-white p-4 md:p-8 rounded-sm border-2 border-gray-100 shadow-sm space-y-8">
+                        <h3 className="text-sm font-black text-[#491907] uppercase tracking-widest flex items-center gap-3 border-b-2 border-gray-50 pb-4">
+                            <ImageIcon size={20} />
+                            {t.farms.images}
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Pic 1 */}
+                            <div className="space-y-4">
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t.farms.photoWindow}</label>
+                                {!pic1 ? (
+                                    <div className="relative">
+                                        <input type="file" accept="image/*" onChange={(e) => setPic1(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                        <button type="button" className="bg-[#491907] text-white font-bold py-3 px-6 rounded-sm text-[10px] tracking-widest uppercase hover:bg-black transition-all flex items-center gap-2">
+                                            <Upload size={14} />
+                                            {t.common.selectPhoto}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-3 bg-gray-50 border-2 border-[#491907] p-2 rounded-sm text-[10px] font-black">
+                                        <span className="truncate flex-1 text-gray-800">{pic1.name}</span>
+                                        <button type="button" onClick={() => setPic1(null)} className="text-red-600 underline uppercase italic">{t.common.remove}</button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Pic 2 */}
+                            <div className="space-y-4">
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t.farms.photosPage}</label>
+                                {!pic2 ? (
+                                    <div className="relative">
+                                        <input type="file" accept="image/*" onChange={(e) => setPic2(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                        <button type="button" className="bg-[#491907] text-white font-bold py-3 px-6 rounded-sm text-[10px] tracking-widest uppercase hover:bg-black transition-all flex items-center gap-2">
+                                            <Upload size={14} />
+                                            {t.common.selectPhoto}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-3 bg-gray-50 border-2 border-[#491907] p-2 rounded-sm text-[10px] font-black">
+                                        <span className="truncate flex-1 text-gray-800">{pic2.name}</span>
+                                        <button type="button" onClick={() => setPic2(null)} className="text-red-600 underline uppercase italic">{t.common.remove}</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center pb-12 pt-6">
+                        <button type="submit" disabled={isSubmitting} className="w-full md:w-auto min-w-[300px] bg-[#491907] hover:bg-black text-white font-black py-4 px-12 rounded-sm text-sm tracking-[0.3em] uppercase disabled:opacity-50 transition-all flex items-center justify-center gap-4 shadow-xl active:translate-y-0.5">
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 size={18} className="animate-spin" />
+                                    <span>{t.common.saving}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Save size={18} />
+                                    <span>{isEdit ? t.common.updateExisting : t.common.establishNew}</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
             
-            <div className="text-center pt-20">
-                <p className="text-[10px] text-amber-900/40 font-bold uppercase tracking-[0.3em] italic">
-                    {t.home.footerConsent}
-                </p>
-            </div>
+            <style jsx global>{`
+                .ql-container.ql-snow { border: none !important; font-size: 1rem !important; }
+                .ql-toolbar.ql-snow { border: none !important; border-bottom: 2px solid #E5E7EB !important; background: #F9FAFB !important; }
+                .ql-editor { min-height: 200px !important; line-height: 1.6 !important; }
+            `}</style>
         </div>
     );
 }

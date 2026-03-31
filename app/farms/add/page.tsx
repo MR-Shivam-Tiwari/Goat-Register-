@@ -11,6 +11,8 @@ export default async function AddFarmPage() {
     if (!username) redirect('/login');
 
     return (
-        <FarmEditor lang={lang} />
+        <div className="min-h-screen bg-gray-50 py-8">
+            <FarmEditor lang={lang} />
+        </div>
     );
 }

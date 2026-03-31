@@ -8,8 +8,6 @@ export const translations = {
       catalog: 'КАТАЛОГ ПОРОД',
       registry: 'СПИСОК КОЗ',
       rules: 'ПРАВИЛА',
-
-
       forum: 'ФОРУМ',
       portal: 'ПОРТАЛ',
       support: 'ОБРАТНАЯ СВЯЗЬ',
@@ -33,7 +31,14 @@ export const translations = {
       onlyAdmin: 'Только администратор имеет доступ к этой странице.',
       goHome: 'На главную',
       notAvailable: 'Нет данных',
-      edit: 'Редактировать'
+      edit: 'Редактировать',
+      selectPhoto: 'ВЫБРАТЬ ФОТО',
+      remove: 'УДАЛИТЬ',
+      fileSelected: 'Файл выбран',
+      currentPhoto: 'Текущее фото',
+      saving: 'СОХРАНЕНИЕ...',
+      establishNew: 'ДОБАВИТЬ НОВУЮ',
+      updateExisting: 'ОБНОВИТЬ ЗАПИСЬ'
     },
     users: {
       listTitle: 'Список зарегистрированных пользователей:',
@@ -54,6 +59,7 @@ export const translations = {
     },
     goats: {
       addTitle: 'Добавить новую козу',
+      editTitle: 'Редактировать запись',
       officialDetails: 'Заполните данные официального реестра',
       nickname: 'Кличка',
       breed: 'Порода',
@@ -78,7 +84,7 @@ export const translations = {
       idInt: 'ID International',
       brand: 'Клеймо',
       registryCode: 'Код по реестру',
-       certSeries: 'Сертификат/Серия',
+      certSeries: 'Сертификат/Серия',
       certNo: 'Сертификат/Номер',
       certNum: 'Сертификат/Номер',
       genetic: 'Ген. материал',
@@ -90,6 +96,8 @@ export const translations = {
       addToRegistry: 'Добавить в реестр',
       female: 'Самка (Коза)',
       male: 'Самец (Козел)',
+      cert1: 'Сертификат 1',
+      cert2: 'Сертификат 2',
       withoutFarm: 'Без хозяйства',
       searchLabel: 'Поиск по кличке или ID',
       breedFilter: 'Все породы',
@@ -102,10 +110,8 @@ export const translations = {
       showLiving: 'Живые',
       showDead: 'Павшие',
       noStatus: 'Без статуса',
-      // Mother & Father section headers
       motherData: 'Данные по матери',
       fatherData: 'Данные по отцу',
-      // Certification columns
       certSection: 'Аттестация (избранное)',
       certType: 'Тип аттестации',
       certFinalScore: 'Итоговый балл',
@@ -115,7 +121,6 @@ export const translations = {
       certBodyLength: 'Косая длина корпуса',
       certClass: 'Класс',
       certCategory: 'Категория',
-      // Productivity / Lactation columns
       productivitySection: 'Продуктивность собственная/по потомству/предкам (избранное)',
       lactViewer: 'Кто',
       lactNo: 'Номер лактации',
@@ -125,9 +130,7 @@ export const translations = {
       lactProtein: 'Белок %',
       lactMilkDay: 'Среднесуточный удой (кг)',
       lactGraph: 'График лактационной кривой',
-      // Trailing columns
       dateAdded: 'Дата записи в реестр',
-      // Movement / Elimination sections
       animalMovement: 'Движение животных',
       eliminatedGoats: 'Выбракованные козы',
       retiredGoats: 'Выведенные из стада козы',
@@ -135,7 +138,6 @@ export const translations = {
       viewEliminated: 'Смотреть выбракованных',
       viewRetired: 'Смотреть выведенных',
       viewDeparted: 'Смотреть выбывший молодняк',
-      // Detail page specific
       goatInfo: 'Данные по козе:',
       basicInfo: 'Основная информация:',
       gallery: 'Галерея',
@@ -158,7 +160,6 @@ export const translations = {
       add: 'Добавить',
       editShort: 'Испр',
       refresh: 'Обновить',
-      // Milk metrics
       lactose: 'Лактоза (%)',
       peakMilk: 'Суточный пиковый удой (кг)',
       density: 'Плотность (кг)',
@@ -170,7 +171,6 @@ export const translations = {
       inviteLink: 'Ссылка на инвайт',
       generate: 'Генерировать',
       linkPlaceholder: 'Ссылка появится здесь...',
-      // Registry table
       globalDatabase: 'ГЛОБАЛЬНАЯ БАЗА ДАННЫХ',
       records: 'ЗАПИСЕЙ',
       uniqueCode: 'УНИКАЛЬНЫЙ КОД',
@@ -201,7 +201,6 @@ export const translations = {
       culledShort: 'ВЫБРАКОВАННЫЕ',
       retiredShort: 'ВЫВЕДЕННЫЕ',
       departedShort: 'ВЫБЫВШИЕ',
-      // Detailed page additional
       animalNotFound: 'ЖИВОТНОЕ НЕ НАЙДЕНО',
       printCertificate: 'Печать сертификата',
       editRecords: 'Редактировать записи',
@@ -217,10 +216,8 @@ export const translations = {
       moveAnimal: 'Переместить животное',
       select: 'выбрать',
       certRequired: 'Необходим для оценки',
-      yesBig: 'ДА',
+      yesBig: 'ДА'
     },
-
-
     home: {
       subtitle: 'ОФИЦИАЛЬНЫЙ ПЛЕМЕННОЙ РЕЕСТР',
       heroHeader: 'Одна из важнейших задач козоводства в Украине - ведение племенного и зоотехнического учета.',
@@ -236,7 +233,7 @@ export const translations = {
       onceBreederSaid: 'Когда-то один из козоводов сказал:',
       q1: '«Мы все очень-очень разные: и внешне, и внутренне. Но есть точка соприкосновения - козы, наши любимицы.',
       q2: 'Когда собирается команда, то игра будет успешна только тогда, когда ВСЁ, кроме ОБЩЕЗНАЧИМОГО, уйдет на второй план.',
-      q3: 'Если Петров в игре не даст шанса забить мяч Сидорову, потому что тот в раздевалке наступил ему на ногу - проиграла команда. Общая точка - мяч-игра-победа.',
+      q3: 'If Petrov does not give Sidorov a chance to score a goal in the game because he stepped on his foot in the locker room, the team lost. The common point is the ball-game-victory.',
       q4: 'Our balls are our goats, and if we try to play as a team with someone\'s ball and achieve success, that\'s great.',
       q5: 'Все уже давно забыли, чей мяч был на поле, идет тренировка на сыгранность команды. Иногда очень важно услышать мнение со стороны, именно услышать, и сопоставить со своим.',
       q6: 'Это не значит, что кто-то не прав, каждое мнение имеет право быть. Услышал, сопоставил, проанализировал и или лишний раз убедился, что идешь правильно, или ищешь другой путь.»',
@@ -294,6 +291,10 @@ export const translations = {
       photoWindow: 'Фото из окна:',
       photosPage: 'Фото на странице:',
       farmNotFound: 'Ферма не найдена',
+      images: 'Фотографии хозяйства',
+      banner: 'Главная фотография (баннер)',
+      logo: 'Логотип / фотография',
+      placeholderName: 'Введите название...',
       officialIdPrefix: 'Официальный ID #',
       stockAnalysis: 'Анализ поголовья',
       activeRecords: 'Активные записи',
@@ -301,7 +302,9 @@ export const translations = {
       activeStockRegistry: 'Реестр активного поголовья',
       displacedStock: 'Выбывшее поголовье',
       verifiedInfrastructure: 'Верифицированный вид базы данных инфраструктуры фермы',
-      emptyStock: 'ПОГОЛОВЬЕ ПУСТО'
+      emptyStock: 'ПОГОЛОВЬЕ ПУСТО',
+      addTitle: 'Добавить новую ферму',
+      editTitle: 'Редактировать ферму'
     },
     search: {
       title: 'Поиск по реестру',
@@ -336,18 +339,33 @@ export const translations = {
       associationProtocol: 'Протокол Ассоциации'
     },
     auth: {
-      loginTitle: 'ВХОД В СИСТЕМУ',
+      loginTitle: 'Вход в систему',
       loginDesc: 'Авторизация для членов ассоциации',
-      emailLabel: 'ЛОГИН ИЛИ EMAIL',
-      passLabel: 'ПАРОЛЬ',
+      emailLabel: 'Логин или Email',
+      loginPlaceholder: 'Введите логин',
+      passLabel: 'Пароль',
+      passPlaceholder: '••••••••',
+      loggingIn: 'ВХОД...',
       signInBtn: 'ВОЙТИ В ПОРТАЛ',
-      newMember: 'Впервые в Ассоциации?',
-      createAccount: 'СОЗДАТЬ УЧЕТНУЮ ЗАПИСЬ',
-      registerTitle: 'РЕГИСТРАЦИЯ В АССОЦИАЦИИ',
-      registerDesc: 'Подайте заявку на статус сертифицированного участника сегодня.',
-      usernameLabel: 'ЛОГИН',
-      confirmPass: 'ПОДТВЕРДИТЕ ПАРОЛЬ',
-      submitApp: 'ЗАРЕГИСТРИРОВАТЬСЯ'
+      noAccount: 'Нет учетной записи? Регистрация',
+      registerTitle: 'Регистрация в Ассоциации',
+      registerDesc: 'Подайте заявку на статус сертифицированного участника',
+      usernameLabel: 'Логин',
+      usernamePlaceholder: 'Придумайте логин',
+      emailFullLabel: 'Email (Почта)',
+      emailPlaceholder: 'example@mail.com',
+      fullNameLabel: 'ФИО / Имя',
+      fullNamePlaceholder: 'Ваше полное имя',
+      phoneLabel: 'Телефон',
+      phonePlaceholder: '+380 (___) ___-____',
+      confirmPassLabel: 'Повтор пароля',
+      creatingAccount: 'Создание аккаунта...',
+      submitApp: 'Зарегистрироваться',
+      alreadyHaveAccount: 'Уже есть аккаунт?',
+      loginLink: 'Войти в портал',
+      roleLabel: 'Роль (Уровень доступа)',
+      memberRole: 'Участник',
+      adminRole: 'Администратор'
     }
   },
   en: {
@@ -357,8 +375,6 @@ export const translations = {
       catalog: 'BREED CATALOG',
       registry: 'GOAT LIST',
       rules: 'RULES',
-
-
       forum: 'FORUM',
       portal: 'PORTAL',
       support: 'FEEDBACK',
@@ -382,7 +398,14 @@ export const translations = {
       onlyAdmin: 'Only administrators can access this page.',
       goHome: 'Go Home',
       notAvailable: 'Not available',
-      edit: 'Edit'
+      edit: 'Edit',
+      selectPhoto: 'SELECT PHOTO',
+      remove: 'REMOVE',
+      fileSelected: 'File selected',
+      currentPhoto: 'Current photo',
+      saving: 'SAVING...',
+      establishNew: 'ESTABLISH NEW',
+      updateExisting: 'UPDATE RECORD'
     },
     users: {
       listTitle: 'List of registered users:',
@@ -403,6 +426,7 @@ export const translations = {
     },
     goats: {
       addTitle: 'Add New Goat',
+      editTitle: 'Edit Goat Record',
       officialDetails: 'Fill out official registry details',
       nickname: 'Nickname',
       breed: 'Breed',
@@ -439,6 +463,8 @@ export const translations = {
       addToRegistry: 'Add to Registry',
       female: 'Female (Doe)',
       male: 'Male (Buck)',
+      cert1: 'Certificate 1',
+      cert2: 'Certificate 2',
       withoutFarm: 'Without Farm',
       searchLabel: 'Search by nickname or ID',
       breedFilter: 'All Breeds',
@@ -451,10 +477,8 @@ export const translations = {
       showLiving: 'Show Living',
       showDead: 'Dead Animals',
       noStatus: 'No Status',
-      // Mother & Father section headers
       motherData: 'Dam Data (Mother)',
       fatherData: 'Sire Data (Father)',
-      // Certification columns
       certSection: 'Certification (selected)',
       certType: 'Type of certification',
       certFinalScore: 'Final score',
@@ -464,7 +488,6 @@ export const translations = {
       certBodyLength: 'Oblique body length',
       certClass: 'Class',
       certCategory: 'Category',
-      // Productivity / Lactation columns
       productivitySection: 'Productivity of one\'s own/offspring/ancestors (selected)',
       lactViewer: 'Who',
       lactNo: 'Lactation no',
@@ -474,9 +497,7 @@ export const translations = {
       lactProtein: 'Protein %',
       lactMilkDay: 'Avg daily milk (kg)',
       lactGraph: 'Lactation curve graph',
-      // Trailing columns
       dateAdded: 'Date of entry into the register',
-      // Movement / Elimination sections
       animalMovement: 'Animal Movement',
       eliminatedGoats: 'Eliminated Goats',
       retiredGoats: 'Retired Goats',
@@ -484,7 +505,6 @@ export const translations = {
       viewEliminated: 'View Eliminated',
       viewRetired: 'View Retired',
       viewDeparted: 'View Departed Young',
-      // Detail page specific
       goatInfo: 'Goat information:',
       basicInfo: 'Basic information:',
       gallery: 'Gallery',
@@ -507,7 +527,6 @@ export const translations = {
       add: 'Add',
       editShort: 'Edit',
       refresh: 'Refresh',
-      // Milk metrics
       lactose: 'Lactose (%)',
       peakMilk: 'Peak milk yield (kg)',
       density: 'Density (kg)',
@@ -519,7 +538,6 @@ export const translations = {
       inviteLink: 'Invite Link',
       generate: 'Generate',
       linkPlaceholder: 'Link will appear here...',
-      // Registry table
       globalDatabase: 'GLOBAL DATABASE',
       records: 'RECORDS',
       uniqueCode: 'UNIQUE CODE',
@@ -550,7 +568,6 @@ export const translations = {
       culledShort: 'CULLED',
       retiredShort: 'RETIRED',
       departedShort: 'DEPARTED',
-      // Detailed page additional
       animalNotFound: 'ANIMAL NOT FOUND',
       printCertificate: 'Print Certificate',
       editRecords: 'Edit Records',
@@ -566,10 +583,8 @@ export const translations = {
       moveAnimal: 'Move Animal',
       select: 'select',
       certRequired: 'Required for assessment',
-      yesBig: 'YES',
+      yesBig: 'YES'
     },
-
-
     home: {
       subtitle: 'OFFICIAL BREED REGISTRY',
       heroHeader: 'One of the most important tasks of goat breeding in Ukraine is maintaining breeding and zootechnical records.',
@@ -643,6 +658,10 @@ export const translations = {
       photoWindow: 'Photo out window:',
       photosPage: 'Photos per page:',
       farmNotFound: 'Farm not found',
+      images: 'Farm Imagery',
+      banner: 'Main Photo (Banner)',
+      logo: 'Logo / Profile',
+      placeholderName: 'Enter farm name...',
       officialIdPrefix: 'Official ID #',
       stockAnalysis: 'Stock Analysis',
       activeRecords: 'Active Records',
@@ -650,7 +669,9 @@ export const translations = {
       activeStockRegistry: 'Active Stock Registry',
       displacedStock: 'Displaced Stock',
       verifiedInfrastructure: 'Verified Farm Infrastructure Database View',
-      emptyStock: 'EMPTY STOCK'
+      emptyStock: 'EMPTY STOCK',
+      addTitle: 'Add New Farm',
+      editTitle: 'Edit Farm Details'
     },
     search: {
       title: 'Registry Search',
@@ -685,18 +706,33 @@ export const translations = {
       associationProtocol: 'Association Protocol'
     },
     auth: {
-      loginTitle: 'LOGIN SYSTEM',
-      loginDesc: 'Authorization for members',
-      emailLabel: 'LOGIN OR EMAIL',
-      passLabel: 'PASSWORD',
+      loginTitle: 'Login System',
+      loginDesc: 'Authorization for association members',
+      emailLabel: 'Login or Email',
+      loginPlaceholder: 'Enter your login',
+      passLabel: 'Password',
+      passPlaceholder: '••••••••',
+      loggingIn: 'LOGGING IN...',
       signInBtn: 'SIGN IN PORTAL',
-      newMember: 'New to the Association?',
-      createAccount: 'CREATE ACCOUNT',
-      registerTitle: 'JOIN ASSOCIATION',
-      registerDesc: 'Apply for authenticated member status today.',
-      usernameLabel: 'USERNAME',
-      confirmPass: 'CONFIRM PASSWORD',
-      submitApp: 'REGISTER NOW'
+      noAccount: 'No account? Register',
+      registerTitle: 'Join Association',
+      registerDesc: 'Apply for authenticated member status today',
+      usernameLabel: 'Login',
+      usernamePlaceholder: 'Create a login',
+      emailFullLabel: 'Email',
+      emailPlaceholder: 'example@mail.com',
+      fullNameLabel: 'Full Name',
+      fullNamePlaceholder: 'Your full name',
+      phoneLabel: 'Phone',
+      phonePlaceholder: '+380 (___) ___-____',
+      confirmPassLabel: 'Confirm Password',
+      creatingAccount: 'Creating account...',
+      submitApp: 'Register Now',
+      alreadyHaveAccount: 'Already have an account?',
+      loginLink: 'Login to portal',
+      roleLabel: 'Role (Access Level)',
+      memberRole: 'Member',
+      adminRole: 'Administrator'
     }
   }
 };
