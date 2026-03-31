@@ -40,6 +40,9 @@ export default function LoginForm({ t }: { t?: any }) {
 
   useEffect(() => {
     if (state?.success) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user_login', 'true');
+      }
       router.push('/?loggedin=success');
       router.refresh();
     }

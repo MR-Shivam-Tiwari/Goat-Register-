@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenu from './MobileMenu';
+import LogoutButton from './LogoutButton';
 import { getTranslation, Locale } from '@/lib/translations';
 import { getSessionUser } from '@/lib/access-control';
 
@@ -84,14 +85,7 @@ export default async function Navbar() {
                     </Link>
                 </div>
                 </div>
-                <form action={logoutAction}>
-                <button 
-                    type="submit" 
-                    className="bg-gray-50 text-gray-700 px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all active:scale-95"
-                >
-                    {t.nav.logout}
-                </button>
-                </form>
+                <LogoutButton t={t} action={logoutAction} />
             </div>
             ) : (
             <div className="flex items-center gap-4">

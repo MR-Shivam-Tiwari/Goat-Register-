@@ -27,8 +27,8 @@ export async function loginAction(prevState: any, formData: FormData) {
     if (result.rows.length > 0) {
       const user = result.rows[0];
       const cookieStore = await cookies();
-      cookieStore.set('uid_token', user.token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
-      cookieStore.set('user_login', user.login, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/' });
+      cookieStore.set('uid_token', user.token, { httpOnly: true, secure: false, path: '/' });
+      cookieStore.set('user_login', user.login, { httpOnly: true, secure: false, path: '/' });
       return { success: true };
     }
 
