@@ -15,49 +15,12 @@ export default function GoatTable({
   isGuest?: boolean;
 }) {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const topScrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const tableContainer = tableContainerRef.current;
-    const topScroll = topScrollRef.current;
-
-    if (!tableContainer || !topScroll) return;
-
-    const syncTableScroll = () => {
-      if (topScroll.scrollLeft !== tableContainer.scrollLeft) {
-        topScroll.scrollLeft = tableContainer.scrollLeft;
-      }
-    };
-
-    const syncTopScroll = () => {
-      if (tableContainer.scrollLeft !== topScroll.scrollLeft) {
-        tableContainer.scrollLeft = topScroll.scrollLeft;
-      }
-    };
-
-    tableContainer.addEventListener("scroll", syncTableScroll);
-    topScroll.addEventListener("scroll", syncTopScroll);
-
-    return () => {
-      tableContainer.removeEventListener("scroll", syncTableScroll);
-      topScroll.removeEventListener("scroll", syncTopScroll);
-    };
-  }, []);
 
   return (
-    <div className="flex flex-col w-full">
-      {/* Top Scrollbar */}
-      <div 
-        ref={topScrollRef}
-        className="overflow-x-auto w-full mb-0.5"
-        style={{ height: '14px' }}
-      >
-        <div style={{ width: '7500px', height: '1px' }}></div>
-      </div>
-
+    <div className="flex flex-col w-full h-full min-h-0">
       <div 
         ref={tableContainerRef}
-        className="overflow-x-auto overflow-y-auto max-h-[75vh] w-full bg-white border border-gray-300 shadow-sm custom-scrollbar relative"
+        className="flex-1 min-h-0 overflow-auto bg-white border border-gray-300 shadow-sm custom-scrollbar relative"
       >
       <table className="w-full text-left border-collapse table-auto min-w-[7500px]">
         <thead className="sticky top-0 z-30 shadow-sm">

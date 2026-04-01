@@ -71,10 +71,7 @@ export default async function Navbar() {
       {/* Right Side: Lang/Auth Desktop and Mobile Toggle */}
       <div className="flex items-center gap-8">
         <div className="hidden lg:flex items-center gap-8">
-            <LanguageSwitcher currentLang={lang} />
-            <div className="h-4 w-px bg-gray-200"></div>
-
-            {user ? (
+          {user ? (
             <div className="flex items-center gap-8">
                 <div className="flex flex-col items-end">
                 <span className="text-[9px] uppercase text-gray-400 font-bold tracking-widest leading-none mb-1">{t.nav.authenticated}</span>

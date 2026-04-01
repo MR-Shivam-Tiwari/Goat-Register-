@@ -299,12 +299,15 @@ export default async function GoatsListPage({
     : { breeds: [], farms: [], owners: [] };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-16 px-4 font-sans leading-tight text-gray-800">
-      <div className="max-w-[2000px] mx-auto space-y-10">
-        <Breadcrumbs items={breadcrumbItems} />
+    <div className="h-[calc(100vh-64px)] flex flex-col bg-[#FDFDFD] px-4 font-sans leading-tight text-gray-800 overflow-hidden">
+      <div className="max-w-[2800px] w-full mx-auto flex flex-col h-full space-y-2 py-4">
+        <div className="flex-shrink-0">
+          <Breadcrumbs items={breadcrumbItems} />
+        </div>
 
-        {showRegisterGrid && (
-          <section className="space-y-12">
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {showRegisterGrid && (
+            <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
                 {lang === "ru" ? "Реестры породы" : "Registry Types"}
@@ -388,8 +391,8 @@ export default async function GoatsListPage({
           </section>
         )}
 
-        {showGenerationGrid && (
-          <section className="space-y-12">
+          {showGenerationGrid && (
+            <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
                 RCB Generations
@@ -429,8 +432,8 @@ export default async function GoatsListPage({
           </section>
         )}
 
-        {showExperimentalGrid && (
-          <section className="space-y-12">
+          {showExperimentalGrid && (
+            <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
                 RExB Classification
@@ -480,7 +483,7 @@ export default async function GoatsListPage({
         )}
 
         {showTable && (
-          <section className="space-y-6">
+          <section className="h-full flex flex-col space-y-4">
             <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
               <div>
                 <h2 className="text-xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
@@ -532,11 +535,8 @@ export default async function GoatsListPage({
               </div>
             </header>
 
-            <div
-              className="bg-white border rounded-sm shadow-2xl relative"
-              style={{ height: "72vh" }}
-            >
-              <div className="overflow-auto h-full">
+            <div className="flex-1 min-h-0 bg-white border rounded-sm shadow-2xl relative">
+              <div className="w-full h-full">
                 <Suspense
                   fallback={
                     <div className="p-20 text-center font-black uppercase opacity-20 text-xs text-primary">
@@ -561,8 +561,9 @@ export default async function GoatsListPage({
           )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   async function GoatTableContainer({
     breedId,
