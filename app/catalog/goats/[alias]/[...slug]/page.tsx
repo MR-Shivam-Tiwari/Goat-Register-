@@ -140,7 +140,7 @@ async function getGoats(
   farmId?: string,
   owner?: string,
 ) {
-  const sex = sex_slug === "male" ? 1 : 0;
+  const sex = sex_slug === "male" ? 1 : (sex_slug === "child" ? 2 : 0);
   const statusCondition = showDead ? "A.status = 0" : "A.status = 1";
   let filterClause = "";
 
@@ -226,7 +226,7 @@ export default async function GoatsListPage({
   params: paramsPromise,
   searchParams: searchParamsPromise,
 }: {
-  params: Promise<{ alias: string; sex: string }>;
+  params: Promise<{ alias: string; slug: string[] }>;
   searchParams: Promise<{
     reg?: string;
     age?: string;
@@ -240,7 +240,9 @@ export default async function GoatsListPage({
 }) {
   const params = await paramsPromise;
   const searchParams = await searchParamsPromise;
-  const { sex } = params;
+  const { slug } = params;
+  const sex = slug[0];
+  const status = slug[1];
   const { reg, age, view, farm, owner, show, breed: breedParam } = searchParams;
   const alias = breedParam || params.alias;
   const s = searchParams.s || sex;
@@ -259,10 +261,10 @@ export default async function GoatsListPage({
     );
 
   const pics = await getBreedPictures(alias);
-  const breedImg = `/img/${pics[s === "male" ? 1 : 0] || "noimage.gif"}`;
+  const breedImg = `/img/${pics[s === "male" ? 1 : (s === "child" ? 2 : 0)] || "noimage.gif"}`;
 
-  // Detect dead/eliminated view
-  const isDead = sex === "dead" || (typeof window === "undefined" && false);
+  // Detect dead/eliminated view from second slug segment
+  const isDead = status === "dead";
   const actualSex = s === "dead" ? "female" : s;
 
   const sexLabel =
@@ -277,8 +279,14 @@ export default async function GoatsListPage({
   const breadcrumbItems: any[] = [
     { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
     { label: breed.name, href: `/catalog/goats/${alias}` },
-    { label: sexLabel },
   ];
+
+  if (isDead) {
+    breadcrumbItems.push({ label: sexLabel, href: `/catalog/goats/${alias}/${sex}` });
+    breadcrumbItems.push({ label: t.goats.animalMovement });
+  } else {
+    breadcrumbItems.push({ label: sexLabel });
+  }
 
   if (reg) {
     breadcrumbItems.push({ label: REGISTER_NAMES[reg] || reg });
@@ -292,7 +300,7 @@ export default async function GoatsListPage({
     (sex === "male" || sex === "female") && !reg && !view && !show;
   const showGenerationGrid = view === "rcb" && !show;
   const showExperimentalGrid = view === "ex" && !show;
-  const showTable = !!(reg || age || farm || owner || show === "all");
+  const showTable = !!(reg || age || farm || owner || show === "all" || sex === "child");
 
   const filterOptions = showTable
     ? await getFilterOptions()
@@ -324,6 +332,7 @@ export default async function GoatsListPage({
                   id: "rhb",
                   name: t.rules.rhbTitle,
                   code: "RHB",
+                  img: "/img/ui/reg_rhb.png",
                   desc:
                     lang === "ru"
                       ? "Чистопородные животные с сертифицированной родословной."
@@ -333,6 +342,7 @@ export default async function GoatsListPage({
                   id: "rcb",
                   name: lang === "ru" ? "Поглощение" : "Absorption",
                   code: "RCB",
+                  img: "/img/ui/reg_rcb.png",
                   desc:
                     lang === "ru"
                       ? "Программы поглотительного скрещивания под контролем."
@@ -343,6 +353,7 @@ export default async function GoatsListPage({
                   id: "rfb",
                   name: t.rules.rfbTitle,
                   code: "RFB",
+                  img: "/img/ui/reg_rfb.png",
                   desc:
                     lang === "ru"
                       ? "Отбор по строгим стандартам физических характеристик."
@@ -352,6 +363,7 @@ export default async function GoatsListPage({
                   id: "ex",
                   name: lang === "ru" ? "Эксперимент" : "Experimental",
                   code: "RExB",
+                  img: "/img/ui/reg_ex.png",
                   desc:
                     lang === "ru"
                       ? "Специализированные линии и экспериментальные программы."
@@ -366,24 +378,26 @@ export default async function GoatsListPage({
                       ? `?view=${item.id}`
                       : `?reg=${item.id}`
                   }
-                  className="bg-white p-8 flex flex-col items-center text-center group border border-primary/10 hover:border-secondary rounded-2xl transition-colors shadow-sm"
+                  className="bg-white group overflow-hidden border border-primary/10 hover:border-secondary rounded-2xl transition-all shadow-sm hover:shadow-xl flex flex-col"
                 >
-                  <div className="w-16 h-16 mb-4 rounded-lg overflow-hidden bg-primary/5 p-2 border border-primary/10">
+                  <div className="aspect-[16/9] w-full overflow-hidden border-b border-primary/10">
                     <img
-                      src={breedImg}
+                      src={item.img}
                       alt={item.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
-                  <h3 className="text-xl font-black text-primary mb-1 tracking-tight uppercase">
-                    {item.name}
-                  </h3>
-                  <span className="text-secondary font-black text-[10px] mb-4 uppercase tracking-widest">
-                    {item.code}
-                  </span>
-                  <p className="text-xs text-primary/70 mb-8">{item.desc}</p>
-                  <div className="mt-auto px-6 py-2 w-full bg-primary/5 text-primary font-black text-[10px] uppercase tracking-widest rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
-                    {t.catalog.launch} ➔
+                  <div className="p-8 flex flex-col flex-1 text-center items-center">
+                    <h3 className="text-xl font-black text-primary mb-1 tracking-tight uppercase italic">
+                      {item.name}
+                    </h3>
+                    <span className="text-secondary font-black text-[10px] mb-4 uppercase tracking-widest bg-secondary/5 px-3 py-1 rounded-full">
+                      {item.code}
+                    </span>
+                    <p className="text-xs text-primary/70 mb-8 leading-relaxed max-w-[240px]">{item.desc}</p>
+                    <div className="mt-auto px-6 py-2 w-full bg-[#491907] text-white font-black text-[10px] uppercase tracking-widest rounded-lg transition-transform group-hover:scale-[1.02] italic">
+                      {t.catalog.launch} ➔
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -553,6 +567,7 @@ export default async function GoatsListPage({
                       owner={owner} 
                       t={t} 
                       lang={lang}
+                      showDead={isDead}
                     />
                   </Suspense>
                 </div>
@@ -573,6 +588,7 @@ export default async function GoatsListPage({
     farm,
     owner,
     t,
+    showDead
   }: {
     breedId: number;
     sex: string;
@@ -582,7 +598,8 @@ export default async function GoatsListPage({
     owner?: string;
     t: any;
     lang: string;
+    showDead?: boolean;
   }) {
-    const goats = await getGoats(breedId, sex, reg, age, false, farm, owner);
+    const goats = await getGoats(breedId, sex, reg, age, showDead, farm, owner);
     return <GoatTable goats={goats} t={t} />;
   }

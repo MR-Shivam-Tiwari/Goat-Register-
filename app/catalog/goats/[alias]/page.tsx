@@ -31,9 +31,9 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
   const pics = await getBreedPictures(params.alias);
 
   const categories = [
-    { id: 'female', name: t.goats.female, sex: 0, desc: t.goats.stockRecords, img: pics[0] || 'noimage.gif', color: 'bg-[#E2F0D9]/20' },
-    { id: 'male',   name: t.goats.male,   sex: 1, desc: t.goats.breedingSires, img: pics[1] || 'noimage.gif', color: 'bg-[#C5E0B4]/20' },
-    { id: 'child',  name: t.goats.kidsYoung, sex: 2, desc: t.goats.offspringDesc, img: pics[2] || 'noimage.gif', color: 'bg-[#F8CBAD]/20' },
+    { id: 'female', name: t.goats.female, sex: 0, desc: t.goats.stockRecords, img: 'ui/female_stock.png', color: 'bg-[#E2F0D9]/20' },
+    { id: 'male',   name: t.goats.male,   sex: 1, desc: t.goats.breedingSires, img: 'ui/male_stock.png', color: 'bg-[#C5E0B4]/20' },
+    { id: 'child',  name: t.goats.kidsYoung, sex: 2, desc: t.goats.offspringDesc, img: 'ui/kids_stock.png', color: 'bg-[#F8CBAD]/20' },
   ];
 
   return (
@@ -77,12 +77,13 @@ export default async function BreedPage({ params: paramsPromise }: { params: Pro
               href={`/catalog/goats/${breed.alias.trim()}/${cat.id}`}
               className="group flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-black transition-all duration-300 hover:shadow-lg"
             >
-              <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center p-4 border-b border-gray-50 relative">
+              <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-50 relative">
                  <img 
                     src={cat.img.startsWith('/') ? cat.img : `/img/${cat.img}`} 
                     alt={cat.name} 
-                    className="h-[180px] w-auto object-contain opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className={`p-4 flex flex-col flex-1 bg-white group-hover:${cat.color} transition-colors duration-300`}>
                 <h3 className="text-lg font-black text-primary uppercase tracking-tighter italic leading-none">{cat.name}</h3>
