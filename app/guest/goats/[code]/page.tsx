@@ -22,6 +22,10 @@ export default async function GuestGoatPage({
 }: {
   params: Promise<{ code: string }>;
 }) {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
+  const t = getTranslation(lang);
+
   const { code } = await paramsPromise;
 
   const now = Math.floor(Date.now() / 1000);
@@ -37,10 +41,10 @@ export default async function GuestGoatPage({
         <div className="text-center space-y-4">
           <div className="text-6xl">🔒</div>
           <h1 className="text-4xl font-black text-red-600 uppercase tracking-tighter">
-            INVITE EXPIRED OR INVALID
+            {t.guest.expiredTitle}
           </h1>
           <p className="text-[#491907]/60 font-bold uppercase text-[10px] tracking-widest">
-            Please request a new link from the owner.
+            {t.guest.expiredDesc}
           </p>
         </div>
       </div>
@@ -53,7 +57,7 @@ export default async function GuestGoatPage({
   const goat = await getGoatData(id);
   if (!goat) return (
     <div className="p-40 text-center uppercase font-black text-2xl text-gray-400">
-      Animal Record Not Found
+      {t.guest.notFound}
     </div>
   );
 
@@ -75,17 +79,13 @@ export default async function GuestGoatPage({
     getAncestorLactations(id, maxGens),
   ]);
 
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
-  const t = getTranslation(lang);
-
   return (
     <div className="min-h-screen bg-[#FDFDFD] pb-20 font-sans tracking-tight">
       <div className="max-w-8xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
         <Breadcrumbs
           isGuest
           items={[
-            { label: 'GUEST ACCESS ACCOUNT' },
+            { label: t.guest.accessLabel },
             { label: goat.name },
           ]}
         />
@@ -94,7 +94,7 @@ export default async function GuestGoatPage({
         <div className="bg-white rounded-lg shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
           <div className="relative h-32 bg-gradient-to-r from-[#491907] to-[#713117]">
              <div className="absolute top-4 right-4 bg-white/10 backdrop-blur px-3 py-1 rounded-full text-[7px] font-black text-white/70 uppercase tracking-[0.2em] border border-white/10">
-                LINK EXPIRES: {new Date(invite.valid_to * 1000).toLocaleString()}
+                {t.guest.expiresLabel} {new Date(invite.valid_to * 1000).toLocaleString()}
              </div>
             <div className="absolute -bottom-1 left-8 flex items-end gap-6">
               <div className="w-24 h-24 bg-white rounded-xl shadow-lg border-4 border-white overflow-hidden">
@@ -126,7 +126,7 @@ export default async function GuestGoatPage({
             </div>
             <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-100 flex items-center gap-2">
                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-               Official Pedigree Verified
+               {t.guest.verifiedBadge}
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default async function GuestGoatPage({
                 ))
               ) : (
                 <div className="w-full py-12 flex items-center justify-center opacity-40 italic text-xs uppercase tracking-widest">
-                   No photos available
+                   {t.guest.noPhotos}
                 </div>
               )}
             </div>
@@ -179,7 +179,7 @@ export default async function GuestGoatPage({
           </div>
           <div className="p-6 md:p-10">
             <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-               <PedigreeChart ancestry={ancestry} maxGens={maxGens} />
+               <PedigreeChart ancestry={ancestry} maxGens={maxGens} t={t} />
             </div>
           </div>
         </section>
@@ -189,7 +189,7 @@ export default async function GuestGoatPage({
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
             <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              Offspring:
+              {t.goats.offspring}:
             </h2>
           </div>
           <div className="p-6 space-y-8">
@@ -240,7 +240,7 @@ export default async function GuestGoatPage({
 
             <div className="space-y-0">
               <h3 className="text-[#491907] text-[10px] font-black uppercase tracking-widest bg-[#00FF00] px-4 py-2 border border-gray-100 border-b-0 w-fit">
-                Summary table of direct descendants (1st generation):
+                {t.goats.directDescendantsTitle}
               </h3>
               <div className="border border-gray-100 shadow-sm overflow-hidden bg-white">
                 <GoatTable goats={descendants} t={t} isGuest />
@@ -254,20 +254,20 @@ export default async function GuestGoatPage({
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
             <h2 className="text-[#491907] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              Lactation data:
+              {t.goats.lactDataTitle}
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-center text-[9px] border-collapse font-black uppercase whitespace-nowrap">
               <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
                 <tr className="divide-x divide-green-200">
-                  <th className="p-3 text-start">Descendant/ancestor</th>
+                  <th className="p-3 text-start">{t.guest.descendantAncestor}</th>
                   <th className="p-3">{t.goats.lactNo}</th>
                   <th className="p-3">{t.goats.lactDays}</th>
                   <th className="p-3">{t.goats.lactMilk}</th>
                   <th className="p-3">{t.goats.lactFat}</th>
                   <th className="p-3">{t.goats.lactProtein}</th>
-                  <th className="p-3">Avg yield (kg)</th>
+                  <th className="p-3">{t.guest.avgYield}</th>
                   <th className="p-3">{t.goats.lactGraph}</th>
                 </tr>
               </thead>
@@ -295,7 +295,7 @@ export default async function GuestGoatPage({
                 {Object.keys(ancestorLacts).length === 0 && (
                    <tr>
                      <td colSpan={8} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
-                       No record
+                       {t.catalog.empty}
                      </td>
                    </tr>
                 )}
@@ -378,7 +378,7 @@ export default async function GuestGoatPage({
                     <th className="p-3">{t.goats.certHeightSacrum}</th>
                     <th className="p-3">{t.goats.certChestCirc}</th>
                     <th className="p-3">{t.goats.certBodyLength}</th>
-                    <th className="p-3">Weight (kg)</th>
+                    <th className="p-3">{t.guest.weightKg}</th>
                     <th className="p-3">{t.goats.certFinalScore}</th>
                     <th className="p-3">{t.goats.certClass}</th>
                     <th className="p-3">{t.goats.certCategory}</th>
@@ -397,7 +397,7 @@ export default async function GuestGoatPage({
                             {test.date_test || test.Date_test ? new Date(test.date_test || test.Date_test).toLocaleDateString() : "-"}
                           </td>
                           <td className="p-3 opacity-60">
-                            {test.test_type === 1 || test.Test_type === 1 ? "Classical" : "Young"}
+                            {test.test_type === 1 || test.Test_type === 1 ? t.goats.classical : t.goats.young}
                           </td>
                           <td className="p-3">{get('par_1')}</td>
                           <td className="p-3">{get('par_2')}</td>
@@ -424,20 +424,20 @@ export default async function GuestGoatPage({
   );
 }
 
-function PedigreeChart({ ancestry, maxGens }: { ancestry: any, maxGens: number }) {
+function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: number, t: any }) {
   if (!ancestry) return null;
   return (
     <div className="flex flex-col w-full text-[9px] uppercase font-black bg-white">
       <div className="bg-[#491907] flex h-8 items-center border-b border-white/10 px-4">
          <span className="text-white/40 text-[7px] tracking-widest font-black uppercase">
-           Verified Pedigree ({maxGens} Generations)
+           {t.guest.verifiedPedigree} ({maxGens} {t.goats.generations})
          </span>
       </div>
       <div className="flex divide-x divide-gray-400">
         {/* Tier 1 */}
         <div className="flex-1 flex-col flex">
-          <PedigreeNode node={ancestry.father} prefix="O:" color="bg-[#C5E0B4]" border isGuest />
-          <PedigreeNode node={ancestry.mother} prefix="M:" color="bg-[#F8CBAD]" isGuest />
+          <PedigreeNode node={ancestry.father} prefix="O:" color="bg-[#C5E0B4]" border isGuest t={t} />
+          <PedigreeNode node={ancestry.mother} prefix="M:" color="bg-[#F8CBAD]" isGuest t={t} />
         </div>
 
         {/* Tier 2 */}
@@ -445,8 +445,8 @@ function PedigreeChart({ ancestry, maxGens }: { ancestry: any, maxGens: number }
           <div className="flex-1 flex flex-col">
             {[ancestry.father, ancestry.mother].map((p, i) => (
               <div key={i} className="flex-1 flex flex-col border-b last:border-0 border-gray-400">
-                <PedigreeNode node={p?.father} prefix="O:" color="bg-[#E2F0D9]" border isGuest />
-                <PedigreeNode node={p?.mother} prefix="M:" color="bg-[#F6B8EB]/50" isGuest />
+                <PedigreeNode node={p?.father} prefix="O:" color="bg-[#E2F0D9]" border isGuest t={t} />
+                <PedigreeNode node={p?.mother} prefix="M:" color="bg-[#F6B8EB]/50" isGuest t={t} />
               </div>
             ))}
           </div>
@@ -458,8 +458,8 @@ function PedigreeChart({ ancestry, maxGens }: { ancestry: any, maxGens: number }
             {[ancestry.father, ancestry.mother].map((p, i) =>
               [p?.father, p?.mother].map((gp, j) => (
                 <div key={`${i}-${j}`} className="flex-1 flex flex-col border-b last:border-0 border-gray-400">
-                  <PedigreeNode node={gp?.father} prefix="O:" color="bg-[#E2F0D9]/40" border isGuest />
-                  <PedigreeNode node={gp?.mother} prefix="M:" color="bg-[#F6B8EB]/30" isGuest />
+                  <PedigreeNode node={gp?.father} prefix="O:" color="bg-[#E2F0D9]/40" border isGuest t={t} />
+                  <PedigreeNode node={gp?.mother} prefix="M:" color="bg-[#F6B8EB]/30" isGuest t={t} />
                 </div>
               ))
             )}
@@ -473,8 +473,8 @@ function PedigreeChart({ ancestry, maxGens }: { ancestry: any, maxGens: number }
               [p?.father, p?.mother].map((gp, j) =>
                 [gp?.father, gp?.mother].map((ggp, k) => (
                   <div key={`${i}-${j}-${k}`} className="flex-1 flex flex-col border-b last:border-0 border-gray-300">
-                    <PedigreeNode node={ggp?.father} prefix="O:" color="bg-gray-100" border isGuest />
-                    <PedigreeNode node={ggp?.mother} prefix="M:" color="bg-gray-50" isGuest />
+                    <PedigreeNode node={ggp?.father} prefix="O:" color="bg-gray-100" border isGuest t={t} />
+                    <PedigreeNode node={ggp?.mother} prefix="M:" color="bg-gray-50" isGuest t={t} />
                   </div>
                 ))
               )
