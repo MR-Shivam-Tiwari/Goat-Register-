@@ -57,11 +57,11 @@ export default function GoatForm({
                 router.push(isEdit ? `/goats/${initialData.id}` : '/goats?success=1');
                 router.refresh();
             } else {
-                setError(result.error || 'Something went wrong');
+                setError(result.error || t.errors.somethingWrong);
                 setIsSubmitting(false);
             }
         } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred');
+            setError(err.message || t.errors.unexpectedError);
             setIsSubmitting(false);
         }
     };
@@ -100,7 +100,7 @@ export default function GoatForm({
                 
                 {/* 1. Basic Information */}
                 <section className="space-y-4">
-                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">Основная информация</h3>
+                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">{t.goats.basicInformation}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-bold text-gray-700">{t.goats.nickname}</label>
@@ -126,13 +126,13 @@ export default function GoatForm({
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-sm font-bold text-gray-700">Ферма</label>
+                                <label className="text-sm font-bold text-gray-700">{t.goats.farm}</label>
                                 <select 
                                     name="farm" 
                                     defaultValue={initialData?.id_farm || "0"}
                                     className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer"
                                 >
-                                    <option value="0">Без хозяйства</option>
+                                    <option value="0">{t.goats.withoutFarm}</option>
                                     {farms.map((farm: any) => (
                                         <option key={farm.id} value={farm.id}>{farm.name}</option>
                                     ))}
@@ -143,14 +143,14 @@ export default function GoatForm({
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="space-y-1">
-                            <label className="text-sm font-bold text-gray-700">Пол</label>
+                            <label className="text-sm font-bold text-gray-700">{t.goats.sex}</label>
                             <select name="sex" defaultValue={initialData?.sex === 1 ? 'male' : 'female'} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
                                 <option value="female">{t.goats.female}</option>
                                 <option value="male">{t.goats.male}</option>
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-sm font-bold text-gray-700">Племкнига</label>
+                            <label className="text-sm font-bold text-gray-700">{t.goats.studbook}</label>
                             <select name="studbook" defaultValue={initialData?.id_stoodbook || "main"} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
                                 <option value="main">{t.goats.mainRegister}</option>
                                 <option value="f1">{t.goats.rcbF1}</option>
@@ -158,18 +158,18 @@ export default function GoatForm({
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-sm font-bold text-gray-700">Статус</label>
+                            <label className="text-sm font-bold text-gray-700">{t.goats.status}</label>
                             <select name="status" defaultValue={initialData?.status === 1 ? 'alive' : initialData?.status === 0 ? 'dead' : 'no_info'} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
-                                <option value="alive">Жив</option>
-                                <option value="dead">Павшее</option>
-                                <option value="no_info">Нет данных</option>
+                                <option value="alive">{t.goats.alive}</option>
+                                <option value="dead">{t.goats.dead}</option>
+                                <option value="no_info">{t.goats.noInfo}</option>
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-sm font-bold text-gray-700">Член ABG</label>
+                            <label className="text-sm font-bold text-gray-700">{t.goats.abgMember}</label>
                             <select name="abg" defaultValue={initialData?.is_abg ? 'yes' : 'no'} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
-                                <option value="no">Нет</option>
-                                <option value="yes">Да</option>
+                                <option value="no">{t.users.no}</option>
+                                <option value="yes">{t.users.yes}</option>
                             </select>
                         </div>
                     </div>
@@ -177,22 +177,22 @@ export default function GoatForm({
 
                 {/* 2. Important Dates */}
                 <section className="space-y-4">
-                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">Даты и Вес</h3>
+                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">{t.goats.datesAndWeight}</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="space-y-1">
-                             <label className="text-sm font-bold text-gray-700">Дата рождения</label>
+                             <label className="text-sm font-bold text-gray-700">{t.goats.birthDate}</label>
                              <input name="birthDate" type="date" defaultValue={formatDate(initialData?.date_born)} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none" />
                         </div>
                         <div className="space-y-1">
-                             <label className="text-sm font-bold text-gray-700">Дата смерти</label>
+                             <label className="text-sm font-bold text-gray-700">{t.goats.deathDate}</label>
                              <input name="deathDate" type="date" defaultValue={formatDate(initialData?.date_dead)} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none" />
                         </div>
                         <div className="space-y-1">
-                             <label className="text-sm font-bold text-gray-700">Вес (гр)</label>
+                             <label className="text-sm font-bold text-gray-700">{t.goats.weightG}</label>
                              <input name="birthWeight" type="number" defaultValue={initialData?.born_weight} placeholder="3500" className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none" />
                         </div>
                         <div className="space-y-1">
-                             <label className="text-sm font-bold text-gray-700">Оценка</label>
+                             <label className="text-sm font-bold text-gray-700">{t.goats.score}</label>
                              <input name="score" type="text" defaultValue={initialData?.score_total} placeholder="0.0" className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none" />
                         </div>
                     </div>
@@ -200,7 +200,7 @@ export default function GoatForm({
 
                 {/* 3. Ownership / Codes */}
                 <section className="space-y-4">
-                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">Владение и Номера</h3>
+                    <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">{t.goats.ownershipAndCodes}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1 text-sm">
                              <label className="font-bold text-gray-700">{t.goats.breeder}</label>
@@ -229,15 +229,15 @@ export default function GoatForm({
                 {/* 4. Notes */}
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-600 uppercase">Генетика</label>
+                        <label className="text-xs font-bold text-gray-600 uppercase">{t.goats.genetics}</label>
                         <textarea name="genetic" defaultValue={initialData?.gen_mat} rows={3} className="w-full border border-gray-300 rounded-sm p-3 text-sm resize-none"></textarea>
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-600 uppercase">Источник</label>
+                        <label className="text-xs font-bold text-gray-600 uppercase">{t.goats.source}</label>
                         <textarea name="source" defaultValue={initialData?.source} rows={3} className="w-full border border-gray-300 rounded-sm p-3 text-sm resize-none"></textarea>
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-600 uppercase">Особые отметки</label>
+                        <label className="text-xs font-bold text-gray-600 uppercase">{t.goats.notes}</label>
                         <textarea name="notes" defaultValue={initialData?.special} rows={3} className="w-full border border-gray-300 rounded-sm p-3 text-sm resize-none"></textarea>
                     </div>
                 </section>

@@ -256,12 +256,11 @@ export default async function GoatsListPage({
   if (!breed)
     return (
       <div className="p-40 text-center text-5xl font-black text-primary uppercase">
-        Breed not found
+        {t.catalog.breedNotFound}
       </div>
     );
 
   const pics = await getBreedPictures(alias);
-  const breedImg = `/img/${pics[s === "male" ? 1 : (s === "child" ? 2 : 0)] || "noimage.gif"}`;
 
   // Detect dead/eliminated view from second slug segment
   const isDead = status === "dead";
@@ -272,9 +271,7 @@ export default async function GoatsListPage({
       ? t.goats.male
       : actualSex === "female"
         ? t.goats.female
-        : lang === "ru"
-          ? "Молодняк"
-          : "Kids (Young)";
+        : t.catalog.kidsYoung;
 
   const breadcrumbItems: any[] = [
     { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
@@ -318,12 +315,10 @@ export default async function GoatsListPage({
             <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
-                {lang === "ru" ? "Реестры породы" : "Registry Types"}
+                {t.catalog.registryTypes}
               </h2>
               <p className="text-sm font-bold opacity-40">
-                {lang === "ru"
-                  ? `Выберите категорию генетического реестра для ${breed.name}`
-                  : `Select a genetic registry category for ${breed.name}`}
+                {t.catalog.selectCategory} {breed.name}
               </p>
             </header>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -333,20 +328,14 @@ export default async function GoatsListPage({
                   name: t.rules.rhbTitle,
                   code: "RHB",
                   img: "/img/ui/reg_rhb.png",
-                  desc:
-                    lang === "ru"
-                      ? "Чистопородные животные с сертифицированной родословной."
-                      : "Purebred animals with certified pedigree.",
+                  desc: t.catalog.rhbDesc,
                 },
                 {
                   id: "rcb",
-                  name: lang === "ru" ? "Поглощение" : "Absorption",
+                  name: t.catalog.absorption,
                   code: "RCB",
                   img: "/img/ui/reg_rcb.png",
-                  desc:
-                    lang === "ru"
-                      ? "Программы поглотительного скрещивания под контролем."
-                      : "Controlled absorption crossbreeding programs.",
+                  desc: t.catalog.rcbDesc,
                   isFolder: true,
                 },
                 {
@@ -354,20 +343,14 @@ export default async function GoatsListPage({
                   name: t.rules.rfbTitle,
                   code: "RFB",
                   img: "/img/ui/reg_rfb.png",
-                  desc:
-                    lang === "ru"
-                      ? "Отбор по строгим стандартам физических характеристик."
-                      : "Selection by strict physical characteristic standards.",
+                  desc: t.catalog.rfbDesc,
                 },
                 {
                   id: "ex",
-                  name: lang === "ru" ? "Эксперимент" : "Experimental",
+                  name: t.catalog.experimental,
                   code: "RExB",
                   img: "/img/ui/reg_ex.png",
-                  desc:
-                    lang === "ru"
-                      ? "Специализированные линии и экспериментальные программы."
-                      : "Specialized lines and experimental programs.",
+                  desc: t.catalog.exDesc,
                   isFolder: true,
                 },
               ].map((item) => (
@@ -412,9 +395,7 @@ export default async function GoatsListPage({
                 RCB Generations
               </h2>
               <p className="text-sm font-bold opacity-40 italic">
-                {lang === "ru"
-                  ? "Основной список для программ поглощения (F1–F7)"
-                  : "Main list for absorption programs (F1–F7)"}
+                {t.catalog.rcbMainList}
               </p>
             </header>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -430,7 +411,7 @@ export default async function GoatsListPage({
                   <span className="text-secondary font-black text-[10px] uppercase tracking-widest text-right">
                     → {t.catalog.launch}
                     <br />
-                    List
+                    {t.nav.catalog}
                   </span>
                 </Link>
               ))}
@@ -453,9 +434,7 @@ export default async function GoatsListPage({
                 RExB Classification
               </h2>
               <p className="text-sm font-bold opacity-40 italic">
-                {lang === "ru"
-                  ? "Списки по стандартам экспериментального процента"
-                  : "Lists by experimental percentage standards"}
+                {t.catalog.experimentalStandards}
               </p>
             </header>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -463,17 +442,17 @@ export default async function GoatsListPage({
                 {
                   id: "ex1",
                   name: "RExB 1",
-                  s: lang === "ru" ? "До 50%" : "Up to 50%",
+                  s: t.catalog.upTo50,
                 },
                 {
                   id: "ex2",
                   name: "RExB 2",
-                  s: lang === "ru" ? "51% до 75%" : "51% to 75%",
+                  s: t.catalog.upTo75,
                 },
                 {
                   id: "ex3",
                   name: "RExB 3",
-                  s: lang === "ru" ? "76% до 98%" : "76% to 98%",
+                  s: t.catalog.upTo98,
                 },
               ].map((item) => (
                 <Link
@@ -504,7 +483,7 @@ export default async function GoatsListPage({
                   {breed.name} /{" "}
                   {reg
                     ? REGISTER_NAMES[reg]
-                    : age ? `${lang === "ru" ? "До" : "Up to"} ${age}M` : (lang === "ru" ? "Весь реестр" : "All Registry")}
+                    : age ? `${t.catalog.upTo} ${age}M` : t.catalog.allRegistry}
                 </h2>
                 <div className="flex gap-2">
                   <span className="bg-primary text-secondary px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-widest">
@@ -515,10 +494,10 @@ export default async function GoatsListPage({
 
               <div className="flex flex-wrap items-center gap-3">
                 <FilterCard 
-                    label={lang === "ru" ? "Порода" : "Breed"}
+                    label={t.catalog.allBreeds}
                     param="breed"
                     currentValue={alias}
-                    options={[{ id: 'all', name: `-- ${lang === "ru" ? "Все породы" : "All Breeds"} --` }, ...filterOptions.breeds.map((b: { alias: string; name: string }) => ({ id: b.alias, name: b.name }))]}
+                    options={[{ id: 'all', name: `-- ${t.catalog.allBreeds} --` }, ...filterOptions.breeds.map((b: { alias: string; name: string }) => ({ id: b.alias, name: b.name }))]}
                 />
                 <FilterCard
                     label={t.goats.farm}
@@ -533,18 +512,18 @@ export default async function GoatsListPage({
                     options={filterOptions.owners.map(o => ({ id: o, name: o }))}
                 />
                 <FilterCard 
-                    label={lang === 'ru' ? 'Возраст' : 'Age'}
+                    label={t.catalog.age}
                     param="age"
                     currentValue={age}
                     options={[
-                        { id: '12', name: lang === 'ru' ? 'До 12 мес.' : 'Up to 12m' },
-                        { id: '24', name: lang === 'ru' ? 'До 24 мес.' : 'Up to 24m' },
-                        { id: '36', name: lang === 'ru' ? 'До 36 мес.' : 'Up to 36m' },
-                        { id: 'all', name: lang === 'ru' ? 'Все' : 'All Ages' }
+                        { id: '12', name: t.catalog.upTo12m },
+                        { id: '24', name: t.catalog.upTo24m },
+                        { id: '36', name: t.catalog.upTo36m },
+                        { id: 'all', name: t.catalog.allAges }
                     ]}
                 />
                 <Link href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`} className="px-6  bg-[#CFA97A] border h-8  mt-4 border-primary/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white transition-all shadow-sm flex items-center">
-                    ← {lang === "ru" ? "СБРОС" : "RESET"}
+                    ← {t.catalog.reset}
                 </Link>
               </div>
             </header>
@@ -554,7 +533,7 @@ export default async function GoatsListPage({
                 <Suspense
                   fallback={
                     <div className="p-20 text-center font-black uppercase opacity-20 text-xs text-primary">
-                      Accessing Genetic Registry...
+                      {t.common.loading}
                     </div>
                   }
                 >
@@ -588,6 +567,7 @@ export default async function GoatsListPage({
     farm,
     owner,
     t,
+    lang,
     showDead
   }: {
     breedId: number;

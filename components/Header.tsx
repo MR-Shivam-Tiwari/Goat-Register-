@@ -3,9 +3,9 @@ import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
 import LanguageSwitcher from './LanguageSwitcher';
 
-export default async function Header() {
+export default async function Header({ lang: propLang }: { lang?: Locale }) {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const lang = propLang || (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
   const t = getTranslation(lang);
 
   return (
@@ -29,7 +29,7 @@ export default async function Header() {
       <div className="flex items-center gap-10">
           <div className="hidden lg:flex flex-col border-r border-white/10 pr-8 text-right shrink-0">
               <span className="text-[9px] opacity-40 uppercase tracking-[0.4em] font-black mb-1 leading-none italic">{t.nav.contact}</span>
-              <span className="text-sm md:text-sm font-black text-secondary tracking-tighter uppercase whitespace-nowrap">+380 99 123 45 67</span>
+              <span className="text-sm md:text-sm font-black text-secondary tracking-tighter uppercase whitespace-nowrap">{t.common.phoneNumber}</span>
           </div>
 
           <div className="flex-shrink-0 scale-90 origin-right">

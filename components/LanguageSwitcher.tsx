@@ -1,80 +1,82 @@
 'use client';
 
-import { useState, useTransition, useRef, useEffect } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setLanguage } from '@/lib/actions';
 
 export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 'en' }) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isPending, startTransition] = useTransition();
+  const [active, setActive] = useState(currentLang);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const languages = [
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-  ];
-
-  const current = languages.find(l => l.code === currentLang) || languages[0];
+  // Avoid hydration mismatch by waiting for mount
+  useEffect(() => {
+    setIsMounted(true);
+    setActive(currentLang);
+  }, [currentLang]);
 
   const handleSwitch = (lang: 'ru' | 'en') => {
-    // Immediate UI feedback
-    setIsOpen(false);
+    if (lang === active) return;
     
-    // Set cookie on client side for instant persistence
+    setActive(lang);
+    
+    // Set cookie instantly
     document.cookie = `nxt-lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
     
-    // Fast reload
-    window.location.reload();
+    startTransition(() => {
+        // Soft refresh first
+        router.refresh();
+        
+        // Hard reload for layout-level consistency
+        setTimeout(() => {
+            window.location.reload();
+        }, 150);
+    });
   };
 
-  // Close dropdown on click outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  if (!isMounted) {
+    return <div className="w-24 h-8 bg-black/20 rounded-full animate-pulse" />;
+  }
 
   return (
-    <div className="relative font-sans" ref={dropdownRef}>
+    <div className="relative flex p-1 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 shadow-lg scale-90 md:scale-100 ring-1 ring-white/5">
+      {/* Sliding background pill */}
+      <div 
+        className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-md ${
+          active === 'en' ? 'left-[calc(50%+2px)]' : 'left-1'
+        }`}
+      />
+
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2.5 py-1 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all active:scale-95 shadow-sm group"
+        onClick={() => handleSwitch('ru')}
+        disabled={isPending}
+        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+          active === 'ru' 
+            ? 'text-[#491907]' 
+            : 'text-white/40 hover:text-white/60'
+        }`}
       >
-        <span className="text-lg group-hover:scale-110 transition-transform">{current.flag}</span>
-        <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">{current.code}</span>
-        <svg 
-            className={`w-2.5 h-2.5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-        </svg>
+        <span className="text-xs">🇷🇺</span>
+        <span>RU</span>
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200 py-1">
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => handleSwitch(lang.code as 'ru' | 'en')}
-              className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-amber-50 transition-colors group ${
-                currentLang === lang.code ? 'bg-amber-50/50' : ''
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{lang.flag}</span>
-                <span className={`text-sm font-bold ${currentLang === lang.code ? 'text-[#491907]' : 'text-gray-700'}`}>
-                    {lang.name}
-                </span>
-              </div>
-              {currentLang === lang.code && (
-                <div className="w-2 h-2 bg-[#491907] rounded-full"></div>
-              )}
-            </button>
-          ))}
+      <button
+        onClick={() => handleSwitch('en')}
+        disabled={isPending}
+        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+          active === 'en' 
+            ? 'text-[#491907]' 
+            : 'text-white/40 hover:text-white/60'
+        }`}
+      >
+        <span className="text-xs">🇺🇸</span>
+        <span>EN</span>
+      </button>
+
+      {/* Progress Animation using tailwind only */}
+      {isPending && (
+        <div className="absolute inset-x-4 -bottom-1 h-[1px] bg-white/30 rounded-full overflow-hidden">
+          <div className="w-full h-full bg-white animate-[shimmer_2s_infinite] origin-left" />
         </div>
       )}
     </div>

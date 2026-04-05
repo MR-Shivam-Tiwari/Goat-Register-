@@ -46,8 +46,8 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
         e.preventDefault();
         // Here you would implement the server action or api call
         console.log('UPDATING GOAT:', formData);
-        alert('Goat updated! (Logic would go here)');
-        router.push('/goats');
+        alert(lang === 'ru' ? 'Запись обновлена!' : 'Record updated!');
+        router.push('/catalog/goats');
     };
 
     return (
@@ -61,7 +61,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         value={formData.name}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded shadow-sm outline-none focus:border-amber-900 focus:ring-1 focus:ring-amber-900/10 font-black h-10"
-                        placeholder="Кличка"
+                        placeholder={t.goatForm.namePlaceholder}
                     />
                 </div>
             </div>
@@ -75,11 +75,11 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded shadow-sm outline-none h-10"
                     >
-                        <option value="1">Мужской</option>
-                        <option value="2">Женский</option>
+                        <option value="1">{t.goatForm.male}</option>
+                        <option value="2">{t.goatForm.female}</option>
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Пол</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.sex}</div>
             </div>
 
             {/* ROW 3: Status */}
@@ -91,11 +91,11 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded shadow-sm outline-none h-10"
                     >
-                        <option value="1">Alive</option>
-                        <option value="2">Dead</option>
+                        <option value="1">{t.catalog.live}</option>
+                        <option value="2">{t.goats.dead}</option>
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Статус</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.status}</div>
             </div>
 
             {/* ROW 4: Type (Stoodbook) */}
@@ -110,7 +110,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         {stoodbooks.map(s => <option key={s.id} value={s.id}>{s.name || s.id}</option>)}
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Тип записи</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.recordType}</div>
             </div>
 
             {/* ROW 5: ABG Membership */}
@@ -122,11 +122,11 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={(e) => setFormData(prev => ({ ...prev, is_abg: e.target.value === 'true' }))}
                         className="w-full p-2 border border-gray-300 rounded shadow-sm outline-none h-10"
                     >
-                        <option value="true">Да</option>
-                        <option value="false">Нет</option>
+                        <option value="true">{t.goatForm.yes}</option>
+                        <option value="false">{t.goatForm.no}</option>
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Членство в ABG</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.abgMembership}</div>
             </div>
 
             {/* ROW 6: Breed */}
@@ -141,7 +141,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         {breeds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Порода</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.breed}</div>
             </div>
 
             {/* ROW 8: Farm */}
@@ -153,11 +153,11 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded shadow-sm outline-none h-10"
                     >
-                        <option value="">Без хозяйства</option>
+                        <option value="">{t.goatForm.noFarm}</option>
                         {farms.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Ферма</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.farm}</div>
             </div>
 
             {/* ROW 9: Dates */}
@@ -170,7 +170,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded h-10"
                     />
-                    <span className="text-[10px] uppercase font-black text-gray-400">Дата рождения</span>
+                    <span className="text-[10px] uppercase font-black text-gray-400">{t.goatForm.bornDate}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                     <input 
@@ -180,7 +180,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded h-10"
                     />
-                    <span className="text-[10px] uppercase font-black text-gray-400">Дата смерти</span>
+                    <span className="text-[10px] uppercase font-black text-gray-400">{t.goatForm.deathDate}</span>
                 </div>
             </div>
 
@@ -195,7 +195,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         className="w-full p-2 border border-gray-300 rounded h-10"
                         placeholder="3000"
                     />
-                    <span className="text-[10px] uppercase font-black text-gray-400">Вес при рождении</span>
+                    <span className="text-[10px] uppercase font-black text-gray-400">{t.goatForm.bornWeight}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                     <input 
@@ -206,13 +206,13 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                         className="w-full p-2 border border-gray-300 rounded h-10"
                         placeholder="3"
                     />
-                    <span className="text-[10px] uppercase font-black text-gray-400">Родился в количестве</span>
+                    <span className="text-[10px] uppercase font-black text-gray-400">{t.goatForm.bornQty}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                     <input 
                         type="text" 
                         className="w-full p-2 border border-gray-300 rounded h-10"
-                        placeholder="5"
+                        placeholder="..."
                     />
                     <span className="text-[10px] uppercase font-black text-gray-400">...</span>
                 </div>
@@ -226,7 +226,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                     value={formData.manuf}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded h-10"
-                    placeholder="Заводчик"
+                    placeholder={t.goatForm.breeder}
                 />
                 <input 
                     type="text" 
@@ -234,27 +234,27 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                     value={formData.owner}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded h-10"
-                    placeholder="Владелец"
+                    placeholder={t.goatForm.owner}
                 />
             </div>
 
             {/* IDs */}
             <div className="grid grid-cols-3 gap-4">
-                <input type="text" name="code_ua" value={formData.code_ua} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="ID UA" />
-                <input type="text" name="code_abg" value={formData.code_abg} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="ID ABG" />
-                <input type="text" name="code_farm" value={formData.code_farm} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="ID по ФХ" />
+                <input type="text" name="code_ua" value={formData.code_ua} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.idUa} />
+                <input type="text" name="code_abg" value={formData.code_abg} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.idAbg} />
+                <input type="text" name="code_farm" value={formData.code_farm} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.idFarm} />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-                <input type="text" name="code_chip" value={formData.code_chip} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="ID Chip" />
-                <input type="text" name="code_int" value={formData.code_int} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="ID Int" />
-                <input type="text" name="code_brand" value={formData.code_brand} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="Клеймо" />
+                <input type="text" name="code_chip" value={formData.code_chip} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.idChip} />
+                <input type="text" name="code_int" value={formData.code_int} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.idInt} />
+                <input type="text" name="code_brand" value={formData.code_brand} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.brand} />
             </div>
 
             {/* Cert */}
             <div className="grid grid-cols-2 gap-4">
-                <input type="text" name="cert_serial" value={formData.cert_serial} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="Сертификат/Серия" />
-                <input type="text" name="cert_no" value={formData.cert_no} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder="Сертификат/Номер" />
+                <input type="text" name="cert_serial" value={formData.cert_serial} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.certSerial} />
+                <input type="text" name="cert_no" value={formData.cert_no} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded h-10" placeholder={t.goatForm.certNo} />
             </div>
 
             {/* Horns/Gen */}
@@ -262,21 +262,21 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                 <div className="w-1/2">
                     <select name="horns_type" value={formData.horns_type} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded shadow-sm h-10">
                         <option value="">-- select --</option>
-                        <option value="Комолый">Комолый</option>
-                        <option value="Рогатый">Рогатый</option>
+                        <option value="Комолый">{t.goatForm.polled}</option>
+                        <option value="Рогатый">{t.goatForm.horned}</option>
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Рогатость</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.horns}</div>
             </div>
 
             <div className="flex items-center gap-4">
                 <div className="w-1/2">
                     <select name="have_gen" value={formData.have_gen} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded shadow-sm h-10">
-                        <option value="Да">Да</option>
-                        <option value="Нет">Нет</option>
+                        <option value="Да">{t.goatForm.yes}</option>
+                        <option value="Нет">{t.goatForm.no}</option>
                     </select>
                 </div>
-                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">Генетический паспорт</div>
+                <div className="w-1/2 text-[10px] uppercase font-black text-gray-400">{t.goatForm.genPassport}</div>
             </div>
 
             {/* Textareas */}
@@ -318,7 +318,7 @@ export default function EditGoatForm({ goat, breeds, farms, stoodbooks, lang, t 
                     type="submit"
                     className="px-8 py-2 bg-gray-200 border border-gray-300 rounded text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white hover:border-black transition-all"
                 >
-                    Записать
+                    {t.goatForm.save}
                 </button>
             </div>
         </form>

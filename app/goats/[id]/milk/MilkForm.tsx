@@ -45,11 +45,11 @@ export default function MilkForm({
         router.refresh();
       } else {
         const err = await res.json();
-        alert('Failed to save milk data: ' + err.error);
+        alert(t.goatForm.milk.errorSave + ': ' + err.error);
       }
     } catch (error) {
       console.error(error);
-      alert('Error saving milk data');
+      alert(t.goatForm.milk.errorSave);
     } finally {
       setLoading(false);
     }
@@ -59,8 +59,8 @@ export default function MilkForm({
     <div className="max-w-xl mx-auto bg-[#FDFBF7] rounded-3xl shadow-2xl border border-amber-900/5 overflow-hidden">
       <div className="bg-[#491907] p-10 text-white relative overflow-hidden">
          <div className="relative z-10">
-            <h1 className="text-3xl font-black uppercase tracking-tighter italic">Milk productivity</h1>
-            <p className="text-[#E2F0D9]/40 text-[10px] font-black mt-2 uppercase tracking-widest">Official Production Registry</p>
+            <h1 className="text-3xl font-black uppercase tracking-tighter italic">{t.goatForm.milk.title}</h1>
+            <p className="text-[#E2F0D9]/40 text-[10px] font-black mt-2 uppercase tracking-widest">{t.goatForm.milk.subtitle}</p>
          </div>
          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
       </div>
@@ -115,8 +115,8 @@ export default function MilkForm({
                 onChange={e => setFormData({...formData, have_graph: parseInt(e.target.value)})}
                 className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-[10px] font-black outline-none focus:ring-2 focus:ring-[#491907]/20"
               >
-                <option value={0}>{t.users.no}</option>
-                <option value={1}>{t.users.yes}</option>
+                <option value={0}>{t.goatForm.no}</option>
+                <option value={1}>{t.goatForm.yes}</option>
               </select>
            </div>
         </div>
@@ -127,14 +127,14 @@ export default function MilkForm({
              onClick={() => router.back()}
              className="flex-1 bg-white border border-gray-200 text-gray-400 px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all"
            >
-             Cancel
+             {t.goatForm.milk.cancel}
            </button>
            <button 
              type="submit"
              disabled={loading}
              className="flex-[2] bg-[#491907] text-white px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all shadow-xl shadow-[#491907]/10 disabled:opacity-50"
            >
-             {loading ? 'Processing...' : 'Write down'}
+             {loading ? t.goatForm.milk.processing : t.goatForm.milk.save}
            </button>
         </div>
       </form>

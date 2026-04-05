@@ -3,12 +3,21 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { getTranslation, Locale } from '@/lib/translations';
 
 export default function ToastHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
+    // Read lang from cookie
+    const cookieValue = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('nxt-lang='))
+      ?.split('=')[1];
+    const lang = (cookieValue as Locale) || 'ru';
+    const t = getTranslation(lang);
+
     const success = searchParams.get('success');
     const error = searchParams.get('error');
     const registered = searchParams.get('registered');
@@ -40,7 +49,7 @@ export default function ToastHandler() {
     }
 
     if (registered === 'success') {
-      toast.success('Регистрация прошла успешно!', {
+      toast.success(t.common.toast.registered, {
         style: {
           borderRadius: '12px',
           background: '#491907',
@@ -52,7 +61,7 @@ export default function ToastHandler() {
     }
 
     if (loggedin === 'success') {
-      toast.success('Добро пожаловать в систему!', {
+      toast.success(t.common.toast.welcome, {
         style: {
           borderRadius: '12px',
           background: '#491907',
@@ -64,7 +73,7 @@ export default function ToastHandler() {
     }
 
     if (updated === 'success') {
-      toast.success('Данные успешно обновлены!', {
+      toast.success(t.common.toast.updated, {
         style: {
           borderRadius: '12px',
           background: '#491907',

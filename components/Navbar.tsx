@@ -15,10 +15,10 @@ async function logoutAction() {
   redirect('/login');
 }
 
-export default async function Navbar() {
+export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
   const user = await getSessionUser();
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const lang = propLang || (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
   const t = getTranslation(lang);
 
   const navLinks = [

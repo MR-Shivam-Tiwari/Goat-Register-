@@ -1,18 +1,24 @@
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { cookies } from 'next/headers';
+import { getTranslation, Locale } from '@/lib/translations';
 
-export default function FeedbackPage() {
+export default async function FeedbackPage() {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const t = getTranslation(lang);
+
   return (
     <div className="min-h-screen bg-bg-site py-24 px-10 lg:px-24 font-inter">
       <div className="max-w-7xl mx-auto">
-        <Breadcrumbs items={[{ label: 'Administrative Support' }]} />
+        <Breadcrumbs items={[{ label: t.feedback.adminSupport }]} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 mt-24 items-center">
             <div>
                 <header className="mb-20 text-left relative group">
-                    <h2 className="text-8xl font-black text-primary tracking-tighter uppercase mb-8 leading-none group-hover:text-secondary group-hover:translate-x-4 transition-all duration-700 underline decoration-secondary decoration-8 underline-offset-[1.5rem]">Get In <br/> Touch.</h2>
+                    <h2 className="text-8xl font-black text-primary tracking-tighter uppercase mb-8 leading-none group-hover:text-secondary group-hover:translate-x-4 transition-all duration-700 underline decoration-secondary decoration-8 underline-offset-[1.5rem] whitespace-pre-line">{t.feedback.getInTouch}</h2>
                     <div className="h-5 w-40 mb-12"></div>
                     <p className="text-gray-500 font-bold text-2xl leading-[1.8] max-w-lg italic">
-                    Connect with our administration for inquiries regarding Global Registry and Association membership.
+                    {t.feedback.connectDesc}
                     </p>
                 </header>
                 
@@ -24,8 +30,8 @@ export default function FeedbackPage() {
                         </svg>
                       </div>
                       <div>
-                        <span className="block text-[11px] font-black uppercase text-secondary tracking-[0.6em] mb-2 scale-110 origin-left">Primary Contact</span>
-                        <span className="text-4xl font-black text-primary group-hover:translate-x-2 block transition-all tracking-tighter leading-none">+380 99 123 45 67</span>
+                        <span className="block text-[11px] font-black uppercase text-secondary tracking-[0.6em] mb-2 scale-110 origin-left">{t.feedback.primaryContact}</span>
+                        <span className="text-4xl font-black text-primary group-hover:translate-x-2 block transition-all tracking-tighter leading-none">{t.common.phoneNumber}</span>
                       </div>
                    </div>
 
@@ -36,7 +42,7 @@ export default function FeedbackPage() {
                         </svg>
                       </div>
                       <div>
-                        <span className="block text-[11px] font-black uppercase text-secondary tracking-[0.6em] mb-2 scale-110 origin-left">Admin Support</span>
+                        <span className="block text-[11px] font-black uppercase text-secondary tracking-[0.6em] mb-2 scale-110 origin-left">{t.feedback.adminSupportLabel}</span>
                         <span className="text-4xl font-black text-primary group-hover:translate-x-2 block transition-all tracking-tighter leading-none lowercase">support@breedinggoats.org</span>
                       </div>
                    </div>
@@ -47,24 +53,24 @@ export default function FeedbackPage() {
                 <div className="absolute top-0 left-0 w-full h-12 bg-primary group-hover:bg-secondary transition-colors duration-1000"></div>
                 <div className="absolute -top-10 -right-10 p-10 opacity-[0.03] select-none pointer-events-none text-[30rem] font-black italic scale-150 rotate-12 transition-all group-hover:opacity-10 group-hover:scale-125 group-hover:text-secondary group-hover:rotate-0">?</div>
                 
-                <h3 className="text-4xl font-black text-primary mb-12 uppercase tracking-tighter leading-none mt-4 relative z-10 transition-all duration-700 group-hover:scale-110 group-hover:text-secondary origin-left">Master Protocol Request Form.</h3>
+                <h3 className="text-4xl font-black text-primary mb-12 uppercase tracking-tighter leading-none mt-4 relative z-10 transition-all duration-700 group-hover:scale-110 group-hover:text-secondary origin-left">{t.feedback.requestForm}</h3>
                 <form className="space-y-12 relative z-10">
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">Legal Full Name</label>
-                        <input type="text" className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder="Identity Verification" required />
+                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">{t.feedback.fullName}</label>
+                        <input type="text" className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder={t.feedback.identityVerification} required />
                     </div>
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">Electronic Address</label>
-                        <input type="email" className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder="Official Correspondence" required />
+                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">{t.feedback.emailAddress}</label>
+                        <input type="email" className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder={t.feedback.officialCorrespondence} required />
                     </div>
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">Message Protocol</label>
-                        <textarea rows={5} className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder="Detail your administrative inquiry here..." required></textarea>
+                        <label className="text-[10px] font-black uppercase text-primary/40 tracking-[0.5em] pl-6 uppercase">{t.feedback.messageProtocol}</label>
+                        <textarea rows={5} className="w-full bg-primary/5 border-none px-8 py-6 rounded-3xl focus:ring-4 focus:ring-secondary/20 focus:bg-white transition-all font-black text-primary text-xl shadow-inner placeholder:text-primary/10" placeholder={t.feedback.inquiryPlaceholder} required></textarea>
                     </div>
                     <button type="submit" className="w-full bg-primary text-secondary py-8 rounded-[2.5rem] font-black text-xl shadow-3xl hover:bg-secondary hover:text-primary transition-all duration-1000 transform hover:-translate-y-4 active:scale-95 uppercase tracking-[0.3em]">
-                        Dispatch Request ➔
+                        {t.feedback.dispatchRequest}
                     </button>
-                    <p className="text-center text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] pt-4 italic">Response turn-around: 24-48 Hours</p>
+                    <p className="text-center text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] pt-4 italic">{t.feedback.responseTime}</p>
                 </form>
             </div>
         </div>

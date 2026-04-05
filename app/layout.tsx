@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import { Toaster } from 'react-hot-toast';
 import ToastHandler from "@/components/ToastHandler";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { getTranslation, Locale } from "@/lib/translations";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,25 +19,33 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Племенной Реестр Коз | Ассоциация Племенных Коз",
-  description: "Официальный племенной реестр молочных коз Ассоциации Племенных Коз",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const t = getTranslation(lang);
+  return {
+    title: t.layout.title,
+    description: t.layout.description,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={`${inter.variable} ${outfit.variable} antialiased`} suppressHydrationWarning>
         <Toaster position="top-right" />
         <Suspense fallback={null}>
             <ToastHandler />
         </Suspense>
-        <Header />
-        <Navbar />
+        <Header lang={lang} />
+        <Navbar lang={lang} />
         {children}
       </body>
     </html>

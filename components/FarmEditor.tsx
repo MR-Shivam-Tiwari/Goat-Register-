@@ -12,7 +12,7 @@ import 'react-quill-new/dist/quill.snow.css';
 // Dynamic import for ReactQuill
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
   ssr: false,
-  loading: () => <div className="h-64 bg-gray-50 border-2 border-gray-200 rounded-sm flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs italic">Загрузка редактора...</div>
+  loading: () => <div className="h-64 bg-gray-50 border-2 border-gray-200 rounded-sm flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs italic">Loading...</div>
 });
 
 interface FarmEditorProps {
@@ -72,11 +72,11 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
                 router.push('/farms');
                 router.refresh();
             } else {
-                setError(res.error || 'Something went wrong');
+                setError(res.error || t.common.errorSomething);
                 setIsSubmitting(false);
             }
         } catch (err: any) {
-            setError(err.message || 'An error occurred');
+            setError(err.message || t.common.errorOccurred);
             setIsSubmitting(false);
         }
     };

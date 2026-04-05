@@ -451,8 +451,8 @@ export default async function GoatDetailPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <CertRows
-                  label="П"
+                 <CertRows
+                  label={t.common.ancestors.p}
                   count={5}
                   bgColor="bg-[#F6B8EB]/10"
                   certData={certData}
@@ -462,7 +462,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="М"
+                  label={t.common.ancestors.m}
                   count={3}
                   bgColor="bg-[#F8DAB8]/20"
                   certData={certData}
@@ -472,7 +472,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="О"
+                  label={t.common.ancestors.f}
                   count={3}
                   bgColor="bg-[#F8CBAD]/15"
                   certData={certData}
@@ -482,7 +482,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="ММ"
+                  label={t.common.ancestors.mm}
                   count={3}
                   bgColor="bg-gray-50"
                   certData={certData}
@@ -492,7 +492,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="ОМ"
+                  label={t.common.ancestors.mf}
                   count={3}
                   bgColor="bg-gray-50/50"
                   certData={certData}
@@ -502,7 +502,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="МО"
+                  label={t.common.ancestors.fm}
                   count={3}
                   bgColor="bg-gray-50"
                   certData={certData}
@@ -512,7 +512,7 @@ export default async function GoatDetailPage({
                   t={t}
                 />
                 <CertRows
-                  label="ОО"
+                  label={t.common.ancestors.ff}
                   count={3}
                   bgColor="bg-gray-50/50"
                   certData={certData}
@@ -666,14 +666,16 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
         <div className="flex-1 flex-col flex">
           <PedigreeNode
             node={ancestry.father}
-            prefix="O:"
+            prefix={t.common.pedigreePrefix.father}
             color="bg-[#C5E0B4]"
             border
+            t={t}
           />
           <PedigreeNode
             node={ancestry.mother}
-            prefix="M:"
+            prefix={t.common.pedigreePrefix.mother}
             color="bg-[#F8CBAD]"
+            t={t}
           />
         </div>
 
@@ -685,14 +687,16 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
             >
               <PedigreeNode
                 node={p?.father}
-                prefix="O:"
+                prefix={t.common.pedigreePrefix.father}
                 color="bg-[#E2F0D9]"
                 border
+                t={t}
               />
               <PedigreeNode
                 node={p?.mother}
-                prefix="M:"
+                prefix={t.common.pedigreePrefix.mother}
                 color="bg-[#F6B8EB]/50"
+                t={t}
               />
             </div>
           ))}
@@ -707,14 +711,16 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
               >
                 <PedigreeNode
                   node={gp?.father}
-                  prefix="O:"
+                  prefix={t.common.pedigreePrefix.father}
                   color="bg-[#E2F0D9]/40"
                   border
+                  t={t}
                 />
                 <PedigreeNode
                   node={gp?.mother}
-                  prefix="M:"
+                  prefix={t.common.pedigreePrefix.mother}
                   color="bg-[#F6B8EB]/30"
+                  t={t}
                 />
               </div>
             )),
@@ -731,14 +737,16 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
                 >
                   <PedigreeNode
                     node={ggp?.father}
-                    prefix="O:"
+                    prefix={t.common.pedigreePrefix.father}
                     color="bg-gray-100"
                     border
+                    t={t}
                   />
                   <PedigreeNode
                     node={ggp?.mother}
-                    prefix="M:"
+                    prefix={t.common.pedigreePrefix.mother}
                     color="bg-gray-50"
+                    t={t}
                   />
                 </div>
               )),

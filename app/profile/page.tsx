@@ -84,7 +84,7 @@ export default async function ProfilePage() {
 
                 <div className="pt-6 border-t border-gray-50 flex items-center gap-3 text-green-600">
                     <Shield size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest leading-none">{t.users.active} Account</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest leading-none">{t.users.active} {t.common.account}</span>
                 </div>
               </div>
 
@@ -138,7 +138,7 @@ export default async function ProfilePage() {
                 {t.users.copyright}
             </p>
             <p className="text-[9px] font-black text-[#491907]/20 uppercase tracking-[0.5em] mt-2">
-                © 2026 ABG BREED REGISTRY
+                {t.common.copyrightFull}
             </p>
         </footer>
       </div>

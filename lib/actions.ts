@@ -9,8 +9,16 @@ import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import { getTranslation, Locale } from '@/lib/translations';
+
+async function getT() {
+    const cookieStore = await cookies();
+    const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+    return getTranslation(lang);
+}
 
 export async function loginAction(prevState: any, formData: FormData) {
+  const t = await getT();
   const loginInput = formData.get('login') as string;
   const password = formData.get('password') as string;
 
@@ -32,14 +40,15 @@ export async function loginAction(prevState: any, formData: FormData) {
       return { success: true };
     }
 
-    return { error: 'Неверный логин или пароль' };
+    return { error: t.errors.invalidLogin };
   } catch (e: any) {
     console.error('Login Error:', e.message);
-    return { error: 'Ошибка сервера: ' + e.message };
+    return { error: t.errors.dbError + e.message };
   }
 }
 
 export async function registerAction(prevState: any, formData: FormData) {
+    const t = await getT();
     const login = formData.get('login') as string;
     const email = formData.get('email') as string;
     const name = formData.get('name') as string;
@@ -48,12 +57,12 @@ export async function registerAction(prevState: any, formData: FormData) {
     const confirmPassword = formData.get('confirm_password') as string;
 
     if (password !== confirmPassword) {
-      return { error: 'Пароли не совпадают' };
+      return { error: t.errors.passMismatch };
     }
 
     const checkRes = await query('SELECT id FROM users WHERE email = $1 OR login = $2', [email, login]);
     if (checkRes.rows.length > 0) {
-      return { error: 'Пользователь с таким email или логином уже существует' };
+      return { error: t.errors.userExists };
     }
 
     // MD5 Hashing 
@@ -71,29 +80,36 @@ export async function registerAction(prevState: any, formData: FormData) {
       return { success: true };
     } catch (e: any) {
       console.error('Registration Error:', e.message);
-      return { error: 'Ошибка базы данных: ' + e.message };
+      return { error: t.errors.dbError + e.message };
     }
 }
 
 export async function setLanguage(lang: string) {
     const cookieStore = await cookies();
-    cookieStore.set('nxt-lang', lang, { path: '/' });
+    cookieStore.set('nxt-lang', lang, { 
+      path: '/', 
+      maxAge: 31536000, 
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production' 
+    });
+    revalidatePath('/', 'layout');
 }
 
 export async function addGoatAction(formData: FormData) {
+    const t = await getT();
     const cookieStore = await cookies();
     const username = cookieStore.get('user_login')?.value;
 
     if (!username) {
-        return { error: 'Authentication required' };
+        return { error: t.errors.authRequired };
     }
 
     // 1. Get User ID
     const userRes = await query('SELECT id FROM users WHERE login = $1', [username]);
-    if (userRes.rows.length === 0) return { error: 'User not found' };
+    if (userRes.rows.length === 0) return { error: t.errors.userNotFound };
     const userId = userRes.rows[0].id;
-
-    // 2. Extract Data
+    
+    // ... rest same ...
     const nickname = formData.get('nickname') as string;
     const breedId = parseInt(formData.get('breed') as string);
     const farmId = parseInt(formData.get('farm') as string);
@@ -187,18 +203,19 @@ export async function addGoatAction(formData: FormData) {
     } catch (e: any) {
         await client.query('ROLLBACK');
         console.error('Add Goat Error:', e.message);
-        return { error: 'Database error: ' + e.message };
+        return { error: t.errors.dbError + e.message };
     } finally {
         client.release();
     }
 }
 
 export async function addPhotoAction(formData: FormData) {
+    const t = await getT();
     const photoFile = formData.get('photo') as File | null;
     const goatId = parseInt(formData.get('goatId') as string);
 
     if (!photoFile || photoFile.size === 0 || !goatId) {
-        return { error: 'Invalid data' };
+        return { error: t.errors.invalidData };
     }
 
     try {
@@ -224,12 +241,13 @@ export async function addPhotoAction(formData: FormData) {
         return { success: true };
     } catch (e: any) {
         console.error('Add Photo Error:', e.message);
-        return { error: 'Upload failed: ' + e.message };
+        return { error: t.errors.uploadFailed + e.message };
     }
 }
 
 export async function deletePhotoAction(fileName: string, goatId?: string | number) {
-    if (!fileName) return { error: 'No filename' };
+    const t = await getT();
+    if (!fileName) return { error: t.errors.noFilename };
 
     try {
         const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
@@ -247,12 +265,13 @@ export async function deletePhotoAction(fileName: string, goatId?: string | numb
         return { success: true };
     } catch (e: any) {
         console.error('Delete Photo Error:', e.message);
-        return { error: 'Delete failed: ' + e.message };
+        return { error: t.errors.deleteFailed + e.message };
     }
 }
 
 export async function deleteGoatAction(goatId: number | string) {
-    if (!goatId) return { error: 'Invalid ID' };
+    const t = await getT();
+    if (!goatId) return { error: t.errors.invalidData };
 
     try {
         // Order is important to avoid foreign key constraints (if any)
@@ -267,18 +286,20 @@ export async function deleteGoatAction(goatId: number | string) {
         return { success: true };
     } catch (e: any) {
         console.error('Delete Goat Error:', e.message);
-        return { error: 'Delete failed: ' + e.message };
+        return { error: t.errors.deleteFailed + e.message };
     }
 }
 
 export async function updateGoatAction(formData: FormData) {
+    const t = await getT();
     const goatId = formData.get('goatId') as string;
-    if (!goatId) return { error: 'Invalid Goat ID' };
+    if (!goatId) return { error: t.errors.invalidData };
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-
+        
+        // ... rest same ...
         const nickname = formData.get('nickname') as string;
         const breed = formData.get('breed') as string;
         const farm = formData.get('farm') as string;
@@ -352,19 +373,20 @@ export async function updateGoatAction(formData: FormData) {
     } catch (e: any) {
         await client.query('ROLLBACK');
         console.error('Update Error:', e.message);
-        return { error: 'Update failed: ' + e.message };
+        return { error: t.errors.deleteFailed + e.message }; // Using deleteFailed as a generic error base
     } finally {
         client.release();
     }
 }
 
 export async function addFarmAction(formData: FormData) {
+    const t = await getT();
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const pic1File = formData.get('pic1') as File | null;
     const pic2File = formData.get('pic2') as File | null;
 
-    if (!name) return { error: 'Farm name is required' };
+    if (!name) return { error: t.errors.farmNameReq };
 
     try {
         const uploadDir = path.join(process.cwd(), 'public', 'uploads');
@@ -391,18 +413,19 @@ export async function addFarmAction(formData: FormData) {
         return { success: true };
     } catch (e: any) {
         console.error('Add Farm Error:', e.message);
-        return { error: 'Save failed: ' + e.message };
+        return { error: t.errors.dbError + e.message };
     }
 }
 
 export async function updateFarmAction(formData: FormData) {
+    const t = await getT();
     const id = formData.get('farmId') as string;
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const pic1File = formData.get('pic1') as File | null;
     const pic2File = formData.get('pic2') as File | null;
 
-    if (!id || !name) return { error: 'Farm ID and Name are required' };
+    if (!id || !name) return { error: t.errors.farmIdNameReq };
 
     try {
         const uploadDir = path.join(process.cwd(), 'public', 'uploads');
@@ -434,21 +457,22 @@ export async function updateFarmAction(formData: FormData) {
         return { success: true };
     } catch (e: any) {
         console.error('Update Farm Error:', e.message);
-        return { error: 'Update failed: ' + e.message };
+        return { error: t.errors.dbError + e.message };
     }
 }
 
 export async function deleteFarmAction(farmId: number | string) {
+    const t = await getT();
     const cookieStore = await cookies();
     const isAdmin = cookieStore.get('uid_token')?.value;
-    if (!isAdmin) return { error: 'Unauthorized' };
+    if (!isAdmin) return { error: t.errors.unauthorized };
 
     try {
         await query('DELETE FROM farms WHERE id = $1', [farmId]);
         revalidatePath('/farms');
         return { success: true };
     } catch (e: any) {
-        return { error: 'Delete failed: ' + e.message };
+        return { error: t.errors.deleteFailed + e.message };
     }
 }
 

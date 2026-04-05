@@ -31,25 +31,25 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
     );
 
     const handleDeleteGoat = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this goat?')) return;
+        if (!confirm(t.manage.deleteGoatConfirm)) return;
         setIsDeleting(id);
         const res = await deleteGoatAction(id);
         if (res?.success) {
             setGoats(goats.filter(g => g.id !== id));
         } else {
-            alert(res?.error || 'Delete failed');
+            alert(res?.error || t.errors.deleteFailed);
         }
         setIsDeleting(null);
     };
 
     const handleDeleteFarm = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this farm? This will NOT delete goats on the farm, they will become farm-less.')) return;
+        if (!confirm(t.manage.deleteFarmConfirm)) return;
         setIsDeleting(id);
         const res = await deleteFarmAction(id);
         if (res?.success) {
             setFarms(farms.filter(f => f.id !== id));
         } else {
-            alert(res?.error || 'Delete failed');
+            alert(res?.error || t.errors.deleteFailed);
         }
         setIsDeleting(null);
     };
@@ -63,20 +63,20 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                         onClick={() => setActiveTab('goats')}
                         className={`px-8 py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'goats' ? 'bg-[#491907] text-white' : 'hover:bg-gray-50 text-gray-400'}`}
                     >
-                        <Table size={16} /> GOATS ({filteredGoats.length})
+                        <Table size={16} /> {t.manage.goats} ({filteredGoats.length})
                     </button>
                     <button 
                         onClick={() => setActiveTab('farms')}
                         className={`px-8 py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'farms' ? 'bg-[#491907] text-white' : 'hover:bg-gray-50 text-gray-400'}`}
                     >
-                        <Layout size={16} /> FARMS ({filteredFarms.length})
+                        <Layout size={16} /> {t.manage.farms} ({filteredFarms.length})
                     </button>
                 </div>
 
                 <div className="w-full md:w-64">
                     <input 
                         type="text"
-                        placeholder="Search records..."
+                        placeholder={t.manage.searchRecords}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full px-6 py-4 bg-white border-2 border-gray-100 rounded-sm text-xs font-bold uppercase tracking-widest outline-none focus:border-[#491907] transition-all shadow-sm"
@@ -94,7 +94,7 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                                     <th className="p-4">{t.goats.nickname}</th>
                                     <th className="p-4">{t.goats.breed}</th>
                                     <th className="p-4">{t.goats.farm}</th>
-                                    <th className="p-4 text-right">Actions</th>
+                                    <th className="p-4 text-right">{t.manage.actions}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-xs font-bold divide-y divide-gray-50">
@@ -102,7 +102,7 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                                     <tr key={goat.id} className="hover:bg-amber-50/20 transition-all group">
                                         <td className="p-4 text-[#491907] font-black italic">{goat.nickname}</td>
                                         <td className="p-4 opacity-60">{goat.breed_name || '-'}</td>
-                                        <td className="p-4 opacity-60 font-mono text-[10px]">{goat.farm_name || 'Individual'}</td>
+                                        <td className="p-4 opacity-60 font-mono text-[10px]">{goat.farm_name || t.goats.individual}</td>
                                         <td className="p-4 text-right space-x-2">
                                             <Link href={`/catalog/goats/fix/${goat.id}`} className="inline-flex p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-sm transition-all shadow-sm">
                                                 <Pencil size={14} />
@@ -125,9 +125,9 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50 text-[11px] font-black uppercase tracking-widest text-gray-500 border-b">
-                                    <th className="p-4">Farm Name</th>
-                                    <th className="p-4">Owner Ref</th>
-                                    <th className="p-4 text-right">Actions</th>
+                                    <th className="p-4">{t.manage.farmName}</th>
+                                    <th className="p-4">{t.manage.ownerRef}</th>
+                                    <th className="p-4 text-right">{t.manage.actions}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-xs font-bold divide-y divide-gray-50">
