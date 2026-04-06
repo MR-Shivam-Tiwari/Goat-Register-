@@ -18,7 +18,12 @@ export default async function MovementPage({
   const { id } = await params;
   const { mode = 'view' } = await searchParams;
   
-  const goatRes = await query("SELECT id, name, id_farm FROM animals WHERE id = $1", [id]);
+  const goatRes = await query(`
+    SELECT A.id, A.name, A.id_farm, F.name as farm_name 
+    FROM animals A 
+    LEFT JOIN farms F ON A.id_farm = F.id
+    WHERE A.id = $1
+  `, [id]);
   const goat = goatRes.rows[0];
   if (!goat) notFound();
   
@@ -32,9 +37,9 @@ export default async function MovementPage({
   return (
     <div className="min-h-screen bg-[#FDFBF7]/50 py-20 px-6 font-sans">
        <div className="max-w-4xl mx-auto mb-16 text-center">
-          <Link href={`/goats/${id}`} className="inline-flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-100 rounded-full text-[#491907]/40 hover:text-[#491907] font-black text-[10px] uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-[#491907]/5 hover:-translate-y-0.5 active:translate-y-0">
+          <a href={`/goats/${id}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-100 rounded-full text-[#491907]/40 hover:text-[#491907] font-black text-[10px] uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-[#491907]/5 hover:-translate-y-0.5 active:translate-y-0">
             ← {t.nav.catalog}
-          </Link>
+          </a>
           
           <div className="mt-8 space-y-2">
              <div className="flex items-center justify-center gap-3">
@@ -46,24 +51,34 @@ export default async function MovementPage({
           </div>
           
           <div className="flex justify-center gap-12 mt-12 border-b border-gray-100/60 pb-1">
-            <Link 
+            <a 
               href={`/goats/${id}/move?mode=view`}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`text-[11px] font-black uppercase tracking-[0.2em] pb-5 border-b-2 transition-all duration-300 ${mode === 'view' ? 'border-[#491907] text-[#491907]' : 'border-transparent text-gray-300 hover:text-gray-500 hover:border-gray-200'}`}
             >
               {t.goats.animalMovement} History
-            </Link>
-            <Link 
+            </a>
+            <a 
               href={`/goats/${id}/move?mode=add`}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`text-[11px] font-black uppercase tracking-[0.2em] pb-5 border-b-2 transition-all duration-300 ${mode === 'add' ? 'border-[#491907] text-[#491907]' : 'border-transparent text-gray-300 hover:text-gray-500 hover:border-gray-200'}`}
             >
               {t.goats.add} Movement
-            </Link>
+            </a>
           </div>
        </div>
 
        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
           {mode === 'add' ? (
-            <MovementForm goatId={id} currentFarmId={goat.id_farm} farms={farms} t={t} />
+            <MovementForm 
+              goatId={id} 
+              currentFarmId={goat.id_farm} 
+              currentFarmName={goat.farm_name}
+              farms={farms} 
+              t={t} 
+            />
           ) : (
             <MovementHistory goatId={id} t={t} />
           )}

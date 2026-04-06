@@ -75,6 +75,7 @@ interface Goat {
   status: number;
   cert_serial?: string;
   cert_no?: string;
+  blood_percent?: string | number;
 }
 
 const STOODBOOK_MAP: Record<string, number> = {
@@ -86,6 +87,7 @@ const STOODBOOK_MAP: Record<string, number> = {
   f5: 6,
   f6: 7,
   f7: 8,
+  f8: 13,
   rfb: 9,
   ex1: 10,
   ex2: 11,
@@ -102,6 +104,7 @@ function getRegisterNames(t: any): Record<string, string> {
     f5: "RCB Generation F5",
     f6: "RCB Generation F6",
     f7: "RCB Generation F7",
+    f8: "RCB Generation F8",
     rfb: t.rules.rfbTitle,
     ex1: "Experimental (up to 50%)",
     ex2: "Experimental (51–75%)",
@@ -158,7 +161,7 @@ async function getGoats(
       SELECT 
         A.id, A.is_reg, A.name, A.sex, A.id AS reg_id, A.status, A.time_added, A.id_farm,
         Di.ava, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
-        Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
+        Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.blood_percent,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
 
@@ -392,14 +395,14 @@ export default async function GoatsListPage({
             <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
-                RCB Generations
+                {t.catalog.absorption}
               </h2>
               <p className="text-sm font-bold opacity-40 italic">
                 {t.catalog.rcbMainList}
               </p>
             </header>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                 <Link
                   key={num}
                   href={`?reg=f${num}`}

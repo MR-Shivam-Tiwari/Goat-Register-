@@ -482,6 +482,10 @@ export default async function CertificatePage({
 
     const renderSmallAnc = (p: string, symbol: string) => {
         const d = detailsMap[p] || {};
+        const rows = [1,2,3].map(j => lactMap[selections[`id_${p}_row${j}`]]).filter(v => v);
+        const l = rows[0]; // First one
+        const lactFormat = l ? `L${l.lact_no}•${l.lact_days}•${l.milk}•${l.fat}•${l.protein}` : "-";
+
         return (
             <div className="border border-black p-1 text-[6px] font-bold h-full">
                 <div className="flex border-b border-black mb-1">
@@ -489,13 +493,11 @@ export default async function CertificatePage({
                    <span className="truncate italic">{d.name || '-'}</span>
                 </div>
                 <div className="space-y-0.5">
-                   <div className="flex justify-between border-b border-black/5"><span>ID ABG</span><span>{d.code_abg}</span></div>
-                   <div className="flex justify-between border-b border-black/5"><span>ID UA</span><span>{d.code_ua}</span></div>
-                   <div className="flex justify-between border-b border-black/5"><span>Порода</span><span>{d.breed_name}</span></div>
-                   <div className="flex justify-between border-b border-black/5"><span>Породн.</span><span>-</span></div>
-                   <div className="flex justify-between border-b border-black/5"><span>Клас</span><span>{d.test_class}</span></div>
-                   <div className="flex justify-between border-b border-black/5"><span>Прод.</span><span>-</span></div>
-                   <div className="flex justify-between"><span>Прод.</span><span>-</span></div>
+                   <div className="flex justify-between border-b border-black/5"><span>ID ABG</span><span>{d.code_abg || '-'}</span></div>
+                   <div className="flex justify-between border-b border-black/5"><span>Breed</span><span>{d.breed_name || '-'}</span></div>
+                   <div className="flex justify-between border-b border-black/5"><span>Class</span><span>{d.test_class || '-'}</span></div>
+                   <div className="flex justify-center border-b border-black/5 text-[#491907] font-black">{lactFormat}</div>
+                   <div className="flex justify-center italic text-[5px] opacity-40">Productivity</div>
                 </div>
             </div>
         );
@@ -504,8 +506,7 @@ export default async function CertificatePage({
     return (
       <div className="min-h-screen bg-gray-100 p-8 font-sans text-black print:p-0">
         <div className="max-w-[1240px] mx-auto bg-white border-[3px] border-black p-4 print:border-none shadow-[20px_20px_0px_rgba(0,0,0,0.05)]">
-           <header className="text-center mb-6 border-b-4 border-black pb-4 relative">
-              <h1 className="text-2xl font-black uppercase tracking-widest italic drop-shadow-sm">ПЛЕМІННИЙ СЕРТИФІКАТ (Pedigree Summary)</h1>
+           <header className="text-end mb-6 border-b-4 border-black pb-4 relative h-8">
               <div className="absolute right-0 top-0 text-[8px] opacity-40 font-black">REGISTRY OFFICIAL DOCUMENT</div>
            </header>
 

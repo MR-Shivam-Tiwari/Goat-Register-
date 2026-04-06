@@ -83,34 +83,32 @@ export default async function FarmsPage() {
                                 className="group bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
                                 {/* CARD IMAGE */}
-                                <div className="relative h-48 bg-gray-100 overflow-hidden">
+                                <div className="relative h-48 bg-white overflow-hidden">
                                     <Image
                                         src={farm.displayPic}
                                         alt={farm.name}
                                         fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                                     />
-                                    {/* ID badge */}
-                                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg font-mono">
-                                        #{farm.id}
-                                    </div>
-                                    {/* Status badge */}
-                                    <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-green-200 text-green-700 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
-                                        <Shield size={9} className="fill-green-100" />
-                                        {t.farms.memberApk}
-                                    </div>
-                                    {/* Gradient overlay at bottom */}
-                                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+                                    {/* Gradient overlay at bottom (very subtle) */}
+                                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-gray-50/50 to-transparent" />
                                 </div>
 
                                 {/* CARD BODY */}
-                                <div className="flex flex-col flex-1 p-4 gap-3">
-                                    {/* Farm name */}
-                                    <Link href={`/farms/${farm.id}`}>
-                                        <h2 className="text-[13px] font-black uppercase tracking-tight text-gray-900 leading-tight group-hover:text-[#491907] transition-colors line-clamp-2">
-                                            {farm.name}
-                                        </h2>
-                                    </Link>
+                                <div className="flex flex-col flex-1 p-5 gap-3">
+                                    {/* Farm name with ID tag */}
+                                    <div className="flex items-start justify-between gap-3">
+                                        <Link href={`/farms/${farm.id}`} className="flex-1">
+                                            <h2 className="text-[13px] font-black uppercase tracking-tight text-gray-900 leading-tight group-hover:text-[#491907] transition-colors line-clamp-2 italic">
+                                                <span className="text-[10px] not-italic font-mono text-gray-400 mr-1.5">#{farm.id}</span>
+                                                {farm.name}
+                                            </h2>
+                                        </Link>
+                                        <div className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tight shrink-0 border border-green-100">
+                                            <Shield size={8} className="fill-green-600/10" />
+                                            {t.farms.memberApk}
+                                        </div>
+                                    </div>
 
                                     {/* Location */}
                                     <div className="flex items-center gap-1.5 text-gray-400">
@@ -119,10 +117,10 @@ export default async function FarmsPage() {
                                     </div>
 
                                     {/* Divider */}
-                                    <div className="border-t border-gray-100 mt-auto pt-3 flex items-center justify-between gap-2">
+                                    <div className="border-t border-gray-100 mt-auto pt-4 flex items-center justify-between gap-2">
                                         <Link
                                             href={`/farms/${farm.id}`}
-                                            className="flex items-center gap-1.5 flex-1 justify-center py-2 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm"
+                                            className="flex items-center gap-1.5 flex-1 justify-center py-2.5 bg-[#491907] text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm active:scale-95"
                                         >
                                             <Eye size={12} />
                                             {t.farms.view}
@@ -130,7 +128,7 @@ export default async function FarmsPage() {
                                         {isAdmin && (
                                             <Link
                                                 href={`/farms/${farm.id}/edit`}
-                                                className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-500 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-100 hover:text-amber-700 transition-all"
+                                                className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-100 hover:text-amber-700 transition-all border border-gray-100"
                                             >
                                                 <Pencil size={12} />
                                             </Link>

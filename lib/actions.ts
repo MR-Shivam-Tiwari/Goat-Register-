@@ -125,6 +125,7 @@ export async function addGoatAction(formData: FormData) {
     // Other fields
     const birthWeight = parseInt(formData.get('birthWeight') as string) || null;
     const score = parseFloat(formData.get('score') as string) || null;
+    const totalPercent = parseFloat(formData.get('totalPercent') as string) || null;
     const breeder = formData.get('breeder') as string || null;
     const owner = formData.get('owner') as string || null;
     const idUa = formData.get('idUa') as string || null;
@@ -156,7 +157,11 @@ export async function addGoatAction(formData: FormData) {
     }
 
     // Mapping studbook
-    const studbookMap: Record<string, number> = { 'main': 1, 'f1': 2, 'ex': 3 };
+    const studbookMap: Record<string, number> = { 
+        'main': 1, 'rhb': 1, 
+        'f1': 2, 'f2': 3, 'f3': 4, 'f4': 5, 'f5': 6, 'f6': 7, 'f7': 8, 'f8': 13,
+        'rfb': 9, 'ex1': 10, 'ex2': 11, 'ex3': 12, 'ex': 10 
+    };
     const studbookId = studbookMap[studbook] || 1;
 
     // Mapping status
@@ -181,12 +186,12 @@ export async function addGoatAction(formData: FormData) {
             `INSERT INTO goats_data (
                 id_goat, id_breed, id_stoodbook, is_abg, date_born, date_dead, 
                 born_weight, manuf, owner, ava, score, code_ua, code_abg, 
-                code_chip, code_int, cert_serial, cert_no, gen_mat, source, special
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`,
+                code_chip, code_int, cert_serial, cert_no, gen_mat, source, special, blood_percent
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
             [
                 goatId, breedId, studbookId, abg, birthDate, deathDate,
                 birthWeight, breeder, owner, photoName, score, idUa, idAbg,
-                chipId, idInt, certSeries, certNo, genetic, source, notes
+                chipId, idInt, certSeries, certNo, genetic, source, notes, totalPercent
             ]
         );
 
@@ -310,6 +315,7 @@ export async function updateGoatAction(formData: FormData) {
         const dateDeath = formData.get('deathDate') as string || null;
         const birthWeight = formData.get('birthWeight') as string || null;
         const score = formData.get('score') as string || null;
+        const totalPercent = formData.get('totalPercent') as string || null;
         const breeder = formData.get('breeder') as string;
         const owner = formData.get('owner') as string;
         
@@ -323,6 +329,14 @@ export async function updateGoatAction(formData: FormData) {
         const genetic = formData.get('genetic') as string;
         const source = formData.get('source') as string;
         const notes = formData.get('notes') as string;
+        const studbook = formData.get('studbook') as string;
+
+        const studbookMap: Record<string, number> = { 
+            'main': 1, 'rhb': 1, 
+            'f1': 2, 'f2': 3, 'f3': 4, 'f4': 5, 'f5': 6, 'f6': 7, 'f7': 8, 'f8': 13,
+            'rfb': 9, 'ex1': 10, 'ex2': 11, 'ex3': 12, 'ex': 10 
+        };
+        const studbookId = studbookMap[studbook] || 1;
 
         // 1. Update animals table
         await client.query(
@@ -346,13 +360,17 @@ export async function updateGoatAction(formData: FormData) {
             'id_breed = $1', 'is_abg = $2', 'manuf = $3', 'owner = $4', 
             'date_born = $5', 'date_dead = $6', 'born_weight = $7',
             'code_ua = $8', 'code_abg = $9', 'code_chip = $10', 'code_int = $11',
-            'cert_serial = $12', 'cert_no = $13', 'special = $14', 'source = $15', 'gen_mat = $16'
+            'cert_serial = $12', 'cert_no = $13', 'special = $14', 'source = $15', 'gen_mat = $16',
+            'score = $17', 'blood_percent = $18', 'id_stoodbook = $19'
         ];
         const dataValues = [
             parseInt(breed), isAbg, breeder, owner, 
             dateBorn, dateDeath, birthWeight,
             idUa, idAbg, chipId, idInt,
-            certSeries, certNum, notes, source, genetic
+            certSeries, certNum, notes, source, genetic,
+            score,
+            totalPercent,
+            studbookId
         ];
 
         if (photoName) {

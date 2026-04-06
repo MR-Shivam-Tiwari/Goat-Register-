@@ -30,12 +30,14 @@ export default function PedigreeNode({ node, prefix, color, border, isGuest = fa
           {node.name}
         </span>
       ) : (
-        <Link
+        <a
           href={`/goats/${node.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="font-bold text-[#491907] hover:underline truncate max-w-[110px]"
         >
           {node.name}
-        </Link>
+        </a>
       )}
       <span className="text-[9px] font-black opacity-30 ml-auto whitespace-nowrap">
         {node.reg_code || `ID:${node.id}`}

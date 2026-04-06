@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function GoatTable({
@@ -15,6 +15,19 @@ export default function GoatTable({
   isGuest?: boolean;
 }) {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-96 bg-white animate-pulse flex items-center justify-center border border-gray-100 rounded-lg">
+         <span className="text-gray-300 font-black uppercase tracking-[0.5em]">Loading Registry...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full min-h-0">
@@ -73,6 +86,9 @@ export default function GoatTable({
             </th>
             <th className="p-1 px-5 border-r text-center text-nowrap border-gray-200 bg-[#F0F7F0] text-[#491907]">
               {t.goats.breed}
+            </th>
+            <th className="p-1 px-5 border-r text-center text-nowrap border-gray-200 bg-[#E3F2FD] text-blue-700 font-black">
+              Σ %
             </th>
             <th className="p-1 px-5 border-r text-center text-nowrap border-gray-200 bg-[#F0F7F0] text-[#491907]">
               {t.goats.sex}
@@ -258,54 +274,80 @@ export default function GoatTable({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {goats.map((g, idx) => {
-            let rowBg = 'bg-white';
-            if (g.status === 0) rowBg = 'bg-[#EF9A9A]/30';
-            else if (g.is_reg === 1 || g.is_reg === true) rowBg = 'bg-[#D7FDB5]/30';
-            else rowBg = 'bg-[#F3F1F1]/40';
+            let rowColor = '#FFFFFF';
+            // Dead animals - Saturated Pink
+            if (g.status === 0 || g.status === '0') {
+               rowColor = '#FFEBEE'; 
+            } 
+            // Registry (R prefix) - Clear Green
+            else if (g.is_reg === 1 || g.is_reg === '1' || g.is_reg === true) {
+               rowColor = '#F0FDF4'; 
+            }
+            // Pedigree (X prefix) - CLEAR BLUE
+            else {
+               rowColor = '#F0F9FF'; 
+            }
+
+            const prefix = (g.is_reg === '1' || g.is_reg === 1 || g.is_reg === true ? "R" : "X");
+            const displayId = prefix + (10000 + Number(g.id || g.reg_id));
 
             return (
               <tr
                 key={idx}
-                className={`divide-x divide-gray-200 hover:bg-blue-100/50 transition-all text-sm font-bold text-gray-800 h-8 ${rowBg}`}
+                style={{ backgroundColor: rowColor }}
+                className={`divide-x divide-gray-200 hover:bg-black/5 transition-all text-[11px] font-bold text-gray-900 border-b border-gray-100`}
               >
-                <td className={`p-1 sticky px-4 left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.05)] whitespace-nowrap bg-inherit`}>
-                  <div className="flex items-center gap-1.5 min-h-[20px]">
+                <td 
+                  style={{ backgroundColor: rowColor }}
+                  className={`p-3 sticky px-5 left-0 z-20 whitespace-nowrap border-r border-gray-200`}
+                >
+                  <div className="flex items-center gap-4">
                     {g.ava ? (
                       <img
                         src={g.ava.startsWith('http') || g.ava.startsWith('/') ? g.ava : `/uploads/${g.ava}`}
                         alt=""
-                        className="w-10 h-8 object-cover rounded shadow-sm border border-gray-100"
+                        className="w-16 h-12 object-cover rounded shadow-sm border border-white"
                       />
                     ) : (
-                      <div className="w-10 h-8 bg-gray-100 rounded border border-gray-100 flex items-center justify-center text-[10px] text-gray-300 font-black">
-                        NO IMG
+                      <div className="w-16 h-12 bg-gray-200/50 rounded border border-gray-100 flex items-center justify-center text-[8px] text-gray-500 font-black">
+                        NO IMAGE
                       </div>
                     )}
                     {isGuest ? (
-                      <span className="text-[#491907] font-bold">{g.name}</span>
+                      <span className="text-[#491907]" style={{ fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' }}>{g.name}</span>
                     ) : (
-                      <Link
+                      <a
                         href={`/goats/${g.id}`}
-                        className="hover:text-blue-600 underline text-[#491907]"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-[#491907] flex items-center"
+                        style={{ fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' }}
                       >
                         {g.name}
-                      </Link>
+                      </a>
                     )}
                   </div>
                 </td>
-              <td className="p-1 text-center font-black text-nowrap px-4 opacity-80 uppercase leading-tight">
+              <td className="p-3 text-center font-black text-nowrap px-6 uppercase leading-none text-gray-900 opacity-80" style={{ fontSize: '11px' }}>
                 {g.breed_name || g.breed_alias}
+              </td>
+              <td className="p-3 text-center font-black text-blue-700 bg-blue-50/20 px-6 uppercase leading-none" style={{ fontSize: '12px' }}>
+                {g.blood_percent ? `${g.blood_percent}%` : '-'}
               </td>
               <td className="p-1 px-4 text-center font-black">
                 {g.sex === 1 ? "Buck" : "Doe"}
               </td>
               <td className="p-1 text-center">{g.is_abg ? "Yes" : "No"}</td>
-              <td className="p-1 text-nowrap text-center  ">
+              <td className="p-1 text-nowrap text-center text-[11px]">
                 {g.farm_name || "-"}
               </td>
-              <td className="p-1 text-nowrap text-center   ">{g.manuf || "-"}</td>
-              <td className="p-1 text-nowrap text-center  ">{g.owner || "-"}</td>
-              <td className="p-1 text-center whitespace-nowrap font-mono text-xs min-w-[120px]">
+              <td className="p-1 text-nowrap text-center text-[11px] font-medium italic opacity-70">
+                {g.manuf || "-"}
+              </td>
+              <td className="p-1 text-nowrap text-center text-[11px] font-semibold">
+                {g.owner || "-"}
+              </td>
+              <td className="p-1 text-center whitespace-nowrap font-mono text-[10px] min-w-[120px]">
                 {g.date_born
                   ? new Date(g.date_born).toLocaleDateString("en-US", {
                       month: "long",
@@ -327,8 +369,11 @@ export default function GoatTable({
                 {g.have_gen === 1 || g.have_gen === '1' || g.have_gen === true ? "Yes" : "No"}
               </td>
               <td className="p-1 text-center">{g.gen_mat || "-"}</td>
-              <td className="p-1 text-center text-red-700 font-black">
-                {(g.is_reg === '1' || g.is_reg === 1 || g.is_reg === true ? "R" : "X") + (10000 + Number(g.id || g.reg_id))}
+              <td 
+                className="p-3 text-center text-red-700 tracking-tight"
+                style={{ fontSize: '14px', fontWeight: '900' }}
+              >
+                {displayId}
               </td>
               <td className="p-1 text-center px-4 text-nowrap font-mono">{g.code_ua || "-"}</td>
               <td className="p-1 text-center px-4 text-nowrap font-mono">{g.code_abg || "-"}</td>
@@ -355,9 +400,9 @@ export default function GoatTable({
                   isGuest ? (
                     <span className="text-gray-700">{g.m_name}</span>
                   ) : (
-                    <Link href={`/goats/${g.m_id}`} className="hover:underline">
+                    <a href={`/goats/${g.m_id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                       {g.m_name}
-                    </Link>
+                    </a>
                   )
                 ) : (
                   "-"
@@ -391,9 +436,9 @@ export default function GoatTable({
                   isGuest ? (
                     <span className="text-gray-700">{g.f_name}</span>
                   ) : (
-                    <Link href={`/goats/${g.f_id}`} className="hover:underline">
+                    <a href={`/goats/${g.f_id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                       {g.f_name}
-                    </Link>
+                    </a>
                   )
                 ) : (
                   "-"

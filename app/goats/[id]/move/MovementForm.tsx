@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation';
 export default function MovementForm({ 
   goatId, 
   currentFarmId, 
+  currentFarmName: propFarmName,
   farms, 
   t 
 }: { 
   goatId: string, 
   currentFarmId: number, 
+  currentFarmName?: string,
   farms: any[], 
   t: any 
 }) {
@@ -24,7 +26,7 @@ export default function MovementForm({
     info: ''
   });
 
-  const currentFarmName = farms.find(f => f.id === currentFarmId)?.name || (currentFarmId === 0 ? t.goatForm.noFarm : "Unknown Farm");
+  const currentFarmName = propFarmName || farms.find(f => f.id === currentFarmId)?.name || (currentFarmId === 0 ? t.goatForm.noFarm : "Unknown Farm");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,15 +100,6 @@ export default function MovementForm({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">{t.goatForm.move.additionalInfo}</label>
-            <textarea 
-              value={formData.info}
-              onChange={e => setFormData({...formData, info: e.target.value})}
-              className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-[11px] font-black outline-none focus:border-[#491907] focus:ring-4 focus:ring-[#491907]/5 transition-all shadow-sm min-h-[140px] resize-none"
-              placeholder={t.goatForm.move.infoPlaceholder}
-            />
-          </div>
         </div>
 
         <div className="pt-8 border-t border-gray-50">

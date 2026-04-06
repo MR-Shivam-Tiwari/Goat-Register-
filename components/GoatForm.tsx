@@ -23,8 +23,13 @@ export default function GoatForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const t = getTranslation(lang);
-
     const isEdit = !!initialData;
+
+    const REVERSE_STUD_MAP: Record<number, string> = {
+        1: 'rhb', 2: 'f1', 3: 'f2', 4: 'f3', 5: 'f4', 6: 'f5', 7: 'f6', 8: 'f7', 13: 'f8',
+        9: 'rfb', 10: 'ex1', 11: 'ex2', 12: 'ex3'
+    };
+    const currentStud = initialData?.id_stoodbook ? REVERSE_STUD_MAP[initialData.id_stoodbook] : "rhb";
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -151,10 +156,20 @@ export default function GoatForm({
                         </div>
                         <div className="space-y-1">
                             <label className="text-sm font-bold text-gray-700">{t.goats.studbook}</label>
-                            <select name="studbook" defaultValue={initialData?.id_stoodbook || "main"} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
-                                <option value="main">{t.goats.mainRegister}</option>
-                                <option value="f1">{t.goats.rcbF1}</option>
-                                <option value="ex">{t.goats.experimental}</option>
+                            <select name="studbook" defaultValue={currentStud} className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none">
+                                <option value="rhb">{t.goats.mainRegister}</option>
+                                <option value="f1">RCB F1</option>
+                                <option value="f2">RCB F2</option>
+                                <option value="f3">RCB F3</option>
+                                <option value="f4">RCB F4</option>
+                                <option value="f5">RCB F5</option>
+                                <option value="f6">RCB F6</option>
+                                <option value="f7">RCB F7</option>
+                                <option value="f8">RCB F8</option>
+                                <option value="rfb">Phenotype (RFB)</option>
+                                <option value="ex1">Experimental (up to 50%)</option>
+                                <option value="ex2">Experimental (51-75%)</option>
+                                <option value="ex3">Experimental (76-98%)</option>
                             </select>
                         </div>
                         <div className="space-y-1">
@@ -194,6 +209,10 @@ export default function GoatForm({
                         <div className="space-y-1">
                              <label className="text-sm font-bold text-gray-700">{t.goats.score}</label>
                              <input name="score" type="text" defaultValue={initialData?.score_total} placeholder="0.0" className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none" />
+                        </div>
+                        <div className="space-y-1">
+                             <label className="text-sm font-bold text-gray-700 text-blue-600 uppercase text-[10px]">{t.goats.totalBloodPercent || 'Total Bloodline %'}</label>
+                             <input name="totalPercent" type="text" defaultValue={initialData?.blood_percent} placeholder="62.5" className="w-full border-2 border-blue-100 rounded-sm px-3 py-2 font-bold text-blue-900 focus:border-blue-600 outline-none bg-blue-50/30" />
                         </div>
                     </div>
                 </section>

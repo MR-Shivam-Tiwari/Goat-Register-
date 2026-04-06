@@ -11,25 +11,25 @@ export default async function Home() {
   const t = getTranslation(lang);
 
   return (
-    <main className="bg-gray-50 min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
+    <main className="bg-[#FAF9F6] min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column - Images */}
           <div className="hidden lg:flex lg:col-span-2 flex-col gap-6">
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_milk_nature.png" alt="Milk in Nature" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_motherhood_pure.png" alt="Motherhood and Health" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_nursing_artistic.png" alt="Pure Life" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
           </div>
 
           {/* Center Column - Text Content */}
-          <div className="lg:col-span-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
+          <div className="lg:col-span-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200/60 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-[#491907] opacity-80"></div>
             
             <header className="mb-10 text-center">
@@ -81,13 +81,13 @@ export default async function Home() {
 
           {/* Right Column - Images */}
           <div className="hidden lg:flex lg:col-span-2 flex-col gap-6">
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_child_lavender.png" alt="Lavender Field" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_child_goat_meadow.png" alt="Goat Meadow" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
-            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100">
+            <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-md border border-gray-100/50">
               <Image src="/img/home_child_feeding_goat.png" alt="Feeding Goat" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover" />
             </div>
           </div>
@@ -95,11 +95,11 @@ export default async function Home() {
         </div>
       </div>
 
-      <footer className="mt-16 text-center border-t border-gray-200 pt-10 pb-16 bg-white/50">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">
+      <footer className="mt-16 text-center pt-10 pb-16">
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-3">
             {t.home.footerConsent}
           </p>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]">
+          <p className="text-[11px] text-gray-500 font-black uppercase tracking-[0.4em]">
             {t.home.footerCopyright}
           </p>
       </footer>

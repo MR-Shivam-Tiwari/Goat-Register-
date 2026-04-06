@@ -3,6 +3,8 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
+import { getSessionUser } from "@/lib/access-control";
+import { redirect } from "next/navigation";
 import GoatTable from "@/components/GoatTable";
 import InviteSection from "@/components/InviteSection";
 import PedigreeNode from "@/components/PedigreeNode";
@@ -34,6 +36,7 @@ export default async function GoatDetailPage({
   const t = getTranslation(lang);
 
   const goat = await getGoatData(id);
+  const user = await getSessionUser();
 
   if (!goat)
     return (
@@ -41,6 +44,17 @@ export default async function GoatDetailPage({
         {t.goats.animalNotFound}
       </div>
     );
+
+  // ACCESS CONTROL: Allow Admin (role >= 1) or Owner (by name/login)
+  const isOwner = user && (
+    user.role >= 1 || 
+    user.name === goat.owner || 
+    user.login === goat.owner
+  );
+
+  if (!isOwner) {
+    redirect('/goats');
+  }
 
   const [
     descendants,
@@ -94,7 +108,7 @@ export default async function GoatDetailPage({
                   {goat.name}
                 </h1>
                 <p className="text-white/80 font-bold text-[10px] uppercase tracking-[0.2em]">
-                  {goat.breed_name} • {goat.sex === 1 ? t.goats.male : t.goats.female}
+                  {(goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id))} • {goat.breed_name} • {goat.sex === 1 ? t.goats.male : t.goats.female}
                 </p>
               </div>
             </div>
@@ -103,23 +117,23 @@ export default async function GoatDetailPage({
           <div className="pt-14 pb-8 px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="flex gap-8 items-center text-sm font-black uppercase">
                <div className="flex flex-col gap-0.5">
-                  <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.registryCode}</span>
-                  <span className="text-[#491907] font-black text-xs">{goat.code_ua || goat.id}</span>
+                   <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.registryCode}</span>
+                   <span className="text-[#491907] font-black text-xs">{(goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id))}</span>
                </div>
                {goat.f_id && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.fatherData}</span>
-                    <Link href={`/goats/${goat.f_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-blue-200">
+                    <a href={`/goats/${goat.f_id}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline decoration-blue-200">
                       {goat.f_name}
-                    </Link>
+                    </a>
                   </div>
                 )}
                 {goat.m_id && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.motherData}</span>
-                    <Link href={`/goats/${goat.m_id}`} className="text-blue-700 hover:text-blue-900 underline decoration-pink-200">
+                    <a href={`/goats/${goat.m_id}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline decoration-pink-200">
                       {goat.m_name}
-                    </Link>
+                    </a>
                   </div>
                 )}
             </div>
@@ -271,7 +285,6 @@ export default async function GoatDetailPage({
                   <th className="p-3">{t.goats.lactProtein}</th>
                   <th className="p-3">{t.goats.lactose}</th>
                   <th className="p-3">{t.goats.peakMilk}</th>
-                  <th className="p-3">{t.goats.lactMilkDay}</th>
                   <th className="p-3">{t.goats.density}</th>
                   <th className="p-3">{t.goats.flowRate}</th>
                   <th className="p-3">{t.goats.lactGraph}</th>
@@ -294,7 +307,6 @@ export default async function GoatDetailPage({
                     <td className="p-3">{m.protein}</td>
                     <td className="p-3">{m.lactose || "-"}</td>
                     <td className="p-3">{m.peak_yield || "-"}</td>
-                    <td className="p-3">{m.avg_yield || "-"}</td>
                     <td className="p-3">{m.density || "-"}</td>
                     <td className="p-3">{m.flow_rate || "-"}</td>
                     <td className="p-3">
@@ -348,9 +360,9 @@ export default async function GoatDetailPage({
                 </Link>
                 <div className="h-6 w-[1px] bg-gray-200"></div>
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#491907]/50">
-                   <Link href={`/goats/${goat.id}/certificate/1`} target="_blank" className="hover:text-blue-600 hover:underline">{t.goats.cert1}</Link>
+                   <a href={`/goats/${goat.id}/certificate/1`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 hover:underline">{t.goats.cert1}</a>
                    <span className="opacity-30">|</span>
-                   <Link href={`/goats/${goat.id}/certificate/2`} target="_blank" className="hover:text-blue-600 hover:underline">{t.goats.cert2}</Link>
+                   <a href={`/goats/${goat.id}/certificate/2`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 hover:underline">{t.goats.cert2}</a>
                 </div>
               </div>
             ) : (
@@ -447,7 +459,6 @@ export default async function GoatDetailPage({
                   <th className="p-3">{t.goats.lactMilk}</th>
                   <th className="p-3">{t.goats.lactFat}</th>
                   <th className="p-3">{t.goats.lactProtein}</th>
-                  <th className="p-3">{t.goats.lactMilkDay}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -579,18 +590,22 @@ export default async function GoatDetailPage({
           </div>
           <div className="p-6 space-y-6">
              <div className="flex items-center gap-4 text-sm font-black uppercase">
-                <Link
+                <a
                   href={`/goats/${goat.id}/move?mode=view`}
-                   className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
                 >
                   {t.goats.viewMovement}
-                </Link>
-                <Link
+                </a>
+                <a
                   href={`/goats/${goat.id}/move?mode=add`}
-                   className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
                 >
                   {t.goats.moveAnimal}
-                </Link>
+                </a>
              </div>
 
             <InviteSection goatId={goat.id} t={t} />
@@ -645,7 +660,6 @@ function CertRows({
         </td>
         <td className="p-1.5 font-bold text-gray-700">{selectedLact?.fat || "-"}</td>
         <td className="p-1.5 font-bold text-gray-700">{selectedLact?.protein || "-"}</td>
-        <td className="p-1.5 font-bold text-gray-600">{selectedLact?.milk_day || "-"}</td>
       </tr>,
     );
   }
