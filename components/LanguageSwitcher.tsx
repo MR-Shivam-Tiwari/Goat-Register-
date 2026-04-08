@@ -15,23 +15,27 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 
     setActive(currentLang);
   }, [currentLang]);
 
-  const handleSwitch = (lang: 'ru' | 'en') => {
+  const handleSwitch = async (lang: 'ru' | 'en') => {
     if (lang === active) return;
     
     setActive(lang);
     
-    // Set cookie instantly
-    document.cookie = `nxt-lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
-    
-    startTransition(() => {
-        // Soft refresh first
-        router.refresh();
-        
-        // Hard reload for layout-level consistency
-        setTimeout(() => {
-            window.location.reload();
-        }, 150);
-    });
+    try {
+        await fetch('/api/set-lang', {
+            method: 'POST',
+            body: JSON.stringify({ lang }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        startTransition(() => {
+            router.refresh();
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
+        });
+    } catch (err) {
+        console.error('Failed to set language:', err);
+    }
   };
 
   if (!isMounted) {

@@ -21,18 +21,18 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
   const lang = propLang || (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
   const t = getTranslation(lang);
 
-  // Main navigation links visible to everyone
   const mainLinks = [
     { href: '/', label: t.nav.home },
     { href: '/catalog/goats', label: t.nav.catalog },
     { href: '/farms', label: t.nav.farms },
+    { href: '/catalog/move', label: t.nav.movement },
+    // { href: '/goats', label: t.nav.registry },
     { href: 'https://kozovodstvo.center/', label: t.nav.forum }
   ];
 
   // All links for Mobile Menu (Excluding admin only links handled by icons below)
   const allMobileLinks = [...mainLinks];
   if (user && Number(user.role) >= 1) {
-    allMobileLinks.push({ href: '/goats', label: t.nav.registry });
     allMobileLinks.push({ href: '/catalog/goats/add', label: t.nav.addGoat });
     if (Number(user.role) >= 10) {
         allMobileLinks.push({ href: '/users', label: t.nav.users });
@@ -124,9 +124,12 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
             <div className="flex items-center gap-4">
                 <Link 
                   href="/login" 
-                  className="px-6 py-2 rounded-xl text-gray-700 font-black text-[10px] uppercase tracking-widest border-2 border-gray-100 hover:bg-gray-50 transition-all"
+                  className="w-10 h-10 border-2 border-gray-100 text-gray-400 hover:text-[#B5E6FF] hover:bg-gray-50 transition-all flex items-center justify-center rounded-xl group"
+                  title={t.nav.signIn}
                 >
-                {t.nav.signIn}
+                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
                 </Link>
                 <a 
                   href="/register" 

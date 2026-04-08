@@ -1,160 +1,245 @@
-import { query } from '@/lib/db';
-import Link from 'next/link';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import { cookies } from 'next/headers';
-import { getTranslation, Locale } from '@/lib/translations';
-import { LayoutGrid, ArrowRight, Skull, History, LogOut, TrendingUp, ShieldCheck } from 'lucide-react';
+import { query } from "@/lib/db";
+import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { cookies } from "next/headers";
+import { getTranslation, Locale } from "@/lib/translations";
+import {
+  LayoutGrid,
+  ArrowRight,
+  Skull,
+  History,
+  LogOut,
+  TrendingUp,
+  ShieldCheck,
+} from "lucide-react";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 async function getBreedData(alias: string) {
-  const result = await query('SELECT id, name, alias FROM breeds WHERE TRIM(alias) ILIKE TRIM($1)', [alias]);
+  const result = await query(
+    "SELECT id, name, alias FROM breeds WHERE TRIM(alias) ILIKE TRIM($1)",
+    [alias],
+  );
   return result.rows[0];
 }
 
 async function getBreedPictures(alias: string) {
-    const result = await query('SELECT sex, file FROM pictures WHERE TRIM(alias) ILIKE TRIM($1)', [alias]);
-    const pics: Record<number, string> = {};
-    result.rows.forEach(p => pics[p.sex] = p.file);
-    return pics;
+  const result = await query(
+    "SELECT sex, file FROM pictures WHERE TRIM(alias) ILIKE TRIM($1)",
+    [alias],
+  );
+  const pics: Record<number, string> = {};
+  result.rows.forEach((p) => (pics[p.sex] = p.file));
+  return pics;
 }
 
-export default async function BreedPage({ params: paramsPromise }: { params: Promise<{ alias: string }> }) {
+export default async function BreedPage({
+  params: paramsPromise,
+}: {
+  params: Promise<{ alias: string }>;
+}) {
   const params = await paramsPromise;
   const breed = await getBreedData(params.alias);
   const cookieStore = await cookies();
-  const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+  const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
   const t = getTranslation(lang);
 
-  if (!breed) return <div className="p-40 text-center text-4xl font-black text-primary uppercase tracking-[1em]">{t.catalog.breedNotFound}</div>;
+  if (!breed)
+    return (
+      <div className="p-40 text-center text-4xl font-black text-primary uppercase tracking-[1em]">
+        {t.catalog.breedNotFound}
+      </div>
+    );
 
   const pics = await getBreedPictures(params.alias);
+  const alias = params.alias.trim().toUpperCase();
 
   const categories = [
-    { id: 'female', name: t.goats.female, sex: 0, desc: t.goats.stockRecords, img: 'ui/female_stock.png', color: 'bg-[#E2F0D9]/20' },
-    { id: 'male',   name: t.goats.male,   sex: 1, desc: t.goats.breedingSires, img: 'ui/male_stock.png', color: 'bg-[#C5E0B4]/20' },
-    { id: 'child',  name: t.goats.kidsYoung, sex: 2, desc: t.goats.offspringDesc, img: 'ui/kids_stock.png', color: 'bg-[#F8CBAD]/20' },
+    {
+      id: "female",
+      name: t.catalog.stockGrid.female,
+      sex: 0,
+      desc: t.goats.stockRecords,
+      img:
+        alias === "AN"
+          ? "breedimage/kozi-ang.jpg"
+          : alias === "BUR"
+            ? "breedimage/burskaia-koza.jpg"
+            : "breedimage/kozi13.jpg",
+      color: "bg-[transparent]",
+    },
+    {
+      id: "male",
+      name: t.catalog.stockGrid.male,
+      sex: 1,
+      desc: t.goats.breedingSires,
+      img:
+        alias === "AN"
+          ? "breedimage/nub-kozli.jpg"
+          : alias === "BUR"
+            ? "breedimage/burskaia-kozli.jpg"
+            : "breedimage/kozli3.jpg",
+      color: "bg-[transparent]",
+    },
+    {
+      id: "child",
+      name: t.catalog.stockGrid.kids,
+      sex: 2,
+      desc: t.goats.offspringDesc,
+      img:
+        alias === "AN"
+          ? "breedimage/nub-kozliata.jpg"
+          : alias === "BUR"
+            ? "breedimage/burskaia-kozliata.jpg"
+            : "breedimage/kozliata3.jpg",
+      color: "bg-[transparent]",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
       <div className="max-w-[1200px] mx-auto space-y-8">
-        <Breadcrumbs items={[{ label: t.catalog.breadcrumbs, href: '/catalog/goats' }, { label: breed.name }]} />
+        <Breadcrumbs
+          items={[
+            { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
+            { label: breed.name },
+          ]}
+        />
 
-        <header className="border-b border-gray-100 pb-4 flex flex-col md:flex-row justify-between items-end gap-4">
-            <div>
-                <h1 className="text-3xl font-black text-primary tracking-tighter uppercase italic leading-none">
-                  {breed.name} {t.goats.stockSuffix}
-                </h1>
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-2 opacity-80 flex items-center gap-2">
-                  <LayoutGrid size={10} className="text-secondary" />
-                  {t.goats.officialGeneticDb}
-                </p>
-            </div>
-            <div className="hidden md:flex gap-6 items-center">
-                <div className="flex items-center gap-2 border-r pr-4 border-gray-100">
-                    <TrendingUp size={16} className="text-primary/20" />
-                    <div className="text-right">
-                        <span className="block text-xl font-black text-primary leading-none tracking-tighter italic">12K+</span>
-                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">{t.goats.records}</span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-secondary/30" />
-                    <div className="text-right">
-                        <span className="block text-xl font-black text-secondary leading-none tracking-tighter italic">100%</span>
-                        <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none mt-1 block">{t.farms.certificate}</span>
-                    </div>
-                </div>
-            </div>
+        <header className="border-b border-gray-100 pb-4 flex flex-col md:flex-row justify-between items-end gap-4 text-center md:text-left">
+          <div className="w-full">
+            <h1 className="text-3xl font-black text-primary tracking-tighter uppercase italic leading-none border-b-2 border-primary/10 pb-4 mb-4">
+              {breed.name}
+            </h1>
+          </div>
         </header>
 
-        {/* COMPACT STOCK CATEGORIES */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {categories.map((cat) => (
-            <Link 
-              key={cat.id}
-              href={`/catalog/goats/${breed.alias.trim()}/${cat.id}`}
-              className="group flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-black transition-all duration-300 hover:shadow-lg"
+        {/* MODULE 1: BREED REGISTRIES (Top) */}
+        <section className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {categories.map((cat) => {
+              const isUkrainian = ["UAW", "UAC", "UAS"].includes(alias);
+              const href = isUkrainian 
+                ? `/catalog/goats/${breed.alias.trim()}/${cat.id}?show=all`
+                : `/catalog/goats/${breed.alias.trim()}/${cat.id}`;
+              
+              return (
+                <Link
+                  key={cat.id}
+                  href={href}
+                  className="group flex flex-col items-center text-center"
+                >
+                  <div className="w-full max-w-[280px] flex items-center justify-center overflow-hidden mb-4">
+                    <img
+                      src={`/${cat.img}`}
+                      alt={cat.name}
+                      className="max-h-[160px] w-auto h-auto object-contain transition-all duration-300 group-hover:scale-105 [mix-blend-mode:multiply]"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <h3 className="text-xl font-black text-primary uppercase tracking-tighter italic leading-none group-hover:text-secondary transition-colors underline decoration-black/5 underline-offset-8 decoration-2">
+                      {cat.name}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* MODULE 2: ANIMAL MOVEMENT (Middle Segment) */}
+        <section className="py-2 space-y-6">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ECC41E] italic whitespace-nowrap">
+              {t.catalog.movementTitle}
+            </span>
+            <div className="flex-1 h-px bg-[#ECC41E]/20" />
+          </div>
+
+          <div className="flex items-center justify-center">
+            <Link
+              href={`/catalog/goats/${breed.alias.trim()}/move`}
+              className="group flex items-center gap-6 p-6 rounded-2xl bg-[#ECC41E] border border-[#ECC41E] hover:opacity-90 w-[600px] transition-all"
             >
-              <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-50 relative">
-                 <img 
-                    src={cat.img.startsWith('/') ? cat.img : `/img/${cat.img}`} 
-                    alt={cat.name} 
-                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 text-white">
+                <History size={24} />
               </div>
-              <div className={`p-4 flex flex-col flex-1 bg-white group-hover:${cat.color} transition-colors duration-300`}>
-                <h3 className="text-lg font-black text-primary uppercase tracking-tighter italic leading-none">{cat.name}</h3>
-                <p className="text-[8px] font-black uppercase tracking-widest text-gray-300 mt-2 mb-4 italic leading-none">{cat.desc}</p>
-                <div className="mt-auto">
-                   <div className="flex items-center justify-between px-4 py-2 bg-[#491907] text-secondary font-black text-[9px] uppercase tracking-widest rounded-lg w-full transition-all italic">
-                     {t.catalog.launch} 
-                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                   </div>
-                </div>
+              <div className="flex-1">
+                <p className="text-xl font-black text-white uppercase italic tracking-tighter leading-none">
+                  {t.catalog.transferredAnimalsList}
+                </p>
               </div>
+              <ArrowRight size={20} className="text-white opacity-40 group-hover:opacity-100 transition-all" />
             </Link>
-          ))}
-        </div>
+          </div>
+        </section>
 
-        {/* COMPACT ANIMAL MOVEMENT */}
+        {/* MODULE 3: DECEASED REGISTRY (Bottom Segment) */}
         <section className="pt-6 pb-12 space-y-6">
-            <div className="flex items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300 italic whitespace-nowrap">
-                   {t.goats.animalMovement}
-                </span>
-                <div className="flex-1 h-px bg-gray-100" />
-            </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#23412A] italic whitespace-nowrap">
+              {t.catalog.deceasedTitle}
+            </span>
+            <div className="flex-1 h-px bg-[#23412A]/10" />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <MovementLink 
-                    href={`/catalog/goats/${breed.alias.trim()}/female/dead`}
-                    label={t.goats.eliminatedGoats}
-                    sub={t.goats.culledShort}
-                    icon={<Skull size={18} />}
-                    theme="bg-[#491907]"
-                    textColor="text-white"
-                />
-                <MovementLink 
-                    href={`/catalog/goats/${breed.alias.trim()}/male/dead`}
-                    label={t.goats.retiredGoats}
-                    sub={t.goats.retiredShort}
-                    icon={<History size={18} />}
-                    theme="bg-white border-primary/5 hover:border-primary/20"
-                    textColor="text-primary"
-                />
-                <MovementLink 
-                    href={`/catalog/goats/${breed.alias.trim()}/child/dead`}
-                    label={t.goats.departedYoung}
-                    sub={t.goats.departedShort}
-                    icon={<LogOut size={18} />}
-                    theme="bg-amber-50/10 border-amber-100/50 hover:border-amber-300"
-                    textColor="text-amber-900"
-                />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <MovementLink
+              href={`/catalog/goats/${breed.alias.trim()}/female/dead`}
+              label={t.catalog.deadDoes}
+              icon={<Skull size={18} />}
+              theme="bg-[#23412A] border-[#23412A] hover:opacity-90"
+              textColor="text-white"
+            />
+            <MovementLink
+              href={`/catalog/goats/${breed.alias.trim()}/male/dead`}
+              label={t.catalog.deadBucks}
+              icon={<Skull size={18} />}
+              theme="bg-[#23412A] border-[#23412A] hover:opacity-90"
+              textColor="text-white"
+            />
+            <MovementLink
+              href={`/catalog/goats/${breed.alias.trim()}/child/dead`}
+              label={t.catalog.deadKids}
+              icon={<Skull size={18} />}
+              theme="bg-[#23412A] border-[#23412A] hover:opacity-90"
+              textColor="text-white"
+            />
+          </div>
         </section>
 
         <footer className="border-t border-gray-100 pt-8 pb-10 text-center opacity-30">
-            <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter">© {new Date().getFullYear()} {t.home.footerCopyright}</span>
+          <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter">
+            © {new Date().getFullYear()} {t.home.footerCopyright}
+          </span>
         </footer>
       </div>
     </div>
   );
 }
 
-function MovementLink({ href, label, sub, icon, theme, textColor }: any) {
-    return (
-        <Link href={href} className={`group flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-md ${theme}`}>
-            <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-black/5 border border-black/5 ${textColor}`}>
-                {icon}
-            </div>
-            <div>
-                <p className={`text-[12px] font-black uppercase tracking-tight ${textColor}`}>{label}</p>
-                <p className="text-[8px] font-bold text-gray-300 uppercase tracking-widest mt-0.5">{sub}</p>
-            </div>
-            <ArrowRight size={14} className={`ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all ${textColor}`} />
-        </Link>
-    );
+function MovementLink({ href, label, icon, theme, textColor }: any) {
+  return (
+    <Link
+      href={href}
+      className={`group flex items-center gap-4 p-5 rounded-xl border transition-all duration-300 hover:shadow-md ${theme}`}
+    >
+      <div
+        className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-white/10 ${textColor}`}
+      >
+        {icon}
+      </div>
+      <div>
+        <p
+          className={`text-[12px] font-black uppercase tracking-tight ${textColor}`}
+        >
+          {label}
+        </p>
+      </div>
+      <ArrowRight
+        size={14}
+        className={`ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all ${textColor}`}
+      />
+    </Link>
+  );
 }

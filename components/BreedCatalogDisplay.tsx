@@ -25,14 +25,24 @@ export default function BreedCatalogDisplay({ breeds, t }: BreedCatalogGridProps
           className="group bg-white border border-gray-100 rounded-[32px] overflow-hidden hover:border-[#491907] hover:shadow-[0_20px_50px_rgba(73,25,7,0.15)] transition-all duration-500 flex flex-col shadow-md relative h-full"
         >
           {/* IMAGE SECTION */}
-          <div className="aspect-[4/5] w-full overflow-hidden bg-gray-50 relative border-b border-gray-50">
+          <div className="aspect-[4/5] w-full overflow-hidden bg-white relative border-b border-gray-50 p-6 flex items-center justify-center rounded-2xl">
              <img 
-                src={`/img/breeds/${breed.alias.trim()}.png`} 
+                src={
+                  breed.name.includes('Альпийская') ? '/breedimage/Альпийская.jpg' :
+                  breed.name.includes('Бурская') ? '/breedimage/Бурская.jpg' :
+                  breed.name.includes('Ла-Манча') ? '/breedimage/ЛаМанча.jpg' :
+                  breed.name.includes('Украинская короткоухая') ? '/breedimage/Украинскаякороткоухая.jpg' :
+                  breed.name.includes('Украинская цветная') ? '/breedimage/УкраїнськаСтроката.jpg' :
+                  breed.name.includes('Карликовая группа') ? '/breedimage/Карликоваягруппакоз.jpg' :
+                  breed.name.includes('Тюринг') ? '/breedimage/ТюрингскаяЛеснаяКоза.jpg' :
+                  breed.name.includes('Англо-нубийская') ? '/breedimage/anglo_nubian_gen.png' :
+                  `/img/breeds/${breed.alias.trim()}.png`
+                } 
                 alt={breed.name} 
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/img/breeds/default.png';
                 }}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out rounded-lg shadow-sm"
             />
             
             {/* ALIAS LABEL */}

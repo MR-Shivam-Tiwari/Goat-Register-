@@ -21,16 +21,15 @@ export default function AddPhotoGallery({ goatId, t }: { goatId: string | number
         try {
             const res = await addPhotoAction(formData);
             if (res.success) {
-                router.refresh(); // Refresh to show the new photo in gallery
+                router.refresh(); 
             } else {
-                alert(res.error || 'Failed to upload photo');
+                alert(res.error || t.errors.uploadFailed);
             }
         } catch (err) {
             console.error(err);
-            alert('Something went wrong');
+            alert(t.errors.somethingWrong);
         } finally {
             setUploading(false);
-            // Reset input
             e.target.value = '';
         }
     };
@@ -44,7 +43,7 @@ export default function AddPhotoGallery({ goatId, t }: { goatId: string | number
                 {uploading ? (
                     <>
                         <Loader2 size={14} className="animate-spin" />
-                        <span>Uploading...</span>
+                        <span>{t.errors.uploading}</span>
                     </>
                 ) : (
                     <>

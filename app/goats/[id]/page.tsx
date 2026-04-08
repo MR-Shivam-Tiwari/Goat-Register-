@@ -120,19 +120,19 @@ export default async function GoatDetailPage({
                    <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.registryCode}</span>
                    <span className="text-[#491907] font-black text-xs">{(goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id))}</span>
                </div>
-               {goat.f_id && (
+                {goat.f_id && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.fatherData}</span>
-                    <a href={`/goats/${goat.f_id}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline decoration-blue-200">
-                      {goat.f_name}
+                    <a href={`/goats/${goat.f_id}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 font-bold text-xs hover:text-blue-900 underline decoration-blue-200">
+                      {goat.f_name} (ID: {goat.f_id})
                     </a>
                   </div>
                 )}
                 {goat.m_id && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.motherData}</span>
-                    <a href={`/goats/${goat.m_id}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900 underline decoration-pink-200">
-                      {goat.m_name}
+                    <a href={`/goats/${goat.m_id}`} target="_blank" rel="noopener noreferrer" className="text-pink-600 font-bold text-xs hover:text-pink-800 underline decoration-pink-200">
+                      {goat.m_name} (ID: {goat.m_id})
                     </a>
                   </div>
                 )}

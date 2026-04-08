@@ -17,6 +17,31 @@ async function getT() {
     return getTranslation(lang);
 }
 
+async function saveFile(file: File, prefix: string): Promise<string | null> {
+    if (!file || file.size === 0) return null;
+    
+    try {
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!existsSync(uploadDir)) {
+            mkdirSync(uploadDir, { recursive: true });
+        }
+        
+        // Sanitize: remove non-alphanumeric except dot, underscore, dash
+        const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const fileName = `${prefix}_${Date.now()}_${sanitizedName}`;
+        const filePath = path.join(uploadDir, fileName);
+        
+        await fs.writeFile(filePath, buffer);
+        return fileName;
+    } catch (err) {
+        console.error('File Save Error:', err);
+        return null;
+    }
+}
+
 export async function loginAction(prevState: any, formData: FormData) {
   const t = await getT();
   const loginInput = formData.get('login') as string;
@@ -140,21 +165,7 @@ export async function addGoatAction(formData: FormData) {
 
     // Photo
     const photoFile = formData.get('photo') as File | null;
-    let photoName = null;
-
-    if (photoFile && photoFile.size > 0) {
-        const bytes = await photoFile.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-        if (!existsSync(uploadDir)) {
-            mkdirSync(uploadDir, { recursive: true });
-        }
-        
-        photoName = `goat_${Date.now()}_${photoFile.name.replace(/\s+/g, '_')}`;
-        const filePath = path.join(uploadDir, photoName);
-        await fs.writeFile(filePath, buffer);
-    }
+    const photoName = photoFile ? await saveFile(photoFile, 'goat') : null;
 
     // Mapping studbook
     const studbookMap: Record<string, number> = { 
@@ -223,19 +234,12 @@ export async function addPhotoAction(formData: FormData) {
         return { error: t.errors.invalidData };
     }
 
-    try {
-        const bytes = await photoFile.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-        if (!existsSync(uploadDir)) {
-            mkdirSync(uploadDir, { recursive: true });
-        }
-        
-        const photoName = `goat_${goatId}_${Date.now()}_${photoFile.name.replace(/\s+/g, '_')}`;
-        const filePath = path.join(uploadDir, photoName);
-        await fs.writeFile(filePath, buffer);
+    const photoName = await saveFile(photoFile, `goat_${goatId}`);
+    if (!photoName) {
+        return { error: t.errors.uploadFailed };
+    }
 
+    try {
         await query(
             'INSERT INTO goats_pic (id_goat, file) VALUES ($1, $2)',
             [goatId, photoName]
@@ -245,7 +249,7 @@ export async function addPhotoAction(formData: FormData) {
         revalidatePath(`/goats`);
         return { success: true };
     } catch (e: any) {
-        console.error('Add Photo Error:', e.message);
+        console.error('Add Photo Action DB Error:', e.message);
         return { error: t.errors.uploadFailed + e.message };
     }
 }
@@ -344,17 +348,9 @@ export async function updateGoatAction(formData: FormData) {
             [nickname, sex, status, parseInt(farm) || null, goatId]
         );
 
-        // 2. Update goats_data
-        let photoName = null;
+        // Update goats_data
         const photoFile = formData.get('photo') as File | null;
-        if (photoFile && photoFile.size > 0) {
-            const bytes = await photoFile.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-            const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-            if (!existsSync(uploadDir)) mkdirSync(uploadDir, { recursive: true });
-            photoName = `goat_${goatId}_${Date.now()}_${photoFile.name.replace(/\s+/g, '_')}`;
-            await fs.writeFile(path.join(uploadDir, photoName), buffer);
-        }
+        const photoName = photoFile ? await saveFile(photoFile, `goat_${goatId}`) : null;
 
         const dataUpdateFields = [
             'id_breed = $1', 'is_abg = $2', 'manuf = $3', 'owner = $4', 
@@ -410,21 +406,12 @@ export async function addFarmAction(formData: FormData) {
         const uploadDir = path.join(process.cwd(), 'public', 'uploads');
         if (!existsSync(uploadDir)) mkdirSync(uploadDir, { recursive: true });
 
-        let pic1 = 'no_pic.png';
-        let pic2 = null;
-
-        if (pic1File && pic1File.size > 0) {
-            pic1 = `farm_p1_${Date.now()}_${pic1File.name.replace(/\s+/g, '_')}`;
-            await fs.writeFile(path.join(uploadDir, pic1), Buffer.from(await pic1File.arrayBuffer()));
-        }
-        if (pic2File && pic2File.size > 0) {
-            pic2 = `farm_p2_${Date.now()}_${pic2File.name.replace(/\s+/g, '_')}`;
-            await fs.writeFile(path.join(uploadDir, pic2), Buffer.from(await pic2File.arrayBuffer()));
-        }
+        const pic1 = await saveFile(formData.get('pic1') as File, 'farm_p1');
+        const pic2 = await saveFile(formData.get('pic2') as File, 'farm_p2');
 
         await query(
             'INSERT INTO farms (name, tmpl, pic1, pic2) VALUES ($1, $2, $3, $4)',
-            [name, description, pic1, pic2]
+            [name, description, pic1 || 'no_pic.png', pic2]
         );
 
         revalidatePath('/farms');
@@ -453,16 +440,18 @@ export async function updateFarmAction(formData: FormData) {
         const values: any[] = [name, description];
 
         if (pic1File && pic1File.size > 0) {
-            const pic1 = `farm_p1_${Date.now()}_${pic1File.name.replace(/\s+/g, '_')}`;
-            await fs.writeFile(path.join(uploadDir, pic1), Buffer.from(await pic1File.arrayBuffer()));
-            updateFields.push(`pic1 = $${values.length + 1}`);
-            values.push(pic1);
+            const pic1 = await saveFile(pic1File, 'farm_p1');
+            if (pic1) {
+                updateFields.push(`pic1 = $${values.length + 1}`);
+                values.push(pic1);
+            }
         }
         if (pic2File && pic2File.size > 0) {
-            const pic2 = `farm_p2_${Date.now()}_${pic2File.name.replace(/\s+/g, '_')}`;
-            await fs.writeFile(path.join(uploadDir, pic2), Buffer.from(await pic2File.arrayBuffer()));
-            updateFields.push(`pic2 = $${values.length + 1}`);
-            values.push(pic2);
+            const pic2 = await saveFile(pic2File, 'farm_p2');
+            if (pic2) {
+                updateFields.push(`pic2 = $${values.length + 1}`);
+                values.push(pic2);
+            }
         }
 
         values.push(id);

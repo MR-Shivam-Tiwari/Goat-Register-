@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 
 export default function GoatTable({
@@ -15,19 +15,6 @@ export default function GoatTable({
   isGuest?: boolean;
 }) {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="w-full h-96 bg-white animate-pulse flex items-center justify-center border border-gray-100 rounded-lg">
-         <span className="text-gray-300 font-black uppercase tracking-[0.5em]">Loading Registry...</span>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col w-full h-full min-h-0">
@@ -81,7 +68,7 @@ export default function GoatTable({
           </tr>
           {/* BOTTOM HEADER - FIELDS */}
           <tr className="text-sm font-bold uppercase tracking-tight text-gray-700 border-b border-gray-300">
-            <th className="p-1  px-5 border-r text-center text-nowrap border-gray-300 sticky left-0 bg-white z-40 min-w-[150px] text-[#491907]">
+            <th className="p-1 px-5 border-r text-center text-nowrap border-gray-300 sticky left-0 bg-white z-40 min-w-[450px] text-[#491907]">
               {t.goats.nickname}
             </th>
             <th className="p-1 px-5 border-r text-center text-nowrap border-gray-200 bg-[#F0F7F0] text-[#491907]">

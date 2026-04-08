@@ -11,7 +11,7 @@ export default async function Home() {
   const t = getTranslation(lang);
 
   return (
-    <main className="bg-[#FAF9F6] min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
+    <main className="bg-[#FFFFF0] min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
@@ -32,9 +32,10 @@ export default async function Home() {
           <div className="lg:col-span-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200/60 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-[#491907] opacity-80"></div>
             
-            <header className="mb-10 text-center">
+            <header className="mb-10 text-center flex flex-col justify-center items-center">
+              <span className="text-gray-500 font-black text-sm mb-1">ГС</span>
               <h1 className="text-xl md:text-2xl font-bold text-red-600 uppercase leading-snug tracking-tight">
-                {t.home.heroHeader}
+                &quot;{t.home.heroHeader}&quot;
               </h1>
             </header>
 

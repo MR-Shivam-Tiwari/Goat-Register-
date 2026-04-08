@@ -131,13 +131,10 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
 
             {/* INFO COLUMN */}
             <div className="flex-1 p-8 flex flex-col min-w-0">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-gray-100 pb-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="min-w-0 flex-1">
                         <span className="text-[12px] font-black uppercase text-gray-300 tracking-[0.3em] font-mono leading-none">{t.farms.officialIdPrefix}{farm.id} / {t.farms.officialMember}</span>
                         <h1 className="text-3xl md:text-5xl font-black text-primary uppercase italic tracking-tighter leading-none mt-2 break-words">{farm.name}</h1>
-                        <p className="text-[11px] font-bold text-amber-900/60 uppercase tracking-widest mt-3">
-                            {lang === 'ru' ? 'ПРЕФИКС' : 'PREFIX'}: <span className="text-amber-900 font-black">{farm.name.split(' ')[0]}</span>
-                        </p>
                     </div>
                     {isAdmin && (
                         <a href={`/farms/${farm.id}/edit`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-[#491907] text-white rounded-lg font-black text-[11px] uppercase tracking-widest shadow-md hover:bg-black transition-all group">
@@ -147,14 +144,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                     )}
                 </div>
 
-                <div className="flex-1 overflow-auto max-h-[250px] mb-6">
-                    <div 
-                        dangerouslySetInnerHTML={{ __html: farm.tmpl }} 
-                        className="farm-tmpl-content text-gray-600 font-bold leading-relaxed text-[12px] uppercase italic [&_p]:mb-2 [&_span]:!text-inherit break-words"
-                    />
-                </div>
-
-                <div className="mt-auto flex flex-col sm:flex-row gap-4">
+                <div className="mt-8 flex flex-col sm:flex-row gap-4">
                     <Link href="/farms" className="px-8 py-3 border border-gray-200 text-gray-400 font-black rounded-sm text-[11px] uppercase tracking-widest hover:bg-gray-50 transition-all text-center">
                         ← {t.farms.toFarmList}
                     </Link>
@@ -168,7 +158,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             <div className="space-y-4">
                 <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-black border-b-2 border-black pb-3 italic flex items-center gap-3">
                     <span className="w-2 h-2 bg-black rounded-full"></span>
-                    {lang === 'ru' ? 'ЖИВОТНЫЕ В ХОЗЯЙСТВЕ' : 'STOCK PRESENT ON FARM'}
+                    {t.farms.activeStockRegistry}
                 </h2>
                 <div className="bg-white border rounded-sm overflow-hidden shadow-2xl relative min-h-[300px]">
                     <div className="overflow-x-auto">
@@ -214,7 +204,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             <div className="space-y-4 pt-4">
                 <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-red-950 border-b-2 border-red-200 pb-3 italic flex items-center gap-3">
                     <span className="w-2 h-2 bg-red-950 rounded-full animate-pulse"></span>
-                    {lang === 'ru' ? 'ПЕРЕМЕЩЁННЫЕ ЖИВОТНЫЕ' : 'RELOCATED ANIMALS'}
+                    {t.farms.displacedStock}
                 </h2>
                 <div className="bg-white border border-red-50 rounded-sm overflow-hidden shadow-xl relative">
                     <div className="overflow-x-auto">
@@ -253,16 +243,6 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             </div>
             )}
         </div>
-
-        {/* SECONDARY VIEW */}
-        {farm.displayPic2 && (
-            <div className="w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-2xl border border-gray-100 relative grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100 bg-white">
-                <img src={farm.displayPic2} alt="Farm Detail View" className="w-full h-[400px] object-contain aspect-video" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                    <span className="text-[12px] font-black uppercase text-white tracking-[0.5em] italic leading-none shadow-sm">{t.farms.verifiedInfrastructure}</span>
-                </div>
-            </div>
-        )}
       </div>
     </div>
   );

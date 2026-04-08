@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import FilterCard from "./FilterCard";
 import GoatTable from "@/components/GoatTable";
+import RegistryImage from "@/components/RegistryImage";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +112,6 @@ function getRegisterNames(t: any): Record<string, string> {
     ex3: "Experimental (76–98%)",
   };
 }
-
 async function getBreedData(alias: string, lang: string = "ru") {
   if (alias === "all") {
     return {
@@ -264,6 +264,7 @@ export default async function GoatsListPage({
     );
 
   const pics = await getBreedPictures(alias);
+  const breedImg = `/img/breeds/${alias}.png`;
 
   // Detect dead/eliminated view from second slug segment
   const isDead = status === "dead";
@@ -276,31 +277,35 @@ export default async function GoatsListPage({
         ? t.goats.female
         : t.catalog.kidsYoung;
 
+  const isUkrainian = ["UAW", "UAC", "UAS"].includes(alias.toUpperCase());
+  const breedAliasSimple = alias.trim().toUpperCase();
+
   const breadcrumbItems: any[] = [
     { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
-    { label: breed.name, href: `/catalog/goats/${alias}` },
+    { label: breed.name, href: `/catalog/goats/${breedAliasSimple}` },
   ];
 
   if (isDead) {
-    breadcrumbItems.push({ label: sexLabel, href: `/catalog/goats/${alias}/${sex}` });
-    breadcrumbItems.push({ label: t.goats.animalMovement });
+    breadcrumbItems.push({ label: sexLabel, href: `/catalog/goats/${breedAliasSimple}/${sex}` });
+    breadcrumbItems.push({ label: t.catalog.deadAnimals });
   } else {
     breadcrumbItems.push({ label: sexLabel });
   }
 
-  if (reg) {
+  if (reg && !isUkrainian) {
     breadcrumbItems.push({ label: REGISTER_NAMES[reg] || reg });
-  } else if (view) {
+  } else if (view && !isUkrainian) {
     breadcrumbItems.push({
       label: view === "rcb" ? "RCB Generations" : "Experimental Registry",
     });
   }
 
   const showRegisterGrid =
-    (sex === "male" || sex === "female") && !reg && !view && !show;
+    (sex === "male" || sex === "female") && !reg && !view && !show && !isDead;
   const showGenerationGrid = view === "rcb" && !show;
   const showExperimentalGrid = view === "ex" && !show;
-  const showTable = !!(reg || age || farm || owner || show === "all" || sex === "child");
+  const showKidsGrid = sex === "child" && !age && !show && !isDead;
+  const showTable = !!(reg || age || farm || owner || show === "all" || (sex === "child" && age) || isDead);
 
   const filterOptions = showTable
     ? await getFilterOptions()
@@ -310,50 +315,51 @@ export default async function GoatsListPage({
     <div className="h-[calc(100vh-64px)] flex flex-col bg-[#FDFDFD] px-4 font-sans leading-tight text-gray-800 overflow-hidden">
       <div className="max-w-[2800px] w-full mx-auto flex flex-col h-full space-y-2 py-4">
         <div className="flex-shrink-0">
-          <Breadcrumbs items={breadcrumbItems} />
+          <Breadcrumbs items={breadcrumbItems} t={t} />
         </div>
 
         <div className="flex-1 min-h-0 overflow-hidden">
           {showRegisterGrid && (
             <section className="h-full overflow-y-auto space-y-12 pb-10">
             <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
-              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
-                {t.catalog.registryTypes}
+              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight uppercase">
+                {t.catalog.registerPage.title}
               </h2>
               <p className="text-sm font-bold opacity-40">
-                {t.catalog.selectCategory} {breed.name}
+                {t.catalog.registerPage.subtitle} {breed.name}
               </p>
             </header>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-10">
               {[
                 {
                   id: "rhb",
-                  name: t.rules.rhbTitle,
+                  name: t.catalog.registerPage.rhb,
+                  sub: t.catalog.registerPage.rhbSub,
                   code: "RHB",
-                  img: "/img/ui/reg_rhb.png",
-                  desc: t.catalog.rhbDesc,
+                  img: "/img/ui/premium_goat.png",
                 },
                 {
                   id: "rcb",
-                  name: t.catalog.absorption,
+                  name: t.catalog.registerPage.rcb,
+                  sub: t.catalog.registerPage.rcbSub,
                   code: "RCB",
-                  img: "/img/ui/reg_rcb.png",
-                  desc: t.catalog.rcbDesc,
+                  img: "/img/ui/premium_goat.png",
                   isFolder: true,
                 },
                 {
                   id: "rfb",
-                  name: t.rules.rfbTitle,
+                  name: t.catalog.registerPage.rfb,
+                  desc: t.catalog.registerPage.rfbDesc,
                   code: "RFB",
-                  img: "/img/ui/reg_rfb.png",
-                  desc: t.catalog.rfbDesc,
+                  img: "/img/ui/premium_goat.png",
                 },
                 {
                   id: "ex",
-                  name: t.catalog.experimental,
+                  name: t.catalog.registerPage.rexb,
+                  desc: t.catalog.registerPage.rexbDesc,
                   code: "RExB",
-                  img: "/img/ui/reg_ex.png",
-                  desc: t.catalog.exDesc,
+                  img: "/img/ui/premium_goat.png",
                   isFolder: true,
                 },
               ].map((item) => (
@@ -364,25 +370,34 @@ export default async function GoatsListPage({
                       ? `?view=${item.id}`
                       : `?reg=${item.id}`
                   }
-                  className="bg-white group overflow-hidden border border-primary/10 hover:border-secondary rounded-2xl transition-all shadow-sm hover:shadow-xl flex flex-col"
+                  className="group flex flex-col bg-white border border-gray-200 h-full transition-colors hover:border-[#441a0e]"
                 >
-                  <div className="aspect-[16/9] w-full overflow-hidden border-b border-primary/10">
+                  <div className="aspect-[4/3] w-full overflow-hidden border-b border-gray-100">
                     <img
                       src={item.img}
                       alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="p-8 flex flex-col flex-1 text-center items-center">
-                    <h3 className="text-xl font-black text-primary mb-1 tracking-tight uppercase italic">
-                      {item.name}
+                  <div className="flex flex-col items-center text-center p-8 flex-1">
+                    <h3 className="text-base font-black text-gray-900 leading-tight uppercase mb-2">
+                        {item.name}
                     </h3>
-                    <span className="text-secondary font-black text-[10px] mb-4 uppercase tracking-widest bg-secondary/5 px-3 py-1 rounded-full">
-                      {item.code}
-                    </span>
-                    <p className="text-xs text-primary/70 mb-8 leading-relaxed max-w-[240px]">{item.desc}</p>
-                    <div className="mt-auto px-6 py-2 w-full bg-[#491907] text-white font-black text-[10px] uppercase tracking-widest rounded-lg transition-transform group-hover:scale-[1.02] italic">
-                      {t.catalog.launch} ➔
+                    {item.sub && (
+                        <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                            {item.sub}
+                        </p>
+                    )}
+                    {item.desc && (
+                        <p className="text-xs text-gray-500 leading-relaxed max-w-[220px]">
+                            {item.desc}
+                        </p>
+                    )}
+                    
+                    <div className="w-full mt-auto pt-8">
+                        <div className="w-full py-3 bg-[#441a0e] text-white font-black text-[10px] uppercase tracking-[0.25em] text-center rounded-sm">
+                            {t.catalog.launch} ➔
+                        </div>
                     </div>
                   </div>
                 </Link>
@@ -436,9 +451,6 @@ export default async function GoatsListPage({
               <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
                 RExB Classification
               </h2>
-              <p className="text-sm font-bold opacity-40 italic">
-                {t.catalog.experimentalStandards}
-              </p>
             </header>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -478,19 +490,55 @@ export default async function GoatsListPage({
           </section>
         )}
 
+        {showKidsGrid && (
+            <section className="h-full overflow-y-auto space-y-6 pb-10">
+                <header className="border-b border-primary/10 pb-6 text-center max-w-4xl mx-auto uppercase">
+                    <h2 className="text-3xl md:text-4xl font-black text-primary mb-2 tracking-tight">
+                        {t.catalog.kidsGrid.title}
+                    </h2>
+                </header>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-10">
+                    {[
+                        { id: 'male', age: '3', label: t.catalog.kidsGrid.male03 },
+                        { id: 'male', age: '6', label: t.catalog.kidsGrid.male36 },
+                        { id: 'male', age: '12', label: t.catalog.kidsGrid.male612 },
+                        { id: 'female', age: '3', label: t.catalog.kidsGrid.female03 },
+                        { id: 'female', age: '6', label: t.catalog.kidsGrid.female36 },
+                        { id: 'female', age: '12', label: t.catalog.kidsGrid.female612 },
+                    ].map((item, idx) => (
+                        <Link 
+                            key={idx}
+                            href={`?s=${item.id}&age=${item.age}`}
+                            className="group flex flex-col bg-white border border-gray-100 rounded-sm overflow-hidden"
+                        >
+                            <div className="aspect-square bg-white flex items-center justify-center p-4 border-b border-gray-50">
+                                <img src="/img/ui/kid_goat.png" className="w-full h-full object-contain" alt="" />
+                            </div>
+                            <div className="p-3 text-center border-t border-gray-50">
+                                <h3 className="text-[10px] font-black uppercase tracking-tight text-gray-900 leading-tight">
+                                    {item.label}
+                                </h3>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+        )}
+
         {showTable && (
           <section className="h-full flex flex-col space-y-4">
             <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
               <div>
                 <h2 className="text-xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
                   {breed.name} /{" "}
-                  {reg
+                  {reg && !isUkrainian
                     ? REGISTER_NAMES[reg]
-                    : age ? `${t.catalog.upTo} ${age}M` : t.catalog.allRegistry}
+                    : age ? `${t.catalog.upTo} ${age}M` : (isUkrainian ? t.catalog.allRegistry : t.catalog.allRegistry)}
                 </h2>
                 <div className="flex gap-2">
                   <span className="bg-primary text-secondary px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-widest">
-                    {s === "male" ? t.goats.male : t.goats.female}
+                    {sexLabel}
                   </span>
                 </div>
               </div>
