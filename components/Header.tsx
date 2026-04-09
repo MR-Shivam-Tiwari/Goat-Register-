@@ -16,7 +16,7 @@ export default async function Header({ lang: propLang }: { lang?: Locale }) {
           <img 
             src="/img/forum_kozovodstvo.jpg" 
             alt="Association Logo" 
-            className="h-[80px] md:h-[110px] w-auto object-contain brightness-110 drop-shadow-2xl rounded-lg"
+            className="h-[80px] md:h-[130px] w-auto object-contain brightness-110 drop-shadow-2xl rounded-sm"
           />
         </Link>
       </div>

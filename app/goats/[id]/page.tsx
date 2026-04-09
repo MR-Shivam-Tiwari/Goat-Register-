@@ -45,11 +45,10 @@ export default async function GoatDetailPage({
       </div>
     );
 
-  // ACCESS CONTROL: Allow Admin (role >= 1) or Owner (by name/login)
+  // ACCESS CONTROL: Allow Admin (role >= 10) or Owner (by id_user)
   const isOwner = user && (
-    user.role >= 1 || 
-    user.name === goat.owner || 
-    user.login === goat.owner
+    user.role >= 10 || 
+    user.id === goat.id_user
   );
 
   if (!isOwner) {
@@ -108,7 +107,7 @@ export default async function GoatDetailPage({
                   {goat.name}
                 </h1>
                 <p className="text-white/80 font-bold text-[10px] uppercase tracking-[0.2em]">
-                  {(goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id))} • {goat.breed_name} • {goat.sex === 1 ? t.goats.male : t.goats.female}
+                  {(goat.is_abg ? 'R' : 'X') + goat.id} • {goat.breed_name} • {goat.sex === 1 ? t.goats.male : t.goats.female}
                 </p>
               </div>
             </div>
@@ -118,7 +117,7 @@ export default async function GoatDetailPage({
             <div className="flex gap-8 items-center text-sm font-black uppercase">
                <div className="flex flex-col gap-0.5">
                    <span className="text-gray-400 font-bold text-sm tracking-widest">{t.goats.registryCode}</span>
-                   <span className="text-[#491907] font-black text-xs">{(goat.is_reg ? 'R' : 'X') + (10000 + Number(goat.id))}</span>
+                   <span className="text-[#491907] font-black text-xs">{(goat.is_abg ? 'R' : 'X') + goat.id}</span>
                </div>
                 {goat.f_id && (
                   <div className="flex flex-col gap-0.5">
@@ -149,7 +148,7 @@ export default async function GoatDetailPage({
             </h3>
           </div>
           <div className="p-0 overflow-hidden">
-            <GoatTable goats={[goat]} t={t} isMain />
+            <GoatTable goats={[goat]} t={t} isMain currentUser={user} />
           </div>
         </section>
 
@@ -253,7 +252,7 @@ export default async function GoatDetailPage({
                 {t.goats.directDescendantsTitle}
               </h3>
               <div className="rounded-lg border border-gray-100 shadow-sm overflow-hidden">
-                <GoatTable goats={descendants} t={t} />
+                <GoatTable goats={descendants} t={t} currentUser={user} />
               </div>
             </div>
           </div>
@@ -437,23 +436,23 @@ export default async function GoatDetailPage({
           </div>
         </section>
 
-        {/* CERT DATA SELECTOR */}
+        {/* CERT DATA SELECTOR (BLUE OVALS AREA) */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.certLactDataTitle}
+              {t.goats.certLactDataTitle} (Official Selectors)
             </h2>
-            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-sm font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
+            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
               {t.goats.refresh}
             </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse font-black text-center uppercase whitespace-nowrap">
-              <thead className="bg-gray-100 border-b border-gray-200 text-[#491907]">
-                <tr className="divide-x divide-gray-200">
-                  <th className="p-3">{t.goats.lactViewer}</th>
-                  <th className="p-3 w-[25%] uppercase">{t.goats.certChoice}</th>
+              <thead className="bg-[#491907] text-white">
+                <tr className="divide-x divide-white/10">
+                  <th className="p-3 w-16">{t.goats.lactViewer}</th>
+                  <th className="p-3 w-[40%] text-start uppercase">{t.goats.certChoice}</th>
                   <th className="p-3">{t.goats.lactNo}</th>
                   <th className="p-3">{t.goats.lactDays}</th>
                   <th className="p-3">{t.goats.lactMilk}</th>
@@ -462,120 +461,84 @@ export default async function GoatDetailPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                 <CertRows
-                  label={t.common.ancestors.p}
-                  count={5}
-                  bgColor="bg-[#F6B8EB]/10"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="i"
-                  pathKey="ME"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.m}
-                  count={3}
-                  bgColor="bg-[#F8DAB8]/20"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="m"
-                  pathKey="MEM"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.f}
-                  count={3}
-                  bgColor="bg-[#F8CBAD]/15"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="f"
-                  pathKey="MEF"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.mm}
-                  count={3}
-                  bgColor="bg-gray-50"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="mm"
-                  pathKey="MEMM"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.mf}
-                  count={3}
-                  bgColor="bg-gray-50/50"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="fm"
-                  pathKey="MEMF"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.fm}
-                  count={3}
-                  bgColor="bg-gray-50"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="mf"
-                  pathKey="MEFM"
-                  t={t}
-                />
-                <CertRows
-                  label={t.common.ancestors.ff}
-                  count={3}
-                  bgColor="bg-gray-50/50"
-                  certData={certData}
-                  ancestorLacts={ancestorLacts}
-                  pathPrefix="ff"
-                  pathKey="MEFF"
-                  t={t}
-                />
+                 {[
+                   { label: "M", p: "m", path: "MEM", color: "bg-pink-100/10" },
+                   { label: "F", p: "f", path: "MEF", color: "bg-blue-100/10" },
+                   { label: "MM", p: "mm", path: "MEMM", color: "bg-pink-50/20" },
+                   { label: "FM", p: "fm", path: "MEMF", color: "bg-blue-50/20" },
+                   { label: "MF", p: "mf", path: "MEFM", color: "bg-pink-50/20" },
+                   { label: "FF", p: "ff", path: "MEFF", color: "bg-blue-50/20" },
+                 ].map((row, idx) => (
+                    <CertRows
+                      key={idx}
+                      label={row.label}
+                      count={3}
+                      bgColor={row.color}
+                      certData={certData}
+                      ancestorLacts={ancestorLacts}
+                      pathPrefix={row.p}
+                      pathKey={row.path}
+                      t={t}
+                    />
+                 ))}
               </tbody>
             </table>
           </div>
         </section>
 
-        {/* 3RD GEN PRODUCTIVITY */}
+        {/* 3RD GEN PRODUCTIVITY (COMPACT) */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
-            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.thirdGenProductivity}
+          <div className="bg-gray-900 px-6 py-4 border-b border-gray-100 flex justify-between items-center group">
+            <h2 className="text-white text-sm font-black uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-white rounded-full"></span>
+              {t.goats.thirdGenProductivity} (Automated)
             </h2>
+            <span className="text-[10px] text-white/40 font-bold uppercase italic group-hover:text-emerald-400 transition-colors">Auto-formatted: L/Days/Milk/Fat/Protein</span>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 border border-gray-100 rounded-lg overflow-hidden shadow-sm">
+          <div className="p-4 bg-gray-50/30">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                {[
-                 { l: "MMM", f: "id_mmm_row1" },
-                 { l: "BMM", f: "id_fmm_row1" },
-                 { l: "MBM", f: "id_mfm_row1" },
-                 { l: "BBM", f: "id_ffm_row1" },
-                 { l: "MMB", f: "id_mmf_row1" },
-                 { l: "BMB", f: "id_fmf_row1" },
-                 { l: "MBB", f: "id_mff_row1" },
-                 { l: "BBB", f: "id_fff_row1" },
-               ].map((item, i) => (
-                 <div key={i} className="bg-gray-300 p-4 flex flex-col items-center gap-2 group hover:bg-red-50/10 transition-colors">
-                    <span className="text-sm font-black text-[#491907] bg-red-300 px-3 py-1 rounded-full scale-95 shadow-sm">
-                       {item.l}
-                    </span>
-                    <div className="w-full">
-                       {certData[item.f] ? (
-                         <div className="text-center bg-red-200 py-2 text-emerald-600 font-black text-xs">
-                            {certData[item.f]}
-                         </div>
-                       ) : (
-                         <input
-                           type="text"
-                           placeholder="---"
-                           className="w-full text-sm font-black text-center bg-gray-50 border border-gray-100 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all shadow-inner"
-                         />
-                       )}
-                    </div>
-                 </div>
-               ))}
+                 { l: "MMM", p: "mmm", path: "MEMMM" },
+                 { l: "BMM", p: "fmm", path: "MEMFM" },
+                 { l: "MBM", p: "mfm", path: "MEFMM" },
+                 { l: "BBM", p: "ffm", path: "MEFFM" },
+                 { l: "MMB", p: "mmf", path: "MEMMF" },
+                 { l: "BMB", p: "fmf", path: "MEMFF" },
+                 { l: "MBB", p: "mff", path: "MEFMF" },
+                 { l: "BBB", p: "fff", path: "MEFFF" },
+               ].map((item, i) => {
+                 const node = ancestorLacts[item.path];
+                 const bestLact = node?.lactations?.[0];
+                 
+                 let displayVal = "";
+                 
+                 if (bestLact) {
+                    displayVal = `${bestLact.lact_no}\\${bestLact.lact_days}\\${bestLact.milk}\\${bestLact.fat}\\${bestLact.protein}`;
+                 } else {
+                    // Fallback to mother
+                    const motherPath = item.path + "M";
+                    const motherNode = ancestorLacts[motherPath];
+                    const mBestLact = motherNode?.lactations?.[0];
+                    if (mBestLact) {
+                       displayVal = `M\\${mBestLact.lact_no}\\${mBestLact.lact_days}\\${mBestLact.milk}\\${mBestLact.fat}\\${mBestLact.protein}`;
+                    }
+                 }
+                 
+                 return (
+                   <div key={i} className="bg-white p-3 border border-gray-200 rounded-lg flex flex-col gap-2 hover:shadow-md transition-all">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{item.l}</span>
+                        <span className="text-[9px] font-bold text-gray-300 italic truncate ml-2">{node?.name || "???"}</span>
+                      </div>
+                      <input
+                        type="text"
+                        defaultValue={certData[`id_${item.p}_row1`] || displayVal}
+                        className={`w-full text-[11px] font-black text-center p-2 rounded-md border outline-none ${displayVal ? 'bg-emerald-50/50 border-emerald-100 text-emerald-800' : 'bg-gray-50 border-gray-100 text-gray-400'}`}
+                        placeholder="---"
+                      />
+                   </div>
+                 );
+               })}
             </div>
           </div>
         </section>
@@ -639,10 +602,10 @@ function CertRows({
         key={i}
         className={`${bgColor} divide-x divide-gray-100 border-b border-gray-100 last:border-0 hover:brightness-95 transition-all h-10`}
       >
-        <td className="p-1 px-3 font-black text-[#491907] w-12">{label}</td>
+        <td className="p-1 px-3 font-black text-[#491907] w-12 text-center text-[10px]">{label}{i}</td>
         <td className="p-1.5 px-4 text-start min-w-[200px]">
           <select
-            className="w-full text-sm bg-white border border-gray-200 rounded-md p-1.5 outline-none font-bold shadow-sm focus:ring-2 focus:ring-[#491907]/20 transition-all"
+            className="w-full text-[11px] bg-white border border-gray-200 rounded-md p-1 outline-none font-bold shadow-sm focus:ring-1 focus:ring-[#491907]/20 transition-all"
             defaultValue={selectedId || ""}
           >
             <option value="">-- {t.goats.select} --</option>
@@ -653,13 +616,13 @@ function CertRows({
             ))}
           </select>
         </td>
-        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.lact_no || "-"}</td>
-        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.lact_days || "-"}</td>
-        <td className="p-1.5 font-black text-emerald-600 scale-110">
+        <td className="p-1.5 font-bold text-gray-700 text-[11px]">{selectedLact?.lact_no || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700 text-[11px]">{selectedLact?.lact_days || "-"}</td>
+        <td className="p-1.5 font-black text-emerald-600 text-[11px]">
           {selectedLact?.milk || "-"}
         </td>
-        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.fat || "-"}</td>
-        <td className="p-1.5 font-bold text-gray-700">{selectedLact?.protein || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700 text-[11px]">{selectedLact?.fat || "-"}</td>
+        <td className="p-1.5 font-bold text-gray-700 text-[11px]">{selectedLact?.protein || "-"}</td>
       </tr>,
     );
   }

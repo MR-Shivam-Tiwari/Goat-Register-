@@ -67,48 +67,51 @@ export default function MovementForm({
       </div>
       
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
-        <div className="space-y-5">
+        <div className="space-y-6">
+          {/* MOVING FROM */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">{t.goatForm.move.from}</label>
-            <div className="text-[11px] font-black text-[#491907] p-4 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
-               "{currentFarmName}"
+            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">MOVING FROM</label>
+            <div className="text-[11px] font-black text-[#491907] p-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
+               {currentFarmName === "Unknown Farm" || currentFarmId === 0 ? "CENTRAL REGISTRY (DEFAULT)" : currentFarmName}
             </div>
           </div>
 
+          {/* DESTINATION FARM */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">{t.goatForm.move.dest}</label>
+            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">DESTINATION FARM</label>
             <select 
               value={formData.id_farm_on}
               onChange={e => setFormData({...formData, id_farm_on: e.target.value})}
               required
-              className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-[11px] font-black outline-none focus:border-[#491907] focus:ring-4 focus:ring-[#491907]/5 transition-all shadow-sm cursor-pointer"
+              className="w-full bg-white border border-gray-200 rounded-2xl p-5 text-[11px] font-black outline-none focus:border-[#491907] focus:ring-4 focus:ring-[#491907]/5 transition-all shadow-sm cursor-pointer"
             >
-              <option value="">{t.goatForm.move.selectDest}</option>
+              <option value="">Select destination...</option>
               {farms.filter(f => f.id !== currentFarmId).map(farm => (
                 <option key={farm.id} value={farm.id}>{farm.name}</option>
               ))}
             </select>
           </div>
 
+          {/* DATE */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">{t.goatForm.move.returnDate}</label>
+            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">DATE OF MOVEMENT</label>
             <input 
               type="date"
-              value={formData.date_return}
-              onChange={e => setFormData({...formData, date_return: e.target.value})}
-              className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-[11px] font-black outline-none focus:border-[#491907] focus:ring-4 focus:ring-[#491907]/5 transition-all shadow-sm"
+              defaultValue={new Date().toISOString().split('T')[0]}
+              className="w-full bg-white border border-gray-200 rounded-2xl p-5 text-[11px] font-black outline-none focus:border-[#491907] focus:ring-4 focus:ring-[#491907]/5 transition-all shadow-sm"
+              required
             />
           </div>
-
         </div>
 
-        <div className="pt-8 border-t border-gray-50">
+        <div className="pt-8 border-t border-gray-50 text-center">
+           <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mb-4 italic">Confirm the transfer details before saving</p>
           <button 
             type="submit"
             disabled={loading}
             className="w-full bg-[#491907] text-white py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.3em] shadow-2xl shadow-[#491907]/20 hover:bg-black hover:translate-y-[-2px] active:translate-y-[0px] transition-all disabled:opacity-50 disabled:translate-y-0"
           >
-            {loading ? t.goatForm.move.processing : t.goatForm.move.submit}
+            {loading ? "PROCESSING..." : "REGISTER MOVEMENT"}
           </button>
         </div>
       </form>

@@ -7,6 +7,7 @@ import { getTranslation, Locale } from "@/lib/translations";
 import FilterCard from "./FilterCard";
 import GoatTable from "@/components/GoatTable";
 import RegistryImage from "@/components/RegistryImage";
+import { getSessionUser } from "@/lib/access-control";
 
 export const dynamic = "force-dynamic";
 
@@ -250,6 +251,8 @@ export default async function GoatsListPage({
   const alias = breedParam || params.alias;
   const s = searchParams.s || sex;
 
+  const user = await getSessionUser();
+
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
   const t = getTranslation(lang);
@@ -301,11 +304,11 @@ export default async function GoatsListPage({
   }
 
   const showRegisterGrid =
-    (sex === "male" || sex === "female") && !reg && !view && !show && !isDead;
+    (sex === "male" || sex === "female") && !reg && !view && !show && !isDead && !isUkrainian;
   const showGenerationGrid = view === "rcb" && !show;
   const showExperimentalGrid = view === "ex" && !show;
   const showKidsGrid = sex === "child" && !age && !show && !isDead;
-  const showTable = !!(reg || age || farm || owner || show === "all" || (sex === "child" && age) || isDead);
+  const showTable = !!(reg || age || farm || owner || show === "all" || (sex === "child" && age) || isDead || isUkrainian);
 
   const filterOptions = showTable
     ? await getFilterOptions()
@@ -598,6 +601,7 @@ export default async function GoatsListPage({
                       t={t} 
                       lang={lang}
                       showDead={isDead}
+                      currentUser={user}
                     />
                   </Suspense>
                 </div>
@@ -619,7 +623,8 @@ export default async function GoatsListPage({
     owner,
     t,
     lang,
-    showDead
+    showDead,
+    currentUser
   }: {
     breedId: number;
     sex: string;
@@ -630,7 +635,8 @@ export default async function GoatsListPage({
     t: any;
     lang: string;
     showDead?: boolean;
+    currentUser?: any;
   }) {
     const goats = await getGoats(breedId, sex, reg, age, showDead, farm, owner);
-    return <GoatTable goats={goats} t={t} />;
+    return <GoatTable goats={goats} t={t} currentUser={currentUser} />;
   }

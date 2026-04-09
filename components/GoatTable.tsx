@@ -8,13 +8,20 @@ export default function GoatTable({
   t,
   isMain,
   isGuest,
+  currentUser,
 }: {
   goats: any[];
   t: any;
   isMain?: boolean;
   isGuest?: boolean;
+  currentUser?: { id: number | string; role: number };
 }) {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = (require('react').useState)(false);
+
+  (require('react').useEffect)(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-full min-h-0">
@@ -300,19 +307,53 @@ export default function GoatTable({
                         NO IMAGE
                       </div>
                     )}
-                    {isGuest ? (
-                      <span className="text-[#491907]" style={{ fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' }}>{g.name}</span>
-                    ) : (
-                      <a
-                        href={`/goats/${g.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline text-[#491907] flex items-center"
-                        style={{ fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' }}
-                      >
-                        {g.name}
-                      </a>
-                    )}
+                    {(() => {
+                      // SSR Safety: Render plain text on server to avoid hydration mismatch
+                      if (!mounted) {
+                        return (
+                          <span className="text-[#491907] flex items-center" style={{ fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' }}>
+                            {g.name}
+                          </span>
+                        );
+                      }
+
+                      // Type-safe comparison and fallback for hydration safety
+                      const currentUserId = currentUser?.id ? String(currentUser.id) : null;
+                      const goatOwnerId = g.id_user ? String(g.id_user) : null;
+                      const userRole = currentUser?.role ? Number(currentUser.role) : 0;
+
+                      const canAccess = isGuest ? false : (
+                        currentUser && (
+                          userRole >= 10 || 
+                          (goatOwnerId !== null && currentUserId === goatOwnerId)
+                        )
+                      );
+
+                      const commonStyles = { fontSize: '17px', fontWeight: '900', letterSpacing: '-0.01em' };
+
+                      if (!canAccess) {
+                        return (
+                          <span 
+                            className="text-[#491907] flex items-center" 
+                            style={commonStyles}
+                          >
+                            {g.name}
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <a
+                          href={`/goats/${g.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline text-blue-700 flex items-center"
+                          style={commonStyles}
+                        >
+                          {g.name}
+                        </a>
+                      );
+                    })()}
                   </div>
                 </td>
               <td className="p-3 text-center font-black text-nowrap px-6 uppercase leading-none text-gray-900 opacity-80" style={{ fontSize: '11px' }}>

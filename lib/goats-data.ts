@@ -4,7 +4,7 @@ export async function getGoatData(id: string) {
   const result = await query(
     `
       SELECT 
-        A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm, A.id_mother, A.id_father,
+        A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm, A.id_mother, A.id_father, A.id_user,
         Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.score,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
@@ -179,7 +179,7 @@ export async function getCertData(id: string) {
   return result.rows[0] || {};
 }
 
-export async function getAncestorLactations(id: string, maxLevel: number = 4) {
+export async function getAncestorLactations(id: string, maxLevel: number = 5) {
   const treeRes = await query(
     `
     WITH RECURSIVE ancestry AS (

@@ -31,6 +31,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
     const router = useRouter();
     const t = getTranslation(lang);
     
+    const [isMounted, setIsMounted] = useState(false);
     const [name, setName] = useState(initialData?.name || '');
     const [description, setDescription] = useState(initialData?.tmpl || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,6 +39,15 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
 
     const [pic1, setPic1] = useState<File | null>(null);
     const [pic2, setPic2] = useState<File | null>(null);
+
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            setIsMounted(true);
+        }
+    });
+
+    // Alternatively use useEffect
+    // useEffect(() => { setIsMounted(true); }, []);
 
     const quillModules = useMemo(() => ({
         toolbar: [
@@ -80,6 +90,10 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
             setIsSubmitting(false);
         }
     };
+
+    if (!isMounted) {
+        return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="animate-spin text-[#491907]" size={48} /></div>;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 md:py-12 px-2 md:px-12 lg:px-24 font-sans text-gray-900 tracking-tight">

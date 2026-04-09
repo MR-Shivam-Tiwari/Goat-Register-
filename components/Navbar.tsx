@@ -88,7 +88,7 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
           
           {user && Number(user.role) >= 1 && (
             <div className="flex items-center gap-4 border-r border-gray-100 pr-8 mr-2">
-                {/* Admin Quick Icons (As requested by client) */}
+                {/* Admin Quick Icons */}
                 {Number(user.role) >= 10 && (
                   <a href="/users" target="_blank" rel="noopener noreferrer" title={t.nav.users} className="w-10 h-10 bg-[#491907] rounded-xl flex items-center justify-center text-white shadow-lg transform hover:scale-110 active:scale-95 transition-all">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,6 +109,7 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
             </div>
           )}
 
+          {/* User Section (Authenticated or Guest) */}
           {user ? (
             <div className="flex items-center gap-8">
                 <div className="flex flex-col items-end">
@@ -121,22 +122,20 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
                 <LogoutButton t={t} action={logoutAction} />
             </div>
             ) : (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
                 <Link 
                   href="/login" 
-                  className="w-10 h-10 border-2 border-gray-100 text-gray-400 hover:text-[#B5E6FF] hover:bg-gray-50 transition-all flex items-center justify-center rounded-xl group"
-                  title={t.nav.signIn}
+                  className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-all font-sans"
                 >
-                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
+                  {t.nav.signIn}
                 </Link>
+                <div className="w-1 h-1 rounded-full bg-gray-200" />
                 <a 
                   href="/register" 
                   target="_blank" rel="noopener noreferrer"
-                  className="px-6 py-2.5 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-primary/90 transition-all active:scale-95 text-center"
+                  className="px-8 py-2.5 rounded-xl bg-[#491907] text-white font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-black transition-all active:scale-95 text-center min-w-[120px]"
                 >
-                {t.nav.join}
+                  {t.nav.join}
                 </a>
             </div>
             )}

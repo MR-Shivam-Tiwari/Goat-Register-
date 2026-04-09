@@ -33,7 +33,7 @@ export default async function Home() {
             <div className="absolute top-0 left-0 w-full h-1 bg-[#491907] opacity-80"></div>
             
             <header className="mb-10 text-center flex flex-col justify-center items-center">
-              <span className="text-gray-500 font-black text-sm mb-1">ГС</span>
+              {/* <span className="text-gray-500 font-black text-sm mb-1">ГС</span> */}
               <h1 className="text-xl md:text-2xl font-bold text-red-600 uppercase leading-snug tracking-tight">
                 &quot;{t.home.heroHeader}&quot;
               </h1>

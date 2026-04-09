@@ -4,6 +4,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import GoatFilters from "@/components/GoatFilters";
+import { getSessionUser } from "@/lib/access-control";
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +107,8 @@ export default async function AllGoatsPage({
     getBreeds(),
   ]);
 
+  const user = await getSessionUser();
+
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
   const t = getTranslation(lang);
@@ -191,14 +194,26 @@ export default async function AllGoatsPage({
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <a
-                            href={`/goats/${goat.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-amber-900 text-lg underline underline-offset-2 overflow-hidden text-ellipsis whitespace-nowrap font-bold"
-                          >
-                            {goat.name}
-                          </a>
+                          {(() => {
+                            const canAccess = user && (user.role >= 10 || user.id === goat.id_user);
+                            if (!canAccess) {
+                              return (
+                                <span className="text-[#491907] text-lg font-bold">
+                                  {goat.name}
+                                </span>
+                              );
+                            }
+                            return (
+                              <a
+                                href={`/goats/${goat.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-amber-900 text-lg underline underline-offset-2 overflow-hidden text-ellipsis whitespace-nowrap font-bold"
+                              >
+                                {goat.name}
+                              </a>
+                            );
+                          })()}
                         </div>
                       </td>
                       <td className="p-2 border-r text-md border-gray-100 text-center font-black text-blue-700 bg-blue-50/20">
