@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -40,14 +40,9 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
     const [pic1, setPic1] = useState<File | null>(null);
     const [pic2, setPic2] = useState<File | null>(null);
 
-    useState(() => {
-        if (typeof window !== 'undefined') {
-            setIsMounted(true);
-        }
-    });
-
-    // Alternatively use useEffect
-    // useEffect(() => { setIsMounted(true); }, []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const quillModules = useMemo(() => ({
         toolbar: [

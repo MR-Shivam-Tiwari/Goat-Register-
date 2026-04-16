@@ -26,9 +26,12 @@ function extractPrefix(farmName: string, goats: any[]): string {
   // Get the first word of every goat name
   const words = goats
     .map(g => g.name.trim().split(/[ \.\-\/]/)[0])
-    .filter(w => w && w.length > 1);
+    .filter(w => w && w.length > 2); // Increased to 3+ characters
     
-  if (words.length === 0) return farmName.split(/[ \.\-\/]/)[0];
+  if (words.length === 0) {
+    const defaultPrefix = farmName.split(/[ \.\-\/]/)[0];
+    return defaultPrefix.length > 2 ? defaultPrefix : '';
+  }
   
   // Count frequencies
   const counts: Record<string, number> = {};
@@ -93,27 +96,36 @@ async function getFarmData(id: string): Promise<Farm | null> {
 }
 
 async function getFarmGoats(id: string) {
+  if (!id || id === '0') return [];
   const result = await query(`
-    SELECT A.id, A.name, A.sex, A.id_user, B.name as breed_name, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
+    SELECT DISTINCT ON (A.id)
+      A.id, A.name, A.sex, A.id_user, B.name as breed_name, 
+      Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
     FROM animals A
-    JOIN goats_data Di ON A.id = Di.id_goat
-    JOIN breeds B ON Di.id_breed = B.id
-    WHERE A.id_farm = $1
-    ORDER BY A.name ASC
+    LEFT JOIN goats_data Di ON A.id = Di.id_goat
+    LEFT JOIN breeds B ON Di.id_breed = B.id
+    WHERE A.id_farm = $1::int
+    ORDER BY A.id, A.name ASC
   `, [id]);
   return result.rows;
 }
 
-async function getDisplacedGoats(id: string, farmName: string, farmPrefix: string) {
+async function getDisplacedGoats(id: string) {
+  if (!id || id === '0') return [];
+  // Align strictly with official movement records from public.goats_move
   const result = await query(`
-    SELECT A.id, A.name, A.sex, A.id_user, B.name as breed_name, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
+    SELECT DISTINCT ON (A.id)
+      A.id, A.name, A.sex, A.id_user, B.name as breed_name, 
+      Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
     FROM animals A
-    JOIN goats_data Di ON A.id = Di.id_goat
-    JOIN breeds B ON Di.id_breed = B.id
-    WHERE (Di.manuf ILIKE '%' || $1 || '%' OR A.name ILIKE $1 || '%')
-    AND (A.id_farm != $2 OR A.id_farm IS NULL)
-    ORDER BY A.name ASC
-  `, [farmPrefix, id]);
+    INNER JOIN goats_move M ON A.id = M.id_goat
+    LEFT JOIN goats_data Di ON A.id = Di.id_goat
+    LEFT JOIN breeds B ON Di.id_breed = B.id
+    WHERE M.id_farm_of = $1::int
+      AND A.id_farm != $1::int
+      AND A.id_farm != 0
+    ORDER BY A.id, A.name ASC
+  `, [id]);
   return result.rows;
 }
 
@@ -133,67 +145,65 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
 
   const goats = await getFarmGoats(id);
   const detectedPrefix = extractPrefix(farm.name, goats);
-  const displaced = await getDisplacedGoats(id, farm.name, detectedPrefix);
+  const displaced = await getDisplacedGoats(id);
   const user = await getSessionUser();
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 md:px-12 lg:px-24 tracking-tight">
-      <div className="max-w-[1500px] mx-auto space-y-8">
+      <div className="max-w-[1500px] mx-auto space-y-4">
         <Breadcrumbs items={[{ label: t.farms.breadcrumbs, href: '/farms' }, { label: farm.name }]} />
 
-        {/* COMPACT DASHBOARD HEADER */}
-        <section className="bg-white border rounded-lg shadow-xl overflow-hidden flex flex-col lg:flex-row text-black">
-            {/* PHOTO COLUMN */}
-            <div className="lg:w-80 shrink-0 bg-white border-r border-gray-100 flex items-center justify-center p-6 bg-gray-50/30">
+        {/* FARM NAME & PREFIX - TOP LEVEL */}
+        <div className="pb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#491907] uppercase tracking-tight">
+                {farm.name}
+            </h1>
+            {detectedPrefix && (
+                <p className="text-sm font-bold text-[#491907] uppercase tracking-widest mt-1 opacity-70">
+                    Prefix: {detectedPrefix}
+                </p>
+            )}
+        </div>
+
+        {/* MAIN DISPLAY SECTION */}
+        <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
+            {/* IMAGE COLUMN (Left) */}
+            <div className="lg:w-[500px] shrink-0 bg-[#FFB000] flex items-center justify-center p-1 border-r border-gray-200">
                 <img 
-                    src={farm.displayAva || '/img/farm_placeholder.png'} 
+                    src={farm.displayPic2 || farm.displayAva || '/img/farm_placeholder.png'} 
                     alt={farm.name} 
-                    className="w-full h-full object-contain max-h-[350px] drop-shadow-2xl"
+                    className="max-w-full max-h-[500px] object-contain shadow-inner"
                 />
             </div>
 
-            {/* INFO COLUMN */}
-            <div className="flex-1 p-8 flex flex-col min-w-0">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                    <div className="min-w-0 flex-1">
-                        <span className="text-[12px] font-black uppercase text-gray-300 tracking-[0.3em] font-mono leading-none">{t.farms.officialIdPrefix}{farm.id} / {t.farms.officialMember}</span>
-                        <h1 className="text-3xl md:text-5xl font-black text-[#491907] uppercase italic tracking-tighter leading-none mt-2 break-words">
-                            {farm.name} {detectedPrefix ? `/ ${detectedPrefix}` : ''}
-                        </h1>
-                        {detectedPrefix && (
-                            <p className="text-[10px] font-black text-blue-600 mt-2 tracking-widest uppercase italic">
-                                Prefix: {detectedPrefix}
-                            </p>
-                        )}
-                    </div>
-                    {isAdmin && (
-                        <a href={`/farms/${farm.id}/edit`} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center gap-2 px-6 py-3 bg-[#491907] text-white rounded-lg font-black text-[11px] uppercase tracking-widest shadow-md hover:bg-black transition-all group">
-                            <Pencil size={14} className="group-hover:rotate-12 transition-transform" />
+            {/* DESCRIPTION COLUMN (Right) */}
+            <div className="flex-1 p-12 flex flex-col items-center justify-center text-center">
+                <div className="max-w-2xl w-full">
+                    <div 
+                        className="text-[#491907] leading-loose font-medium prose prose-slate max-w-none prose-p:my-4 prose-strong:text-[#491907] text-[15px]"
+                        dangerouslySetInnerHTML={{ __html: farm.tmpl }} 
+                    />
+                </div>
+                
+                {isAdmin && (
+                    <div className="mt-8">
+                        <a href={`/farms/${farm.id}/edit`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-2 bg-[#491907] text-white rounded-sm font-bold text-[11px] uppercase tracking-widest hover:bg-black transition-all group">
+                            <Pencil size={14} />
                             {t.common.edit}
                         </a>
-                    )}
-                </div>
-
-                {/* Farm Description with Scroller and Centering */}
-                <div className="mt-8 relative border-t border-gray-50 pt-6">
-                     <div className="max-h-[400px] overflow-y-auto custom-scrollbar pr-4">
-                        <div 
-                          className="text-gray-600 leading-relaxed font-medium text-center prose prose-slate max-w-none prose-p:my-2 prose-strong:text-[#491907]"
-                          dangerouslySetInnerHTML={{ __html: farm.tmpl }} 
-                        />
-                     </div>
-                </div>
-
-                <div className="mt-auto pt-8 flex flex-col sm:flex-row gap-4">
-                    <Link href="/farms" className="px-8 py-3 border border-gray-200 text-gray-400 font-black rounded-sm text-[11px] uppercase tracking-widest hover:bg-gray-50 transition-all text-center">
-                        ← {t.farms.toFarmList}
-                    </Link>
-                </div>
+                    </div>
+                )}
             </div>
         </section>
 
-        {/* DATA TABLES */}
-        <div className="space-y-12">
+        <div className="pt-4">
+            <Link href="/farms" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest hover:underline">
+                ← {t.farms.toFarmList}
+            </Link>
+        </div>
+
+        {/* DATA TABLES SECTION */}
+        <div className="pt-12 space-y-12">
             {/* CURRENT STOCK */}
             <div className="space-y-4">
                 <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-black border-b-2 border-black pb-3 italic flex items-center gap-3">
