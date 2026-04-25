@@ -14,7 +14,6 @@ import { cookies } from "next/headers";
 import PedigreeNode from "@/components/PedigreeNode";
 import ClassicGoatTable from "@/components/ClassicGoatTable";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import GoatDetailPage from "@/app/goats/[id]/page";
 
 export const dynamic = "force-dynamic";
 
@@ -244,7 +243,7 @@ export default async function GuestGoatPage({
                 {t.goats.directDescendantsTitle}
               </h3>
               <div className="border border-gray-100 shadow-sm overflow-hidden bg-white">
-                <GoatDetailPage goats={descendants} t={t} isGuest />
+                <ClassicGoatTable goats={descendants} t={t} isGuest />
               </div>
             </div>
           </div>
