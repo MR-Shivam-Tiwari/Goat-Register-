@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 'en' }) {
+export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 'en' | 'uk' }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [active, setActive] = useState(currentLang);
@@ -15,7 +15,7 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 
     setActive(currentLang);
   }, [currentLang]);
 
-  const handleSwitch = async (lang: 'ru' | 'en') => {
+  const handleSwitch = async (lang: 'ru' | 'en' | 'uk') => {
     if (lang === active) return;
     
     setActive(lang);
@@ -46,8 +46,10 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 
     <div className="relative flex p-1 bg-black/40 backdrop-blur-xl rounded-full border border-white/10 shadow-lg scale-90 md:scale-100 ring-1 ring-white/5">
       {/* Sliding background pill */}
       <div 
-        className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-md ${
-          active === 'en' ? 'left-[calc(50%+2px)]' : 'left-1'
+        className={`absolute top-1 bottom-1 w-[calc(33.33%-4px)] bg-white rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-md ${
+          active === 'ru' ? 'left-1' : 
+          active === 'en' ? 'left-[calc(33.33%+2px)]' : 
+          'left-[calc(66.66%+1px)]'
         }`}
       />
 
@@ -75,6 +77,19 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 
       >
         <span className="text-xs">🇺🇸</span>
         <span>EN</span>
+      </button>
+
+      <button
+        onClick={() => handleSwitch('uk')}
+        disabled={isPending}
+        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+          active === 'uk' 
+            ? 'text-[#491907]' 
+            : 'text-white/40 hover:text-white/60'
+        }`}
+      >
+        <span className="text-xs">🇺🇦</span>
+        <span>UA</span>
       </button>
 
       {/* Progress Animation using tailwind only */}

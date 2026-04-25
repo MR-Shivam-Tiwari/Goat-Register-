@@ -77,7 +77,7 @@ export default async function BreedPage({
         alias === "AN"
           ? "breedimage/nub-kozli.jpg"
           : alias === "BUR"
-            ? "breedimage/burskaia-kozli.jpg"
+            ? "img/image.png"
             : "breedimage/kozli3.jpg",
       color: "bg-[transparent]",
     },
@@ -103,21 +103,12 @@ export default async function BreedPage({
       <div className="max-w-[1200px] mx-auto space-y-8">
         <Breadcrumbs
           items={[
-            { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
             { label: breed.name },
           ]}
         />
 
-        <header className="border-b border-gray-100 pb-4 flex flex-col md:flex-row justify-between items-end gap-4 text-center md:text-left">
-          <div className="w-full">
-            <h1 className="text-3xl font-black text-primary tracking-tighter uppercase italic leading-none border-b-2 border-primary/10 pb-4 mb-4">
-              {breed.name}
-            </h1>
-          </div>
-        </header>
-
         {/* MODULE 1: BREED REGISTRIES (Top) */}
-        <section className="space-y-6">
+        <section className="space-y-6 pt-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {categories.map((cat) => {
               const href = isUkrainian 
@@ -137,25 +128,25 @@ export default async function BreedPage({
                       className="max-h-[160px] w-auto h-auto object-contain transition-all duration-300 group-hover:scale-105 [mix-blend-mode:multiply]"
                     />
                   </div>
-                  <div className="flex flex-col items-center">
-                    <h3 className="text-xl font-black text-primary uppercase tracking-tighter italic leading-none group-hover:text-secondary transition-colors underline decoration-black/5 underline-offset-8 decoration-2">
-                      {cat.name}
-                    </h3>
-                  </div>
+                        <div className="flex flex-col items-center">
+                            <h3 className="text-base font-bold text-primary uppercase tracking-tight leading-none group-hover:text-secondary transition-colors not-italic">
+                                {cat.name}
+                            </h3>
+                        </div>
                 </Link>
               );
             })}
           </div>
         </section>
 
-        {/* MODULE 2: ANIMAL MOVEMENT (Middle Segment) - Hidden for Ukrainian breeds per request */}
-        {!isUkrainian && (
+        {/* MODULE 2: ANIMAL MOVEMENT (Middle Segment) */}
+        {true && (
           <section className="py-2 space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ECC41E] italic whitespace-nowrap">
+              <span className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
                 {t.catalog.movementTitle}
               </span>
-              <div className="flex-1 h-px bg-[#ECC41E]/20" />
+              <div className="flex-1 h-px bg-primary/10" />
             </div>
 
             <div className="flex items-center justify-center">
@@ -167,7 +158,7 @@ export default async function BreedPage({
                   <History size={24} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xl font-black text-white uppercase italic tracking-tighter leading-none">
+                  <p className="text-xl font-black text-white uppercase tracking-tighter leading-none">
                     {t.catalog.transferredAnimalsList}
                   </p>
                 </div>
@@ -177,14 +168,14 @@ export default async function BreedPage({
           </section>
         )}
 
-        {/* MODULE 3: DECEASED REGISTRY (Bottom Segment) - Hidden for Ukrainian breeds per request */}
-        {!isUkrainian && (
+        {/* MODULE 3: DECEASED REGISTRY (Bottom Segment) */}
+        {true && (
           <section className="pt-6 pb-12 space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#23412A] italic whitespace-nowrap">
+              <span className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
                 {t.catalog.deceasedTitle}
               </span>
-              <div className="flex-1 h-px bg-[#23412A]/10" />
+              <div className="flex-1 h-px bg-primary/10" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -214,7 +205,7 @@ export default async function BreedPage({
         )}
 
         <footer className="border-t border-gray-100 pt-8 pb-10 text-center opacity-30">
-          <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter">
+          <span className="text-[10px] font-black text-primary uppercase tracking-tighter">
             © {new Date().getFullYear()} {t.home.footerCopyright}
           </span>
         </footer>
@@ -236,7 +227,7 @@ function MovementLink({ href, label, icon, theme, textColor }: any) {
       </div>
       <div>
         <p
-          className={`text-[12px] font-black uppercase tracking-tight ${textColor}`}
+          className={`text-[16px] font-black uppercase tracking-tight ${textColor}`}
         >
           {label}
         </p>

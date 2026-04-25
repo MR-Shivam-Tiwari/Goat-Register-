@@ -305,7 +305,7 @@ export default function GoatForm({
                         {isEdit && initialData.ava && !selectedFile && (
                             <div className="flex items-center gap-4 border border-gray-200 p-2 bg-white">
                                 <img src={`/uploads/${initialData.ava}`} className="w-16 h-12 object-cover" />
-                                <span className="text-[10px] text-gray-400 font-bold uppercase italic">{t.common.currentPhoto}</span>
+                                <span className="text-[10px] text-gray-400 font-bold uppercase">{t.common.currentPhoto}</span>
                             </div>
                         )}
                     </div>

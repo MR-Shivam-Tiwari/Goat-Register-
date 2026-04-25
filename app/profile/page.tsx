@@ -47,7 +47,7 @@ export default async function ProfilePage() {
           <div className="bg-[#491907] px-8 py-10 text-white relative overflow-hidden">
             <div className="relative z-10">
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight uppercase">{t.nav.memberPortal}</h1>
-                <p className="text-white/70 text-sm mt-1 font-medium italic opacity-80 uppercase tracking-widest">{t.auth.loginDesc}</p>
+                <p className="text-white/70 text-sm mt-1 font-medium opacity-80 uppercase tracking-widest">{t.auth.loginDesc}</p>
             </div>
             {/* Decorative element */}
             <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
@@ -124,7 +124,7 @@ export default async function ProfilePage() {
                         />
                     </div>
                     
-                    <p className="text-[10px] text-gray-400 font-medium italic mt-4 opacity-70">
+                    <p className="text-[10px] text-gray-400 font-medium mt-4 opacity-70">
                         * {t.users.passwordHelp}
                     </p>
                 </form>

@@ -75,7 +75,7 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
 
       {/* MOBILE BRAND (Hidden on Desktop) */}
       <div className="lg:hidden flex items-center gap-3">
-         <span className="text-[10px] font-black text-primary italic uppercase tracking-tighter opacity-70">ABG</span>
+         <span className="text-[10px] font-black text-primary uppercase tracking-tighter opacity-70">ABG</span>
          <div className="w-1 h-1 rounded-full bg-secondary" />
          <span className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em]">REGISTER</span>
       </div>
@@ -104,7 +104,7 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
                 </a>
 
                 <a href="/goats" target="_blank" rel="noopener noreferrer" title={t.nav.registry} className="w-10 h-10 bg-[#491907] rounded-xl flex items-center justify-center text-white shadow-xl transform hover:scale-110 active:scale-95 transition-all">
-                    <span className="text-xl font-black italic">L</span>
+                    <span className="text-xl font-black">L</span>
                 </a>
             </div>
           )}

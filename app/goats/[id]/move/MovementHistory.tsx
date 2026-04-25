@@ -56,7 +56,7 @@ export default function MovementHistory({ goatId, t }: { goatId: string, t: any 
               <td className="p-3 text-amber-600">
                  {item.date_return ? new Date(item.date_return).toLocaleDateString() : '-'}
               </td>
-              <td className="p-3 text-gray-400 capitalize italic truncate max-w-[200px]">
+              <td className="p-3 text-gray-400 capitalize truncate max-w-[200px]">
                  {item.info || '-'}
               </td>
             </tr>

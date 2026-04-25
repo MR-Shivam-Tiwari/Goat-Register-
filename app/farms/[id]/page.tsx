@@ -206,7 +206,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
         <div className="pt-12 space-y-12">
             {/* CURRENT STOCK */}
             <div className="space-y-4">
-                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-black border-b-2 border-black pb-3 italic flex items-center gap-3">
+                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-black border-b-2 border-black pb-3 flex items-center gap-3">
                     <span className="w-2 h-2 bg-black rounded-full"></span>
                     {t.farms.activeStockRegistry}
                 </h2>
@@ -232,23 +232,23 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                                         <tr key={goat.id} className="hover:bg-amber-50/50 transition-colors">
                                             <td className="p-3 border-r border-gray-100 font-black text-blue-900 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
                                                 {hasAccess ? (
-                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline italic leading-none truncate block">➔ {goat.name}</a>
+                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline leading-none truncate block">➔ {goat.name}</a>
                                                 ) : (
-                                                    <span className="italic leading-none truncate block opacity-50">➔ {goat.name}</span>
+                                                    <span className="leading-none truncate block opacity-50">➔ {goat.name}</span>
                                                 )}
                                             </td>
                                             <td className="p-3 border-r border-gray-100 text-center text-primary font-black opacity-80">{goat.breed_name}</td>
                                             <td className="p-3 border-r border-gray-100 text-center font-black text-blue-700 bg-blue-50/20">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
                                             <td className="p-3 border-r border-gray-100 text-center font-bold text-black">{goat.sex === 1 ? t.goats.male : t.goats.female}</td>
                                             <td className="p-3 border-r border-gray-100 text-center font-mono text-[10px]">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
-                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60 italic">{goat.manuf}</td>
-                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60 italic">{goat.owner}</td>
+                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60">{goat.manuf}</td>
+                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60">{goat.owner}</td>
                                             <td className="p-3 text-center font-mono opacity-50 whitespace-nowrap">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
                                         </tr>
                                     );
                                 })}
                                 {goats.length === 0 && (
-                                    <tr><td colSpan={8} className="p-40 text-center font-black uppercase opacity-20 text-3xl tracking-widest italic">{t.farms.emptyStock}</td></tr>
+                                    <tr><td colSpan={8} className="p-40 text-center font-black uppercase opacity-20 text-3xl tracking-widest">{t.farms.emptyStock}</td></tr>
                                 )}
                             </tbody>
                         </table>
@@ -259,7 +259,7 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
             {/* RELOCATED STOCK */}
             {displaced.length > 0 && (
             <div className="space-y-4 pt-4">
-                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-red-950 border-b-2 border-red-200 pb-3 italic flex items-center gap-3">
+                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-red-950 border-b-2 border-red-200 pb-3 flex items-center gap-3">
                     <span className="w-2 h-2 bg-red-950 rounded-full animate-pulse"></span>
                     {t.farms.displacedStock}
                 </h2>
@@ -285,17 +285,17 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
                                         <tr key={goat.id} className="hover:bg-red-50/40 transition-colors">
                                             <td className="p-3 border-r border-red-50 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(153,0,0,0.1)]">
                                                 {hasAccess ? (
-                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline italic leading-none truncate block font-black text-black">➔ {goat.name}</a>
+                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline leading-none truncate block font-black text-black">➔ {goat.name}</a>
                                                 ) : (
-                                                    <span className="italic leading-none truncate block font-black opacity-30 text-black">➔ {goat.name}</span>
+                                                    <span className="leading-none truncate block font-black opacity-30 text-black">➔ {goat.name}</span>
                                                 )}
                                             </td>
                                             <td className="p-3 border-r border-red-50 text-center font-mono text-gray-900">{goat.breed_name}</td>
                                             <td className="p-3 border-r border-red-50 text-center font-black text-blue-700 bg-red-50/10">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
                                             <td className="p-3 border-r border-red-50 text-center font-black text-black">{goat.sex === 1 ? 'M' : 'F'}</td>
                                             <td className="p-3 border-r border-red-50 text-center text-black">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
-                                            <td className="p-3 border-r border-red-50 truncate text-[10px] italic text-gray-700">{goat.manuf}</td>
-                                            <td className="p-3 border-r border-red-50 truncate text-[10px] italic text-gray-700">{goat.owner}</td>
+                                            <td className="p-3 border-r border-red-50 truncate text-[10px] text-gray-700">{goat.manuf}</td>
+                                            <td className="p-3 border-r border-red-50 truncate text-[10px] text-gray-700">{goat.owner}</td>
                                             <td className="p-3 text-center font-mono whitespace-nowrap opacity-50 text-black">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
                                         </tr>
                                     );

@@ -12,7 +12,7 @@ interface PedigreeNodeProps {
 export default function PedigreeNode({ node, prefix, color, border, isGuest = false, t }: PedigreeNodeProps) {
   if (!node) {
     return (
-      <div className={`flex-1 ${color} flex items-center justify-center p-2 text-[10px] font-black italic opacity-20 uppercase tracking-widest`}>
+      <div className={`flex-1 ${color} flex items-center justify-center p-2 text-[10px] font-black opacity-20 uppercase tracking-widest`}>
         {t.catalog.empty}
       </div>
     );

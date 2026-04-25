@@ -100,7 +100,7 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                             <tbody className="text-xs font-bold divide-y divide-gray-50">
                                 {filteredGoats.map((goat) => (
                                     <tr key={goat.id} className="hover:bg-amber-50/20 transition-all group">
-                                        <td className="p-4 text-[#491907] font-black italic">{goat.nickname}</td>
+                                        <td className="p-4 text-[#491907] font-black">{goat.nickname}</td>
                                         <td className="p-4 opacity-60">{goat.breed_name || '-'}</td>
                                         <td className="p-4 opacity-60 font-mono text-[10px]">{goat.farm_name || t.goats.individual}</td>
                                         <td className="p-4 text-right space-x-2">
@@ -133,7 +133,7 @@ export default function ManagerTabs({ initialFarms, initialGoats, lang }: Manage
                             <tbody className="text-xs font-bold divide-y divide-gray-50">
                                 {filteredFarms.map((farm) => (
                                     <tr key={farm.id} className="hover:bg-emerald-50/20 transition-all group">
-                                        <td className="p-4 text-[#491907] font-black italic uppercase">{farm.name}</td>
+                                        <td className="p-4 text-[#491907] font-black uppercase">{farm.name}</td>
                                         <td className="p-4 opacity-30 font-mono text-[10px]"># {farm.id}</td>
                                         <td className="p-4 text-right space-x-2">
                                             <Link href={`/farms/${farm.id}/edit`} className="inline-flex p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-sm transition-all shadow-sm">

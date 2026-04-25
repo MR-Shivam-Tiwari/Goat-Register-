@@ -35,7 +35,7 @@ export default async function ManagePage() {
             <div className="max-w-6xl mx-auto space-y-8">
                 <header className="flex justify-between items-end border-b-2 border-amber-900/10 pb-6">
                     <div>
-                        <h1 className="text-4xl font-black text-primary tracking-tighter uppercase italic">Registry Manager</h1>
+                        <h1 className="text-4xl font-black text-primary tracking-tighter uppercase">Registry Manager</h1>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Administrative Control Center</p>
                     </div>
                 </header>

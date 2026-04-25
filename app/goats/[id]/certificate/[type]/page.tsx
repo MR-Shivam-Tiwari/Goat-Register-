@@ -184,7 +184,7 @@ export default async function CertificatePage({
                     <tr><td className="grid-label">Нар. в числі:</td><td><input className="w-full bg-transparent border-none outline-none" defaultValue={goat.born_qty || '2'} /></td></tr>
                     <tr><td className="grid-label">Вага п/н:</td><td><input className="w-full bg-transparent border-none outline-none" defaultValue={goat.born_weight || '4600'} /></td></tr>
                     <tr className="bg-gray-50/20">
-                        <td className="grid-label italic opacity-40 leading-none">Жива вага:</td>
+                        <td className="grid-label opacity-40 leading-none">Жива вага:</td>
                         <td><input className="w-full bg-transparent border-none outline-none" defaultValue="" placeholder="..." /></td>
                     </tr>
                     <tr><td className="grid-label">Масть:</td><td><input className="w-full bg-transparent border-none outline-none" defaultValue="Brown" /></td></tr>
@@ -205,7 +205,7 @@ export default async function CertificatePage({
             </div>
 
             <div className="flex justify-between items-center mb-1">
-                <h2 className="flex-1 text-center font-black text-[14px] uppercase tracking-tight italic bg-[#5D2A18] text-white py-1">TRIBAL VALUE AND POWERFUL PRODUCTIVITY OF THE CREATURE</h2>
+                <h2 className="flex-1 text-center font-black text-[14px] uppercase tracking-tight bg-[#5D2A18] text-white py-1">TRIBAL VALUE AND POWERFUL PRODUCTIVITY OF THE CREATURE</h2>
                 <div className="print-hidden ml-4 px-3 py-1 bg-yellow-100 border border-yellow-300 rounded text-[10px] font-bold text-yellow-800 animate-pulse">
                    PICK 3 LACTATIONS TO PRINT ➔
                 </div>
@@ -281,7 +281,7 @@ export default async function CertificatePage({
                   <textarea className="flex-1 border-none outline-none resize-none h-10 font-bold p-0 leading-tight bg-transparent text-[13px]" defaultValue={`${goat.breeder_manual || goat.user_farm_name || ''}, ${goat.user_phone || ''}`} />
                </div>
                
-               <div className="absolute right-0 bottom-[-18px] text-[10px] font-black uppercase underline tracking-widest italic opacity-40">RECORDED CORRECTLY</div>
+               <div className="absolute right-0 bottom-[-18px] text-[10px] font-black uppercase underline tracking-widest opacity-40">RECORDED CORRECTLY</div>
             </div>
 
             {/* FINAL OFFICIAL STRIPS */}
@@ -291,7 +291,7 @@ export default async function CertificatePage({
                         <span className="uppercase tracking-widest">Ukraine</span>
                         <div className="w-16 h-px bg-black opacity-20"></div>
                     </div>
-                    <div className="flex gap-12 uppercase italic opacity-80">
+                    <div className="flex gap-12 uppercase opacity-80">
                         <span>Head of GS "................" such and such</span>
                         <span>Signature and seal...</span>
                     </div>
@@ -303,12 +303,12 @@ export default async function CertificatePage({
                         <span className="text-[12px] font-bold uppercase text-blue-900 leading-tight">"Association of Pedigree Goats"</span>
                     </div>
                     <div className="flex items-baseline gap-4">
-                        <span className="opacity-40 text-[9px] uppercase font-black italic">Surname:</span>
+                        <span className="opacity-40 text-[9px] uppercase font-black">Surname:</span>
                         <span className="text-[20px] font-black text-blue-950 tracking-tighter">Alekseeva M.V.</span>
                     </div>
                 </div>
                 
-                <div className="flex justify-between items-center text-[10px] font-bold italic mt-1 px-2 opacity-60">
+                <div className="flex justify-between items-center text-[10px] font-bold mt-1 px-2 opacity-60">
                     <span>Дата видачі: {new Date().toLocaleDateString('uk-UA')}</span>
                     <span>Official Registration Document</span>
                 </div>
@@ -409,7 +409,7 @@ export default async function CertificatePage({
                            <th className="border-r border-black">%</th><th>Клас</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-black/40 italic font-bold text-[8px]">
+                    <tbody className="divide-y divide-black/40 font-bold text-[8px]">
                         {[...Array(3)].map((_, i) => {
                            const r = rows[i] || {};
                            return (
@@ -429,7 +429,7 @@ export default async function CertificatePage({
                     {!isMale && (
                     <tfoot className="border-t border-black font-bold bg-[#f9f9f9] text-[7.5px] uppercase">
                        <tr className="divide-x divide-black h-4 leading-none">
-                          <td colSpan={2} className="border-r border-black text-center pr-2 italic">Середне:</td>
+                          <td colSpan={2} className="border-r border-black text-center pr-2">Середне:</td>
                           <td className="font-black bg-yellow-50/10 border-r border-black"><input className="w-full h-full border-none outline-none text-center" defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ''} /></td>
                           <td className="border-r border-black">Elite</td>
                           <td className="border-r border-black"><input className="w-full h-full border-none outline-none text-center" defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ''} /></td>
@@ -450,7 +450,7 @@ export default async function CertificatePage({
             <div className="p-1 border-[1.5px] border-black bg-white shadow-sm flex flex-col">
                 <div className="flex border-b-2 border-black font-black text-[12px] mb-1 leading-none pb-1 items-end">
                     <span className="mr-2 text-2xl leading-none text-blue-900/80">{symbol}</span>
-                    <input className="flex-1 w-full border-none outline-none italic uppercase text-sm tracking-tight bg-transparent" defaultValue={d.name || ''} />
+                    <input className="flex-1 w-full border-none outline-none uppercase text-sm tracking-tight bg-transparent" defaultValue={d.name || ''} />
                     <input className="w-20 border-none outline-none text-right font-bold text-[10px] self-end text-black/60 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
                 </div>
                 
@@ -500,7 +500,7 @@ export default async function CertificatePage({
                 <div className="flex border-b border-black/60 mb-0.5 items-end justify-between px-0.5">
                    <div className="flex items-end">
                       <span className="font-black mr-1 text-[9px] text-blue-900/60 leading-none">{symbol}</span>
-                      <input className="w-20 border-none outline-none italic truncate bg-transparent leading-none text-[8px] uppercase" defaultValue={d.name || ''} />
+                      <input className="w-20 border-none outline-none truncate bg-transparent leading-none text-[8px] uppercase" defaultValue={d.name || ''} />
                    </div>
                    <input className="w-12 border-none outline-none text-right text-[6px] opacity-40 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
                 </div>
@@ -510,7 +510,7 @@ export default async function CertificatePage({
                    <div className="flex justify-between"><span className="opacity-40">C:</span><input className="w-20 border-none outline-none text-right bg-transparent truncate" defaultValue={d.code_chip || ''} /></div>
                    <div className="flex justify-between"><span className="opacity-40">S:</span><input className="w-20 border-none outline-none text-right bg-transparent" defaultValue={getStdb(d.studbook_alias)} /></div>
                    <div className="mt-0.5 border-t border-black/20 pt-0.5">
-                      <input className="w-full border-none outline-none text-center bg-transparent text-[#491907] font-black italic text-[7px]" defaultValue={lactFormat} />
+                      <input className="w-full border-none outline-none text-center bg-transparent text-[#491907] font-black text-[7px]" defaultValue={lactFormat} />
                    </div>
                 </div>
             </div>
@@ -555,7 +555,7 @@ export default async function CertificatePage({
            </div>
 
            {/* Printing specific signature area bottom of tree page */}
-           <div className="mt-8 border-t-2 border-black pt-4 flex justify-between items-start text-[10px] font-bold italic uppercase h-20">
+           <div className="mt-8 border-t-2 border-black pt-4 flex justify-between items-start text-[10px] font-bold uppercase h-20">
               <div className="flex flex-col gap-2">
                  <span>Recorded Correctly / ПІДТВЕРДЖЕНО: _________________________</span>
                  <p className="normal-case opacity-40 text-[9px] w-96 leading-tight">Цей сертифікат є офіційним документом, що підтверджує племінну цінність тварини.</p>

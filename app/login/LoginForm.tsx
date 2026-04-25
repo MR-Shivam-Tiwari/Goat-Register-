@@ -16,7 +16,7 @@ function SubmitButton({ t }: { t: any }) {
     <button 
       type="submit" 
       disabled={pending}
-      className={`w-full bg-primary text-secondary py-3.5 rounded-xl font-black text-xs shadow-lg transition-all transform hover:-translate-y-1 uppercase tracking-[0.4em] italic mt-2 active:scale-95 duration-500 box-shadow-elite flex items-center justify-center gap-3 ${pending ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black'}`}
+      className={`w-full bg-primary text-secondary py-3.5 rounded-xl font-black text-xs shadow-lg transition-all transform hover:-translate-y-1 uppercase tracking-[0.4em] mt-2 active:scale-95 duration-500 box-shadow-elite flex items-center justify-center gap-3 ${pending ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black'}`}
     >
       {pending ? (
         <>

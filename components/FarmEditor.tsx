@@ -12,7 +12,7 @@ import 'react-quill-new/dist/quill.snow.css';
 // Dynamic import for ReactQuill
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
   ssr: false,
-  loading: () => <div className="h-64 bg-gray-50 border-2 border-gray-200 rounded-sm flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs italic">Loading...</div>
+  loading: () => <div className="h-64 bg-gray-50 border-2 border-gray-200 rounded-sm flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs">Loading...</div>
 });
 
 interface FarmEditorProps {
@@ -47,7 +47,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
     const quillModules = useMemo(() => ({
         toolbar: [
             [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
+            ['bold', '', 'underline', 'strike'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'clean'],
             [{ 'color': [] }, { 'background': [] }],
@@ -169,7 +169,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
                                 ) : (
                                     <div className="flex items-center gap-3 bg-gray-50 border-2 border-[#491907] p-2 rounded-sm text-[10px] font-black">
                                         <span className="truncate flex-1 text-gray-800">{pic1.name}</span>
-                                        <button type="button" onClick={() => setPic1(null)} className="text-red-600 underline uppercase italic">{t.common.remove}</button>
+                                        <button type="button" onClick={() => setPic1(null)} className="text-red-600 underline uppercase">{t.common.remove}</button>
                                     </div>
                                 )}
                             </div>
@@ -188,7 +188,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
                                 ) : (
                                     <div className="flex items-center gap-3 bg-gray-50 border-2 border-[#491907] p-2 rounded-sm text-[10px] font-black">
                                         <span className="truncate flex-1 text-gray-800">{pic2.name}</span>
-                                        <button type="button" onClick={() => setPic2(null)} className="text-red-600 underline uppercase italic">{t.common.remove}</button>
+                                        <button type="button" onClick={() => setPic2(null)} className="text-red-600 underline uppercase">{t.common.remove}</button>
                                     </div>
                                 )}
                             </div>

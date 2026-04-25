@@ -5,7 +5,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import FilterCard from "./FilterCard";
-import GoatTable from "@/components/GoatTable";
+import ClassicGoatTable from "@/components/ClassicGoatTable";
 import RegistryImage from "@/components/RegistryImage";
 import { getSessionUser } from "@/lib/access-control";
 
@@ -99,18 +99,18 @@ const STOODBOOK_MAP: Record<string, number> = {
 function getRegisterNames(t: any): Record<string, string> {
   return {
     rhb: t.rules.rhbTitle,
-    f1: "RCB Generation F1",
-    f2: "RCB Generation F2",
-    f3: "RCB Generation F3",
-    f4: "RCB Generation F4",
-    f5: "RCB Generation F5",
-    f6: "RCB Generation F6",
-    f7: "RCB Generation F7",
-    f8: "RCB Generation F8",
+    f1: `${t.catalog.rcbGen} F1`,
+    f2: `${t.catalog.rcbGen} F2`,
+    f3: `${t.catalog.rcbGen} F3`,
+    f4: `${t.catalog.rcbGen} F4`,
+    f5: `${t.catalog.rcbGen} F5`,
+    f6: `${t.catalog.rcbGen} F6`,
+    f7: `${t.catalog.rcbGen} F7`,
+    f8: `${t.catalog.rcbGen} F8`,
     rfb: t.rules.rfbTitle,
-    ex1: "Experimental (up to 50%)",
-    ex2: "Experimental (51–75%)",
-    ex3: "Experimental (76–98%)",
+    ex1: "RExB",
+    ex2: "RExB",
+    ex3: "RExB",
   };
 }
 async function getBreedData(alias: string, lang: string = "ru") {
@@ -284,22 +284,16 @@ export default async function GoatsListPage({
   const breedAliasSimple = alias.trim().toUpperCase();
 
   const breadcrumbItems: any[] = [
-    { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
     { label: breed.name, href: `/catalog/goats/${breedAliasSimple}` },
+    { label: t.catalog.goats, href: `/catalog/goats/${breedAliasSimple}/${sex}` },
+    { label: t.catalog.breedingRegistries }
   ];
-
-  if (isDead) {
-    breadcrumbItems.push({ label: sexLabel, href: `/catalog/goats/${breedAliasSimple}/${sex}` });
-    breadcrumbItems.push({ label: t.catalog.deadAnimals });
-  } else {
-    breadcrumbItems.push({ label: sexLabel });
-  }
 
   if (reg && !isUkrainian) {
     breadcrumbItems.push({ label: REGISTER_NAMES[reg] || reg });
   } else if (view && !isUkrainian) {
     breadcrumbItems.push({
-      label: view === "rcb" ? "RCB Generations" : "Experimental Registry",
+      label: view === "rcb" ? "Absorption Crossing Registry" : "RExB",
     });
   }
 
@@ -315,17 +309,55 @@ export default async function GoatsListPage({
     : { breeds: [], farms: [], owners: [] };
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col bg-[#FDFDFD] px-4 font-sans leading-tight text-gray-800 overflow-hidden">
+    <div className="h-[calc(100vh-64px)] flex flex-col px-4 font-sans leading-tight text-gray-800 overflow-hidden">
       <div className="max-w-[2800px] w-full mx-auto flex flex-col h-full space-y-2 py-4">
-        <div className="flex-shrink-0">
-          <Breadcrumbs items={breadcrumbItems} t={t} />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2 border-b border-gray-100 mt-10 mb-6">
+          <div className="flex-shrink-0">
+            <Breadcrumbs items={breadcrumbItems} t={t} />
+          </div>
+          {showTable && reg !== 'rfb' && (
+            <div className="flex flex-wrap items-center gap-3">
+                  <FilterCard 
+                      label={t.catalog.allBreeds}
+                      param="breed"
+                      currentValue={alias}
+                      options={[{ id: 'all', name: `-- ${t.catalog.allBreeds} --` }, ...filterOptions.breeds.map((b: { alias: string; name: string }) => ({ id: b.alias, name: b.name }))]}
+                  />
+                  <FilterCard
+                      label={t.goats.farm}
+                      param="farm"
+                      currentValue={farm}
+                      options={filterOptions.farms.map(f => ({ id: f.id.toString(), name: f.name }))}
+                  />
+                  <FilterCard 
+                      label={t.goats.owner}
+                      param="owner"
+                      currentValue={owner}
+                      options={filterOptions.owners.map(o => ({ id: o, name: o }))}
+                  />
+                  <FilterCard 
+                      label={t.catalog.age}
+                      param="age"
+                      currentValue={age}
+                      options={[
+                          { id: '12', name: t.catalog.upTo12m },
+                          { id: '24', name: t.catalog.upTo24m },
+                          { id: '36', name: t.catalog.upTo36m },
+                          { id: 'all', name: t.catalog.allAges }
+                      ]}
+                  />
+                  <Link href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`} className="px-4 bg-[#CFA97A] border h-7 rounded text-[9px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white transition-all shadow-sm flex items-center">
+                      ← {t.catalog.reset}
+                  </Link>
+            </div>
+          )}
         </div>
 
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1  min-h-0 overflow-hidden">
           {showRegisterGrid && (
             <section className="h-full overflow-y-auto space-y-12 pb-10">
-            <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
-              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight uppercase">
+            <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
                 {t.catalog.registerPage.title}
               </h2>
               <p className="text-sm font-bold opacity-40">
@@ -340,14 +372,14 @@ export default async function GoatsListPage({
                   name: t.catalog.registerPage.rhb,
                   sub: t.catalog.registerPage.rhbSub,
                   code: "RHB",
-                  img: "/img/ui/premium_goat.png",
+                  img: "/img/kozi-ang.jpg",
                 },
                 {
                   id: "rcb",
                   name: t.catalog.registerPage.rcb,
                   sub: t.catalog.registerPage.rcbSub,
                   code: "RCB",
-                  img: "/img/ui/premium_goat.png",
+                  img: "/img/kozi-ang.jpg",
                   isFolder: true,
                 },
                 {
@@ -355,14 +387,14 @@ export default async function GoatsListPage({
                   name: t.catalog.registerPage.rfb,
                   desc: t.catalog.registerPage.rfbDesc,
                   code: "RFB",
-                  img: "/img/ui/premium_goat.png",
+                  img: "/img/kozi-ang.jpg",
                 },
                 {
                   id: "ex",
                   name: t.catalog.registerPage.rexb,
                   desc: t.catalog.registerPage.rexbDesc,
                   code: "RExB",
-                  img: "/img/ui/premium_goat.png",
+                  img: "/img/kozi-ang.jpg",
                   isFolder: true,
                 },
               ].map((item) => (
@@ -375,19 +407,19 @@ export default async function GoatsListPage({
                   }
                   className="group flex flex-col bg-white border border-gray-200 h-full transition-colors hover:border-[#441a0e]"
                 >
-                  <div className="aspect-[4/3] w-full overflow-hidden border-b border-gray-100">
+                  <div className="aspect-square w-full overflow-hidden border-b border-gray-100 bg-white flex items-center justify-center p-6">
                     <img
                       src={item.img}
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="flex flex-col items-center text-center p-8 flex-1">
-                    <h3 className="text-base font-black text-gray-900 leading-tight uppercase mb-2">
+                    <h3 className="text-base font-black text-gray-900 leading-tight mb-2">
                         {item.name}
                     </h3>
                     {item.sub && (
-                        <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                        <p className="text-[12px] font-bold text-gray-400 tracking-widest mb-4">
                             {item.sub}
                         </p>
                     )}
@@ -411,29 +443,39 @@ export default async function GoatsListPage({
 
           {showGenerationGrid && (
             <section className="h-full overflow-y-auto space-y-12 pb-10">
-            <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
-              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
-                {t.catalog.absorption}
+            <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto">
+              <h2 className="text-3xl font-normal text-primary mb-2">
+                {t.catalog.registerPage.rcb}
               </h2>
-              <p className="text-sm font-bold opacity-40 italic">
-                {t.catalog.rcbMainList}
-              </p>
             </header>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {[
+                { id: 1, p: '50%' },
+                { id: 2, p: '75%' },
+                { id: 3, p: '87.5%' },
+                { id: 4, p: '93.75%' },
+                { id: 5, p: '96.87%' },
+                { id: 6, p: '98.43%' },
+                { id: 7, p: '99.21%' },
+                { id: 8, p: '99.6%' }
+              ].map((f) => (
                 <Link
-                  key={num}
-                  href={`?reg=f${num}`}
-                  className="bg-white rounded-xl p-8 flex items-center justify-between hover:bg-primary/5 group transition-colors border border-primary/10 hover:border-primary/20 shadow-sm"
+                  key={f.id}
+                  href={`?reg=f${f.id}`}
+                  target="_blank"
+                  className="group bg-white p-8 rounded-xl border border-primary/10 hover:border-primary/20 transition-all shadow-sm hover:shadow-xl flex items-center justify-between"
                 >
-                  <h3 className="text-3xl font-black text-primary uppercase italic">
-                    F{num}
-                  </h3>
-                  <span className="text-secondary font-black text-[10px] uppercase tracking-widest text-right">
-                    → {t.catalog.launch}
-                    <br />
-                    {t.nav.catalog}
-                  </span>
+                  <div className="flex flex-col">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-black text-primary italic">F {f.id}</span>
+                      <span className="text-xs font-bold text-primary/30">{f.p}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black tracking-widest text-primary/30 group-hover:text-primary transition-colors block">
+                      — {t.catalog.launch.toLowerCase() === 'відкрити' || t.catalog.launch.toLowerCase() === 'open' || t.catalog.launch.toLowerCase() === 'открыть' ? 'открыть' : t.catalog.launch}
+                    </span>
+                  </div>
                 </Link>
               ))}
               <Link
@@ -450,12 +492,7 @@ export default async function GoatsListPage({
 
           {showExperimentalGrid && (
             <section className="h-full overflow-y-auto space-y-12 pb-10">
-            <header className="border-b border-primary/10 pb-8 text-center max-w-4xl mx-auto uppercase">
-              <h2 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">
-                RExB Classification
-              </h2>
-            </header>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               {[
                 {
                   id: "ex1",
@@ -478,7 +515,7 @@ export default async function GoatsListPage({
                   href={`?reg=${item.id}`}
                   className="bg-white rounded-xl p-10 flex flex-col items-center group hover:border-secondary transition-colors border border-primary/10 shadow-sm"
                 >
-                  <h3 className="text-3xl font-black text-primary mb-2 uppercase italic">
+                  <h3 className="text-3xl font-black text-primary mb-2">
                     {item.name}
                   </h3>
                   <span className="text-primary/40 font-black text-sm uppercase tracking-widest">
@@ -494,14 +531,14 @@ export default async function GoatsListPage({
         )}
 
         {showKidsGrid && (
-            <section className="h-full overflow-y-auto space-y-6 pb-10">
-                <header className="border-b border-primary/10 pb-6 text-center max-w-4xl mx-auto uppercase">
-                    <h2 className="text-3xl md:text-4xl font-black text-primary mb-2 tracking-tight">
+            <section className="h-full overflow-y-auto space-y-12 pb-10">
+                <header className="border-b border-primary/10 pb-10 text-center max-w-4xl mx-auto">
+                    <h2 className="text-3xl font-black text-primary uppercase">
                         {t.catalog.kidsGrid.title}
                     </h2>
                 </header>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-10">
+                <div className="grid grid-cols-3 gap-10 max-w-6xl mx-auto pb-10">
                     {[
                         { id: 'male', age: '3', label: t.catalog.kidsGrid.male03 },
                         { id: 'male', age: '6', label: t.catalog.kidsGrid.male36 },
@@ -513,13 +550,13 @@ export default async function GoatsListPage({
                         <Link 
                             key={idx}
                             href={`?s=${item.id}&age=${item.age}`}
-                            className="group flex flex-col bg-white border border-gray-100 rounded-sm overflow-hidden"
+                            className="group flex flex-col items-center text-center"
                         >
-                            <div className="aspect-square bg-white flex items-center justify-center p-4 border-b border-gray-50">
-                                <img src="/img/ui/kid_goat.png" className="w-full h-full object-contain" alt="" />
+                            <div className="aspect-square w-full max-w-[220px] bg-white flex items-center justify-center p-4 mb-4">
+                                <img src="/img/kozliata.jpg" className="w-full h-full object-contain transition-transform group-hover:scale-105" alt="" />
                             </div>
-                            <div className="p-3 text-center border-t border-gray-50">
-                                <h3 className="text-[10px] font-black uppercase tracking-tight text-gray-900 leading-tight">
+                            <div className="px-2">
+                                <h3 className="text-[11px] font-normal text-[#491907] leading-tight transition-colors group-hover:text-secondary">
                                     {item.label}
                                 </h3>
                             </div>
@@ -531,55 +568,7 @@ export default async function GoatsListPage({
 
         {showTable && (
           <section className="h-full flex flex-col space-y-4">
-            <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
-              <div>
-                <h2 className="text-xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
-                  {breed.name} /{" "}
-                  {reg && !isUkrainian
-                    ? REGISTER_NAMES[reg]
-                    : age ? `${t.catalog.upTo} ${age}M` : (isUkrainian ? t.catalog.allRegistry : t.catalog.allRegistry)}
-                </h2>
-                <div className="flex gap-2">
-                  <span className="bg-primary text-secondary px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-widest">
-                    {sexLabel}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <FilterCard 
-                    label={t.catalog.allBreeds}
-                    param="breed"
-                    currentValue={alias}
-                    options={[{ id: 'all', name: `-- ${t.catalog.allBreeds} --` }, ...filterOptions.breeds.map((b: { alias: string; name: string }) => ({ id: b.alias, name: b.name }))]}
-                />
-                <FilterCard
-                    label={t.goats.farm}
-                    param="farm"
-                    currentValue={farm}
-                    options={filterOptions.farms.map(f => ({ id: f.id.toString(), name: f.name }))}
-                />
-                <FilterCard 
-                    label={t.goats.owner}
-                    param="owner"
-                    currentValue={owner}
-                    options={filterOptions.owners.map(o => ({ id: o, name: o }))}
-                />
-                <FilterCard 
-                    label={t.catalog.age}
-                    param="age"
-                    currentValue={age}
-                    options={[
-                        { id: '12', name: t.catalog.upTo12m },
-                        { id: '24', name: t.catalog.upTo24m },
-                        { id: '36', name: t.catalog.upTo36m },
-                        { id: 'all', name: t.catalog.allAges }
-                    ]}
-                />
-                <Link href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`} className="px-6  bg-[#CFA97A] border h-8  mt-4 border-primary/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white transition-all shadow-sm flex items-center">
-                    ← {t.catalog.reset}
-                </Link>
-              </div>
+            <header className="hidden">
             </header>
 
             <div className="flex-1 min-h-0 bg-white border rounded-sm shadow-2xl relative">
@@ -638,5 +627,5 @@ export default async function GoatsListPage({
     currentUser?: any;
   }) {
     const goats = await getGoats(breedId, sex, reg, age, showDead, farm, owner);
-    return <GoatTable goats={goats} t={t} currentUser={currentUser} />;
+    return <ClassicGoatTable goats={goats} t={t} currentUser={currentUser} />;
   }

@@ -12,13 +12,13 @@ export default async function Header({ lang: propLang }: { lang?: Locale }) {
     <header className="bg-primary/95 backdrop-blur-md py-4 px-6 lg:px-12 text-white flex items-center justify-between relative z-[60] border-b border-white/5 min-h-[110px]">
       {/* Left side Logo */}
       <div className="flex-1 flex items-center">
-        <Link href="/" className="transition-transform hover:scale-105 duration-300 block">
+        <div   className="transition-transform hover:scale-105 duration-300 block">
           <img 
             src="/img/forum_kozovodstvo.jpg" 
             alt="Association Logo" 
             className="h-[80px] md:h-[130px] w-auto object-contain brightness-110 drop-shadow-2xl rounded-sm"
           />
-        </Link>
+        </div>
       </div>
 
       {/* Center Brand Title */}

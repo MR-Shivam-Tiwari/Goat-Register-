@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import { getSessionUser } from "@/lib/access-control";
 import { redirect } from "next/navigation";
-import GoatTable from "@/components/GoatTable";
+import ClassicGoatTable from "@/components/ClassicGoatTable";
 import InviteSection from "@/components/InviteSection";
 import PedigreeNode from "@/components/PedigreeNode";
 import AddPhotoGallery from "@/components/AddPhotoGallery";
@@ -148,7 +148,7 @@ export default async function GoatDetailPage({
             </h3>
           </div>
           <div className="p-0 overflow-hidden">
-            <GoatTable goats={[goat]} t={t} isMain currentUser={user} />
+            <ClassicGoatTable goats={[goat]} t={t} isMain currentUser={user} />
           </div>
         </section>
 
@@ -169,7 +169,7 @@ export default async function GoatDetailPage({
                 ))
               ) : (
                 <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
-                   <span className="text-[10px] italic opacity-40 uppercase tracking-widest">
+                   <span className="text-[10px] opacity-40 uppercase tracking-widest">
                      {t.goats.noPhotos}
                    </span>
                 </div>
@@ -252,7 +252,7 @@ export default async function GoatDetailPage({
                 {t.goats.directDescendantsTitle}
               </h3>
               <div className="rounded-lg border border-gray-100 shadow-sm overflow-hidden">
-                <GoatTable goats={descendants} t={t} currentUser={user} />
+                <ClassicGoatTable goats={descendants} t={t} currentUser={user} />
               </div>
             </div>
           </div>
@@ -319,7 +319,7 @@ export default async function GoatDetailPage({
                     <td className="p-3">
                         <Link
                           href={`/goats/${goat.id}/milk?row=${m.id}`}
-                          className="text-blue-600 hover:text-blue-900 font-bold italic"
+                          className="text-blue-600 hover:text-blue-900 font-bold"
                         >
                           {t.goats.editShort}
                         </Link>
@@ -331,7 +331,7 @@ export default async function GoatDetailPage({
                 ))}
                 {ownMilk.length === 0 && (
                   <tr>
-                    <td colSpan={15} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
+                    <td colSpan={15} className="py-20 text-gray-300 flex items-center justify-center gap-2">
                       <span className="text-xl">🥛</span>
                       {t.catalog.empty}
                     </td>
@@ -428,7 +428,7 @@ export default async function GoatDetailPage({
                 </tbody>
               </table>
             ) : (
-              <div className="py-20 text-gray-300 italic flex flex-col items-center justify-center gap-1">
+              <div className="py-20 text-gray-300 flex flex-col items-center justify-center gap-1">
                  <span className="text-xl">📋</span>
                  {t.catalog.empty}
               </div>
@@ -493,7 +493,7 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-white rounded-full"></span>
               {t.goats.thirdGenProductivity} (Automated)
             </h2>
-            <span className="text-[10px] text-white/40 font-bold uppercase italic group-hover:text-emerald-400 transition-colors">Auto-formatted: L/Days/Milk/Fat/Protein</span>
+            <span className="text-[10px] text-white/40 font-bold uppercase group-hover:text-emerald-400 transition-colors">Auto-formatted: L/Days/Milk/Fat/Protein</span>
           </div>
           <div className="p-4 bg-gray-50/30">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -528,7 +528,7 @@ export default async function GoatDetailPage({
                    <div key={i} className="bg-white p-3 border border-gray-200 rounded-lg flex flex-col gap-2 hover:shadow-md transition-all">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{item.l}</span>
-                        <span className="text-[9px] font-bold text-gray-300 italic truncate ml-2">{node?.name || "???"}</span>
+                        <span className="text-[9px] font-bold text-gray-300 truncate ml-2">{node?.name || "???"}</span>
                       </div>
                       <input
                         type="text"

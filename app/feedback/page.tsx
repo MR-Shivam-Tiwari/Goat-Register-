@@ -17,7 +17,7 @@ export default async function FeedbackPage() {
                 <header className="mb-20 text-left relative group">
                     <h2 className="text-8xl font-black text-primary tracking-tighter uppercase mb-8 leading-none group-hover:text-secondary group-hover:translate-x-4 transition-all duration-700 underline decoration-secondary decoration-8 underline-offset-[1.5rem] whitespace-pre-line">{t.feedback.getInTouch}</h2>
                     <div className="h-5 w-40 mb-12"></div>
-                    <p className="text-gray-500 font-bold text-2xl leading-[1.8] max-w-lg italic">
+                    <p className="text-gray-500 font-bold text-2xl leading-[1.8] max-w-lg">
                     {t.feedback.connectDesc}
                     </p>
                 </header>
@@ -51,7 +51,7 @@ export default async function FeedbackPage() {
 
             <div className="w-full bg-white/95 rounded-[4rem] shadow-4xl p-20 lg:p-24 border border-primary/5 transform lg:rotate-2 relative overflow-hidden group hover:rotate-0 transition-transform duration-1000">
                 <div className="absolute top-0 left-0 w-full h-12 bg-primary group-hover:bg-secondary transition-colors duration-1000"></div>
-                <div className="absolute -top-10 -right-10 p-10 opacity-[0.03] select-none pointer-events-none text-[30rem] font-black italic scale-150 rotate-12 transition-all group-hover:opacity-10 group-hover:scale-125 group-hover:text-secondary group-hover:rotate-0">?</div>
+                <div className="absolute -top-10 -right-10 p-10 opacity-[0.03] select-none pointer-events-none text-[30rem] font-black scale-150 rotate-12 transition-all group-hover:opacity-10 group-hover:scale-125 group-hover:text-secondary group-hover:rotate-0">?</div>
                 
                 <h3 className="text-4xl font-black text-primary mb-12 uppercase tracking-tighter leading-none mt-4 relative z-10 transition-all duration-700 group-hover:scale-110 group-hover:text-secondary origin-left">{t.feedback.requestForm}</h3>
                 <form className="space-y-12 relative z-10">
@@ -70,7 +70,7 @@ export default async function FeedbackPage() {
                     <button type="submit" className="w-full bg-primary text-secondary py-8 rounded-[2.5rem] font-black text-xl shadow-3xl hover:bg-secondary hover:text-primary transition-all duration-1000 transform hover:-translate-y-4 active:scale-95 uppercase tracking-[0.3em]">
                         {t.feedback.dispatchRequest}
                     </button>
-                    <p className="text-center text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] pt-4 italic">{t.feedback.responseTime}</p>
+                    <p className="text-center text-[10px] font-black text-primary/30 uppercase tracking-[0.4em] pt-4">{t.feedback.responseTime}</p>
                 </form>
             </div>
         </div>

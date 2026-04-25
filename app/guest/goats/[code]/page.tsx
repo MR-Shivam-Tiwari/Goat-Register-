@@ -12,8 +12,9 @@ import {
 import { getTranslation, Locale } from "@/lib/translations";
 import { cookies } from "next/headers";
 import PedigreeNode from "@/components/PedigreeNode";
-import GoatTable from "@/components/GoatTable";
+import ClassicGoatTable from "@/components/ClassicGoatTable";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import GoatDetailPage from "@/app/goats/[id]/page";
 
 export const dynamic = "force-dynamic";
 
@@ -140,7 +141,7 @@ export default async function GuestGoatPage({
             </h3>
           </div>
           <div className="p-0 overflow-hidden">
-            <GoatTable goats={[goat]} t={t} isMain />
+            <ClassicGoatTable goats={[goat]} t={t} isMain isGuest />
           </div>
         </section>
 
@@ -161,7 +162,7 @@ export default async function GuestGoatPage({
                   </div>
                 ))
               ) : (
-                <div className="w-full py-12 flex items-center justify-center opacity-40 italic text-xs uppercase tracking-widest">
+                <div className="w-full py-12 flex items-center justify-center opacity-40 text-xs uppercase tracking-widest">
                    {t.guest.noPhotos}
                 </div>
               )}
@@ -243,7 +244,7 @@ export default async function GuestGoatPage({
                 {t.goats.directDescendantsTitle}
               </h3>
               <div className="border border-gray-100 shadow-sm overflow-hidden bg-white">
-                <GoatTable goats={descendants} t={t} isGuest />
+                <GoatDetailPage goats={descendants} t={t} isGuest />
               </div>
             </div>
           </div>
@@ -294,7 +295,7 @@ export default async function GuestGoatPage({
                 )}
                 {Object.keys(ancestorLacts).length === 0 && (
                    <tr>
-                     <td colSpan={8} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
+                     <td colSpan={8} className="py-20 text-gray-300 flex items-center justify-center gap-2">
                        {t.catalog.empty}
                      </td>
                    </tr>
@@ -347,7 +348,7 @@ export default async function GuestGoatPage({
                 ))}
                 {ownMilk.length === 0 && (
                   <tr>
-                    <td colSpan={11} className="py-20 text-gray-300 italic flex items-center justify-center gap-2">
+                    <td colSpan={11} className="py-20 text-gray-300 flex items-center justify-center gap-2">
                       <span className="text-xl">🥛</span>
                       {t.catalog.empty}
                     </td>
@@ -413,7 +414,7 @@ export default async function GuestGoatPage({
                 </tbody>
               </table>
             ) : (
-              <div className="py-20 text-gray-300 italic flex flex-col items-center justify-center gap-1 uppercase tracking-widest text-[10px]">
+              <div className="py-20 text-gray-300 flex flex-col items-center justify-center gap-1 uppercase tracking-widest text-[10px]">
                  📋 {t.catalog.empty}
               </div>
             )}

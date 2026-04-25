@@ -48,14 +48,14 @@ export default async function FarmsPage() {
     const isAdmin = cookieStore.get('uid_token')?.value;
     
     return (
-        <div className="min-h-screen bg-[#F8F9FA] py-10 px-4 md:px-12 lg:px-24 font-sans text-gray-800">
+        <div className="min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans text-gray-800">
             <div className="max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-700">
                 <Breadcrumbs items={[{ label: t.farms.breadcrumbs }]} />
 
                 {/* PAGE HEADER */}
                 <header className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 pb-8 gap-6">
                     <div className="text-center md:text-left">
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">{t.farms.title}</h1>
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">{t.farms.title}</h1>
                         <p className="mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
                             {t.farms.registryDesc}
                         </p>
@@ -99,8 +99,8 @@ export default async function FarmsPage() {
                                     {/* Farm name with ID tag */}
                                     <div className="flex items-start justify-between gap-3">
                                         <Link href={`/farms/${farm.id}`} className="flex-1">
-                                            <h2 className="text-[13px] font-black uppercase tracking-tight text-gray-900 leading-tight group-hover:text-[#491907] transition-colors line-clamp-2 italic">
-                                                <span className="text-[10px] not-italic font-mono text-gray-400 mr-1.5">#{farm.id}</span>
+                                            <h2 className="text-[13px] font-black uppercase tracking-tight text-gray-900 leading-tight group-hover:text-[#491907] transition-colors line-clamp-2">
+                                                <span className="text-[10px] not-font-mono text-gray-400 mr-1.5">#{farm.id}</span>
                                                 {farm.name}
                                             </h2>
                                         </Link>

@@ -45,7 +45,7 @@ export default function MobileMenu({
           <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/30">
             <div className="flex flex-col">
                <span className="text-[10px] font-black text-primary/40 uppercase tracking-[0.3em] leading-none mb-1">Navigation</span>
-               <span className="font-outfit font-black text-primary tracking-tighter text-xl italic uppercase">Menu</span>
+               <span className="font-outfit font-black text-primary tracking-tighter text-xl uppercase">Menu</span>
             </div>
             <button 
               onClick={() => setIsOpen(false)}

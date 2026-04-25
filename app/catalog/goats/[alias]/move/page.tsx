@@ -94,7 +94,7 @@ export default async function TransferredGoatsPage({
 
         <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
           <div>
-            <h2 className="text-3xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
+            <h2 className="text-3xl font-medium text-primary uppercase leading-tight tracking-tighter mb-2">
               {breed ? `${breed.name} / ` : ""}{t.catalog.transferredAnimalsList}
             </h2>
             <p className="text-[10px] font-black uppercase tracking-widest text-[#CFA97A]">
@@ -109,75 +109,68 @@ export default async function TransferredGoatsPage({
         </header>
 
         <section className="h-full flex flex-col space-y-4 flex-1">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden flex-1 overflow-x-auto relative">
-            <table className="w-full text-left border-separate border-spacing-0 min-w-[1100px]">
-              <thead className="bg-[#441a0e] text-amber-50">
-                <tr className="text-[11px] font-black uppercase tracking-widest">
-                  <th className="p-4 border-b border-white/10 sticky left-0 z-20 bg-[#441a0e]">Кличка</th>
-                  <th className="p-4 border-b border-white/10">Порода</th>
-                  <th className="p-4 border-b border-white/10">Дата рождения</th>
-                  <th className="p-4 border-b border-white/10">Пол</th>
-                  <th className="p-4 border-b border-white/10">Ферма продавец</th>
-                  <th className="p-4 border-b border-white/10">Ферма покупатель</th>
-                  <th className="p-4 border-b border-white/10 text-right">Дата продажи</th>
+          <div className="bg-white border-2 border-black overflow-hidden flex-1 overflow-x-auto relative">
+            <table className="w-full text-left border-collapse min-w-[1100px]">
+              <thead className="bg-[#23DC69] text-black">
+                <tr className="text-[11px] font-bold uppercase divide-x divide-black border-b border-black">
+                  <th className="p-2 px-4 sticky left-0 z-20 bg-[#23DC69] border-r border-black">Кличка</th>
+                  <th className="p-2 px-4 border-r border-black">Порода</th>
+                  <th className="p-2 px-4 border-r border-black">Дата рождения</th>
+                  <th className="p-2 px-4 border-r border-black">Пол</th>
+                  <th className="p-2 px-4 border-r border-black">Член ABG</th>
+                  <th className="p-2 px-4 border-r border-black">Заводчик</th>
+                  <th className="p-2 px-4">Владелец</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 bg-white">
+              <tbody className="divide-y divide-black bg-white">
                 {goats.map((g, idx) => {
-                  // Unique key fix: using move_id OR index if missing
                   const rowKey = g.move_id || `move-${idx}`;
+                  const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#B5F4BB';
+                  
                   return (
-                    <tr key={rowKey} className="hover:bg-primary/5 transition-colors group">
-                        <td className="p-4 align-top sticky left-0 z-10 bg-white group-hover:bg-[#FDF6F0] border-r border-gray-100">
-                        <Link href={`/goats/${g.id}`} className="inline-block relative">
-                            <span className="text-sm font-black text-primary leading-tight hover:text-secondary hover:underline underline-offset-4 decoration-2 overflow-hidden text-ellipsis line-clamp-2 uppercase italic">
-                            ➔ {g.goat_name || "UNKNOWN"}
-                            </span>
-                        </Link>
+                    <tr key={rowKey} style={{ backgroundColor: rowBg }} className="divide-x divide-black transition-all border-b border-black h-8">
+                        <td className="p-2 px-4 sticky left-0 z-10 whitespace-nowrap border-r border-black" style={{ backgroundColor: rowBg }}>
+                          <Link href={`/goats/${g.id}`} className="text-[13px] font-bold text-black hover:underline uppercase">
+                            {g.goat_name || "UNKNOWN"}
+                          </Link>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-[10px] font-black uppercase italic text-gray-400">
-                            {g.breed_name || "-"}
-                        </span>
+                        <td className="p-2 px-4 whitespace-nowrap">
+                          <span className="text-[11px] font-normal uppercase text-black">
+                              {g.breed_name || "-"}
+                          </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-xs font-bold text-gray-900 border border-black/5 bg-black/5 px-2 py-0.5 rounded-sm tabular-nums whitespace-nowrap">
-                            {formatDate(g.date_born)}
-                        </span>
+                        <td className="p-2 px-4 whitespace-nowrap">
+                          <span className="text-[11px] font-normal text-black tabular-nums">
+                              {formatDate(g.date_born)}
+                          </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60 bg-gray-50 px-2 py-1 rounded">
-                            {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
-                        </span>
+                        <td className="p-2 px-4 whitespace-nowrap">
+                          <span className="text-[11px] font-normal uppercase text-black">
+                              {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
+                          </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <div className="flex flex-col">
-                            <span className="text-xs font-bold text-gray-700 leading-tight uppercase">
+                        <td className="p-2 px-4 whitespace-nowrap text-center">
+                          <span className="text-[11px] font-bold text-black uppercase">
+                            {g.buyer_name ? "Да" : "Нет"}
+                          </span>
+                        </td>
+                        <td className="p-2 px-4 whitespace-nowrap">
+                          <span className="text-[11px] font-normal text-black uppercase">
                             {g.seller_name || "-"}
-                            </span>
-                            <span className="text-[8px] font-black text-gray-300 uppercase italic">BREEDER</span>
-                        </div>
+                          </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <div className="flex flex-col text-green-700 uppercase">
-                            <span className="text-xs font-bold leading-tight">
+                        <td className="p-2 px-4 whitespace-nowrap">
+                          <span className="text-[11px] font-normal text-black uppercase">
                             {g.buyer_name || "-"}
-                            </span>
-                            <span className="text-[8px] font-black opacity-50 italic">OWNER</span>
-                        </div>
-                        </td>
-                        <td className="p-4 align-top text-right">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 inline-block border border-primary/10 rounded tabular-nums italic">
-                            {formatDate(g.sale_date)}
-                        </span>
+                          </span>
                         </td>
                     </tr>
-                );
+                  );
                 })}
                 {goats.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="p-20 text-center">
-                      <div className="inline-block bg-gray-50 text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest rounded-3xl border border-gray-100 italic">
+                    <td colSpan={7} className="p-20 text-center bg-white">
+                      <div className="inline-block text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest border-2 border-black">
                          NO MOVEMENT RECORDS FOUND
                       </div>
                     </td>

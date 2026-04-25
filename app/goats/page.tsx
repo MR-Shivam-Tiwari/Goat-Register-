@@ -119,19 +119,20 @@ export default async function AllGoatsPage({
         <Breadcrumbs
           items={[{ label: t.nav.home, href: "/" }, { label: t.nav.registry }]}
         />
+        <GoatFilters breeds={breeds} lang={lang} t={t} />
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b-2 border-primary/5">
+        {/* <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b-2 border-primary/5">
           <div>
-            <h1 className="text-2xl font-black text-primary uppercase tracking-tighter italic leading-none">
+            <h1 className="text-2xl font-black text-primary uppercase tracking-tighter leading-none">
               {t.nav.registry}
             </h1>
             <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mt-1 font-mono">
               {t.goats.globalDatabase} • {goats.length} {t.goats.records}
             </p>
           </div>
-        </div>
+        </div> */}
 
-        <GoatFilters breeds={breeds} lang={lang} t={t} />
+        
 
         <div className="overflow-hidden border border-gray-300 shadow-sm transition-all duration-300">
           <div className="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar">

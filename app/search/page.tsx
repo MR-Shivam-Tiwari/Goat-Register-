@@ -39,7 +39,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
         <header className="mb-24 text-left group">
             <h2 className="text-7xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">{t.search.results.split(' ')[0]} <br/> {t.search.results.split(' ')[1]}.</h2>
             <div className="h-2 w-32 bg-secondary rounded-full mb-8 group-hover:w-64 transition-all duration-1000 shadow-xl"></div>
-            <p className="text-gray-400 font-bold text-3xl italic tracking-tighter">{t.search.querying} "{q}" {t.search.inDatabases}</p>
+            <p className="text-gray-400 font-bold text-3xl tracking-tighter">{t.search.querying} "{q}" {t.search.inDatabases}</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mt-20">

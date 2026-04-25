@@ -61,7 +61,7 @@ export default function MovementForm({
   return (
     <div className="max-w-xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
       <div className="bg-[#491907] p-8 text-white relative">
-        <h2 className="text-2xl font-black uppercase italic relative z-10">{t.goatForm.move.title}</h2>
+        <h2 className="text-2xl font-black uppercase relative z-10">{t.goatForm.move.title}</h2>
         <p className="text-white/40 text-[10px] font-black mt-1 uppercase tracking-widest relative z-10">{t.goatForm.move.subtitle}</p>
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
       </div>
@@ -105,7 +105,7 @@ export default function MovementForm({
         </div>
 
         <div className="pt-8 border-t border-gray-50 text-center">
-           <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mb-4 italic">Confirm the transfer details before saving</p>
+           <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest mb-4">Confirm the transfer details before saving</p>
           <button 
             type="submit"
             disabled={loading}

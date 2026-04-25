@@ -369,7 +369,7 @@ export default function GoatTable({
               <td className="p-1 text-nowrap text-center text-[11px]">
                 {g.farm_name || "-"}
               </td>
-              <td className="p-1 text-nowrap text-center text-[11px] font-medium italic opacity-70">
+              <td className="p-1 text-nowrap text-center text-[11px] font-medium opacity-70">
                 {g.manuf || "-"}
               </td>
               <td className="p-1 text-nowrap text-center text-[11px] font-semibold">
@@ -560,7 +560,7 @@ export default function GoatTable({
                     })
                   : "-"}
               </td>
-              <td className="p-1 px-4 text-nowrap   italic">
+              <td className="p-1 px-4 text-nowrap  ">
                 {g.source || "-"}
               </td>
               <td className="p-1 px-4 text-nowrap min-w-[80px] text-center font-bold">
@@ -572,7 +572,7 @@ export default function GoatTable({
                   <span className="text-gray-500">No info</span>
                 )}
               </td>
-              <td className="p-1 px-4 text-nowrap   italic text-sm    border-l border-gray-200">
+              <td className="p-1 px-4 text-nowrap   text-sm    border-l border-gray-200">
                 {g.special || "-"}
               </td>
             </tr>

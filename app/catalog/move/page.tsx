@@ -88,13 +88,13 @@ export default async function TransferredGoatsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
+    <div className="min-h-screen bg-[#FFFFF0] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
       <div className="max-w-[1400px] mx-auto min-h-screen flex flex-col space-y-6">
         <Breadcrumbs items={breadcrumbItems} />
 
         <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
           <div>
-            <h2 className="text-3xl font-black text-primary uppercase leading-tight tracking-tighter mb-2 italic">
+            <h2 className="text-3xl font-black text-primary uppercase leading-tight tracking-tighter mb-2">
               {breed ? `${breed.name} / ` : ""}{t.catalog.transferredAnimalsList}
             </h2>
             <p className="text-[10px] font-black uppercase tracking-widest text-[#CFA97A]">
@@ -130,13 +130,13 @@ export default async function TransferredGoatsPage({
                     <tr key={rowKey} className="hover:bg-primary/5 transition-colors group">
                         <td className="p-4 align-top sticky left-0 z-10 bg-white group-hover:bg-[#FDF6F0] border-r border-gray-100">
                         <Link href={`/goats/${g.id}`} className="inline-block relative">
-                            <span className="text-sm font-black text-primary leading-tight hover:text-secondary hover:underline underline-offset-4 decoration-2 overflow-hidden text-ellipsis line-clamp-2 uppercase italic">
+                            <span className="text-sm font-black text-primary leading-tight hover:text-secondary hover:underline underline-offset-4 decoration-2 overflow-hidden text-ellipsis line-clamp-2 uppercase">
                             ➔ {g.goat_name || "UNKNOWN"}
                             </span>
                         </Link>
                         </td>
                         <td className="p-4 align-top">
-                        <span className="text-[10px] font-black uppercase italic text-gray-400">
+                        <span className="text-[10px] font-black uppercase text-gray-400">
                             {g.breed_name || "-"}
                         </span>
                         </td>
@@ -155,7 +155,7 @@ export default async function TransferredGoatsPage({
                             <span className="text-xs font-bold text-gray-700 leading-tight uppercase">
                             {g.seller_name || "-"}
                             </span>
-                            <span className="text-[8px] font-black text-gray-300 uppercase italic">BREEDER</span>
+                            <span className="text-[8px] font-black text-gray-300 uppercase">BREEDER</span>
                         </div>
                         </td>
                         <td className="p-4 align-top">
@@ -163,11 +163,11 @@ export default async function TransferredGoatsPage({
                             <span className="text-xs font-bold leading-tight">
                             {g.buyer_name || "-"}
                             </span>
-                            <span className="text-[8px] font-black opacity-50 italic">OWNER</span>
+                            <span className="text-[8px] font-black opacity-50">OWNER</span>
                         </div>
                         </td>
                         <td className="p-4 align-top text-right">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 inline-block border border-primary/10 rounded tabular-nums italic">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 inline-block border border-primary/10 rounded tabular-nums">
                             {formatDate(g.sale_date)}
                         </span>
                         </td>
@@ -177,7 +177,7 @@ export default async function TransferredGoatsPage({
                 {goats.length === 0 && (
                   <tr>
                     <td colSpan={7} className="p-20 text-center">
-                      <div className="inline-block bg-gray-50 text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest rounded-3xl border border-gray-100 italic">
+                      <div className="inline-block bg-gray-50 text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest rounded-3xl border border-gray-100">
                          NO MOVEMENT RECORDS FOUND
                       </div>
                     </td>

@@ -59,7 +59,7 @@ export default function MilkForm({
     <div className="max-w-xl mx-auto bg-[#FDFBF7] rounded-3xl shadow-2xl border border-amber-900/5 overflow-hidden">
       <div className="bg-[#491907] p-10 text-white relative overflow-hidden">
          <div className="relative z-10">
-            <h1 className="text-3xl font-black uppercase tracking-tighter italic">{t.goatForm.milk.title}</h1>
+            <h1 className="text-3xl font-black uppercase tracking-tighter">{t.goatForm.milk.title}</h1>
             <p className="text-[#E2F0D9]/40 text-[10px] font-black mt-2 uppercase tracking-widest">{t.goatForm.milk.subtitle}</p>
          </div>
          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>

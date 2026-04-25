@@ -11,7 +11,7 @@ export default async function Home() {
   const t = getTranslation(lang);
 
   return (
-    <main className="bg-[#FFFFF0] min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
+    <main className="min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
@@ -29,7 +29,7 @@ export default async function Home() {
           </div>
 
           {/* Center Column - Text Content */}
-          <div className="lg:col-span-8 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200/60 relative overflow-hidden">
+          <div className="lg:col-span-8 bg-white/60 backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200/60 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-[#491907] opacity-80"></div>
             
             <header className="mb-10 text-center flex flex-col justify-center items-center">
@@ -47,7 +47,7 @@ export default async function Home() {
               <p>{t.home.p5}</p>
               <p>{t.home.p6}</p>
               
-              <div className="my-8 font-bold border-l-4 border-[#491907] pl-6 italic bg-amber-50/50 py-6 text-gray-900 rounded-r-lg">
+              <div className="my-8 font-bold border-l-4 border-[#491907] pl-6 bg-amber-50/50 py-6 text-gray-900 rounded-r-lg">
                 {t.home.quoteHighlight}
               </div>
               
@@ -57,7 +57,7 @@ export default async function Home() {
                 {t.home.teamHeader}
               </p>
               
-              <div className="mt-12 pt-8 border-t border-gray-100 italic text-gray-500">
+              <div className="mt-12 pt-8 border-t border-gray-100 text-gray-500">
                 <p className="mb-6 font-semibold text-gray-700">{t.home.onceBreederSaid}</p>
                 <div className="bg-gray-50 p-8 rounded-2xl space-y-4 border border-gray-100 shadow-inner">
                   <p>{t.home.q1}</p>
