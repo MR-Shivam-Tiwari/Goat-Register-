@@ -90,43 +90,43 @@ export default function BreedCatalogDisplay({
               <img
                 src={
                   breed.name.toLowerCase().includes("альпийская")
-                    ? "/breedimage/Альпийская.png"
+                    ? "/breedimage/alpijskaya.png"
                     : breed.name.toLowerCase().includes("зааненская")
-                      ? "/breedimage/Зааненская.png"
+                      ? "/breedimage/zaanenskaya.png"
                       : breed.name.toLowerCase().includes("англо-нубийская")
-                        ? "/breedimage/Англо-нубийская.png"
+                        ? "/breedimage/anglo_nubijskaya.png"
                         : breed.name.toLowerCase().includes("тоггенбургская")
-                          ? "/breedimage/Тоггенбургская.png"
+                          ? "/breedimage/toggenburgskaya.png"
                           : breed.name
                                 .toLowerCase()
                                 .includes("карликовая группа")
-                            ? "/breedimage/Карликоваягруппакоз.png"
+                            ? "/breedimage/karlikovaya.png"
                             : breed.name.toLowerCase().includes("оберхазли")
-                              ? "/breedimage/Оберхазли.jpg"
+                              ? "/breedimage/oberhazli.jpg"
                               : breed.name
                                     .toLowerCase()
                                     .includes("украинская белая")
-                                ? "/breedimage/Украинскаябелая.png"
+                                ? "/breedimage/ukrainskaya_belaya.png"
                                 : breed.name
                                       .toLowerCase()
                                       .includes("украинская цветная")
-                                  ? "/breedimage/Украинскаякороткоухая.jpg"
+                                  ? "/breedimage/ukrainskaya_korotkouhaya.jpg"
                                   : breed.name
                                         .toLowerCase()
                                         .includes("украинская короткоухая")
-                                    ? "/breedimage/Украинская_короткоухая.jpg"
+                                    ? "/breedimage/ukrainskaya_korotkouhaya_v2.jpg"
                                     : breed.name
                                           .toLowerCase()
                                           .includes("тюринг")
-                                      ? "/breedimage/ТюрингскаяЛеснаяКоза.jpg"
+                                      ? "/breedimage/thuringian.jpg"
                                       : breed.name
                                             .toLowerCase()
                                             .includes("бурская")
-                                        ? "/breedimage/Бурская.jpg"
+                                        ? "/breedimage/burskaya.jpg"
                                         : breed.name
                                               .toLowerCase()
                                               .includes("ла-манча")
-                                          ? "/breedimage/ЛаМанча.jpg"
+                                          ? "/breedimage/lamancha.jpg"
                                           : `/img/breeds/${breed.alias?.trim()}.png`
                 }
                 alt={displayName}
