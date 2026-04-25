@@ -103,9 +103,9 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
     { label: t?.catalog?.youngAnimals?.toUpperCase() || "YOUNG ANIMALS", href: `/catalog/goats/${alias}/child` },
   ];
 
-  const getItemType = (label: string, index: number) => {
-    const l = label.toLowerCase();
-    if (l.includes('catalog') || l.includes('каталог')) return null;
+  const getItemType = (label: string | any, index: number) => {
+    const l = (label || '').toString().toLowerCase();
+    if (!l || l.includes('catalog') || l.includes('каталог')) return null;
     
     // Check for breed first to avoid conflicts with words like 'коза' in breed names
     const isBreed = Object.keys(breedNames.ru).some(k => 
@@ -145,7 +145,10 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
         <span className="text-[#491907]/30 font-light select-none">•</span>
       </div>
 
-      {items.filter(item => !item.label.toLowerCase().includes('catalog') && !item.label.toLowerCase().includes('каталог')).map((item, index, filteredItems) => {
+      {items.filter(item => {
+        const label = (item?.label || '').toString().toLowerCase();
+        return label && !label.includes('catalog') && !label.includes('каталог');
+      }).map((item, index, filteredItems) => {
         const isLast = index === filteredItems.length - 1;
         const type = getItemType(item.label, index);
         const isOpen = activeIdx === index;

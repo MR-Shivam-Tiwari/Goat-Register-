@@ -285,7 +285,7 @@ export default async function GoatsListPage({
 
   const breadcrumbItems: any[] = [
     { label: breed.name, href: `/catalog/goats/${breedAliasSimple}` },
-    { label: t.catalog.goats, href: `/catalog/goats/${breedAliasSimple}/${sex}` },
+    { label: sexLabel, href: `/catalog/goats/${breedAliasSimple}/${sex}` },
     { label: t.catalog.breedingRegistries }
   ];
 
