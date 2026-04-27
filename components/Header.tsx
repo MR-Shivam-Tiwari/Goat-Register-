@@ -9,49 +9,52 @@ export default async function Header({ lang: propLang }: { lang?: Locale }) {
   const t = getTranslation(lang);
 
   return (
-    <header className="bg-primary/95 backdrop-blur-md py-4 px-6 lg:px-12 text-white flex items-center justify-between relative z-[60] border-b border-white/5 min-h-[110px]">
-      {/* Left side Logo */}
-      <div className="flex-1 flex items-center">
-        <div   className="transition-transform hover:scale-105 duration-300 block">
-          <img 
-            src="/img/forum_kozovodstvo.jpg" 
-            alt="Association Logo" 
-            className="h-[80px] md:h-[130px] w-auto object-contain brightness-110 drop-shadow-2xl rounded-sm"
-          />
+    <header className="bg-primary/95 backdrop-blur-md py-3 md:py-4 px-4 lg:px-12 text-white border-b border-white/5 min-h-[80px] md:min-h-[110px] relative z-[60] w-full">
+      <div className="flex items-center justify-between gap-2 md:gap-4 h-full w-full">
+        {/* Left side Logo */}
+        <div className="flex-none w-1/4 sm:w-auto flex items-center">
+            <div className="transition-transform hover:scale-105 duration-300">
+            <img 
+                src="/img/forum_kozovodstvo.jpg" 
+                alt="Association Logo" 
+                className="h-[45px] sm:h-[80px] md:h-[130px] w-auto object-contain brightness-110 drop-shadow-xl rounded-sm"
+            />
+            </div>
         </div>
-      </div>
 
-      {/* Center Brand Title */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full pointer-events-none md:pointer-events-auto max-w-[600px] z-10 pt-2">
-            <h1 className="text-xl md:text-3xl font-black text-white uppercase tracking-tighter leading-none drop-shadow-2xl">
+        {/* Center Brand Title */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center min-w-0 px-1">
+            <h1 className="text-[10px] xs:text-xs sm:text-xl md:text-3xl font-black text-white uppercase tracking-tighter leading-none drop-shadow-2xl truncate w-full">
                 {t.nav.brandTitle.split(' / ')[0]}
             </h1>
-            <div className="w-[120px] md:w-[200px] h-[2px] bg-secondary mx-auto my-3 md:my-4 shadow-sm" />
-            <h2 className="text-[9px] md:text-[13px] font-black text-secondary uppercase tracking-[0.35em] drop-shadow-lg whitespace-nowrap">
+            <div className="w-8 xs:w-12 sm:w-[120px] md:w-[200px] h-[1px] md:h-[2px] bg-secondary mx-auto my-1.5 md:my-4 shadow-sm" />
+            <h2 className="hidden sm:block text-[9px] md:text-[13px] font-black text-secondary uppercase tracking-[0.35em] drop-shadow-lg whitespace-nowrap">
                 {t.nav.brandTitle.split(' / ')[1]}
             </h2>
-      </div>
+        </div>
 
-      {/* Right side Actions */}
-      <div className="flex-1 flex items-center justify-end gap-3 md:gap-6">
-          <Link 
-            href="/farms" 
-            className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-white/10 hover:border-secondary/30 border border-white/10 px-5 py-2.5 rounded shadow-sm transition-all group overflow-hidden relative"
-          >
-             <div className="absolute inset-0 bg-secondary/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-             <div className="relative flex items-center gap-2">
-                 <span className="text-[9px] font-black uppercase tracking-widest text-[#FDFDFD]">{t.nav.farms}</span>
-                 <svg className="w-3 h-3 text-secondary transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                 </svg>
-             </div>
-          </Link>
+        {/* Right side Actions */}
+        <div className="flex-none w-1/4 sm:w-auto flex items-center justify-end gap-2 md:gap-6">
+            <a 
+                href="/farms" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 bg-white/5 hover:bg-white/10 hover:border-secondary/30 border border-white/10 px-5 py-2.5 rounded shadow-sm transition-all group overflow-hidden relative"
+            >
+                <div className="absolute inset-0 bg-secondary/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                <div className="relative flex items-center gap-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#FDFDFD]">{t.nav.farms}</span>
+                    <svg className="w-3 h-3 text-secondary transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </div>
+            </a>
 
-          <div className="flex-shrink-0 scale-90 sm:scale-100 origin-right ml-2">
-              <LanguageSwitcher currentLang={lang} />
-          </div>
+            <div className="flex-shrink-0 scale-[0.65] xs:scale-[0.8] sm:scale-100 origin-right">
+                <LanguageSwitcher currentLang={lang} />
+            </div>
+        </div>
       </div>
     </header>
   );
 }
-

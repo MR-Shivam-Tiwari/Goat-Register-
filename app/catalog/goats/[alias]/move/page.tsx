@@ -88,38 +88,37 @@ export default async function TransferredGoatsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
-      <div className="max-w-[1400px] mx-auto min-h-screen flex flex-col space-y-6">
+    <div className="min-h-screen bg-[#FEFBF5] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
+      <div className="max-w-[1500px] mx-auto flex flex-col h-[calc(100vh-100px)] space-y-4">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
-          <div>
-            <h2 className="text-3xl font-medium text-primary uppercase leading-tight tracking-tighter mb-2">
-              {breed ? `${breed.name} / ` : ""}{t.catalog.transferredAnimalsList}
+        <header className="flex items-center justify-between py-2 border-b border-[#491907]/10">
+            <h2 className="text-[22px] font-light text-[#491907] uppercase tracking-tight leading-none">
+              <span className="opacity-40">{breed ? `${breed.name} / ` : ""}</span>
+              {t.catalog.transferredAnimalsList}
             </h2>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#CFA97A]">
-                {breed ? "BREED REGISTRY VIEW" : "GLOBAL MOVEMENT LOG"}
-            </p>
-          </div>
-          <div className="bg-primary/5 px-4 py-2 rounded-lg border border-primary/10 self-start md:self-end">
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">
-              TOTAL RECORDS: <span className="text-primary">{goats.length}</span>
-            </p>
-          </div>
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                {goats.length} RECORDS FOUND
+            </div>
         </header>
 
-        <section className="h-full flex flex-col space-y-4 flex-1">
-          <div className="bg-white border-2 border-black overflow-hidden flex-1 overflow-x-auto relative">
-            <table className="w-full text-left border-collapse min-w-[1100px]">
-              <thead className="bg-[#23DC69] text-black">
-                <tr className="text-[11px] font-bold uppercase divide-x divide-black border-b border-black">
-                  <th className="p-2 px-4 sticky left-0 z-20 bg-[#23DC69] border-r border-black">Кличка</th>
-                  <th className="p-2 px-4 border-r border-black">Порода</th>
-                  <th className="p-2 px-4 border-r border-black">Дата рождения</th>
-                  <th className="p-2 px-4 border-r border-black">Пол</th>
-                  <th className="p-2 px-4 border-r border-black">Член ABG</th>
-                  <th className="p-2 px-4 border-r border-black">Заводчик</th>
-                  <th className="p-2 px-4">Владелец</th>
+        <div className="flex-1 min-h-0 overflow-auto bg-white border border-black relative">
+            <table className="w-full text-left border-collapse table-auto min-w-[1400px] text-[10.5px] font-normal leading-none">
+              <thead className="sticky top-0 z-30 shadow-sm">
+                <tr className="text-[9px] font-bold uppercase tracking-tight text-black bg-[#23DC69] border-b border-black">
+                  <th colSpan={8} className="p-1.5 text-center border-r border-black uppercase tracking-widest">
+                    {t.catalog.transferredAnimalsList}
+                  </th>
+                </tr>
+                <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#B5F4BB]">
+                  <th className="p-1 px-4 border-r border-black sticky left-0 bg-[#B5F4BB] z-40 w-64">1. Кличка</th>
+                  <th className="p-1 px-4 border-r border-black text-center">2. порода</th>
+                  <th className="p-1 px-4 border-r border-black text-center">3. Дата рождения</th>
+                  <th className="p-1 px-4 border-r border-black text-center">4. Дата продажи</th>
+                  <th className="p-1 px-4 border-r border-black text-center">5. Пол</th>
+                  <th className="p-1 px-4 border-r border-black text-center">6. Член ABG</th>
+                  <th className="p-1 px-4 border-r border-black text-center">7. Заводчик</th>
+                  <th className="p-1 px-4 border-black text-center">8. Владелец</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black bg-white">
@@ -128,58 +127,54 @@ export default async function TransferredGoatsPage({
                   const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#B5F4BB';
                   
                   return (
-                    <tr key={rowKey} style={{ backgroundColor: rowBg }} className="divide-x divide-black transition-all border-b border-black h-8">
-                        <td className="p-2 px-4 sticky left-0 z-10 whitespace-nowrap border-r border-black" style={{ backgroundColor: rowBg }}>
-                          <Link href={`/goats/${g.id}`} className="text-[13px] font-bold text-black hover:underline uppercase">
-                            {g.goat_name || "UNKNOWN"}
-                          </Link>
+                    <tr 
+                      key={rowKey} 
+                      style={{ backgroundColor: rowBg }}
+                      className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
+                    >
+                        <td 
+                          style={{ backgroundColor: rowBg }}
+                          className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
+                        >
+                            <Link href={`/goats/${g.id}`} target="_blank" className="hover:underline flex items-center gap-2">
+                                <span className="opacity-30">➔</span>
+                                {g.goat_name || "UNKNOWN"}
+                            </Link>
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap">
-                          <span className="text-[11px] font-normal uppercase text-black">
-                              {g.breed_name || "-"}
-                          </span>
+                        <td className="p-1 px-4 text-center uppercase opacity-80">
+                            {g.breed_name || "-"}
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap">
-                          <span className="text-[11px] font-normal text-black tabular-nums">
-                              {formatDate(g.date_born)}
-                          </span>
+                        <td className="p-1 px-4 text-center font-mono tabular-nums">
+                            {formatDate(g.date_born)}
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap">
-                          <span className="text-[11px] font-normal uppercase text-black">
-                              {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
-                          </span>
+                        <td className="p-1 px-4 text-center font-mono tabular-nums bg-yellow-50/10">
+                            {formatDate(g.sale_date)}
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap text-center">
-                          <span className="text-[11px] font-bold text-black uppercase">
-                            {g.buyer_name ? "Да" : "Нет"}
-                          </span>
+                        <td className="p-1 px-4 text-center uppercase font-bold">
+                            {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap">
-                          <span className="text-[11px] font-normal text-black uppercase">
+                        <td className="p-1 px-4 text-center font-bold">
+                            {g.is_abg ? "YES" : "NO"}
+                        </td>
+                        <td className="p-1 px-4 uppercase truncate max-w-[250px]">
                             {g.seller_name || "-"}
-                          </span>
                         </td>
-                        <td className="p-2 px-4 whitespace-nowrap">
-                          <span className="text-[11px] font-normal text-black uppercase">
+                        <td className="p-1 px-4 uppercase truncate max-w-[250px]">
                             {g.buyer_name || "-"}
-                          </span>
                         </td>
                     </tr>
                   );
                 })}
                 {goats.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="p-20 text-center bg-white">
-                      <div className="inline-block text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest border-2 border-black">
-                         NO MOVEMENT RECORDS FOUND
-                      </div>
+                    <td colSpan={8} className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                       NO MOVEMENT RECORDS FOUND
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-          </div>
-        </section>
+        </div>
       </div>
     </div>
   );

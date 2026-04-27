@@ -206,103 +206,151 @@ export default async function FarmDetailPage({ params: paramsPromise }: { params
         <div className="pt-12 space-y-12">
             {/* CURRENT STOCK */}
             <div className="space-y-4">
-                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-black border-b-2 border-black pb-3 flex items-center gap-3">
-                    <span className="w-2 h-2 bg-black rounded-full"></span>
-                    {t.farms.activeStockRegistry}
-                </h2>
-                <div className="bg-white border rounded-sm overflow-hidden shadow-2xl relative min-h-[300px]">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[1300px]">
-                            <thead className="sticky top-0 z-10 bg-gray-50 text-black shadow-sm border-b border-gray-400">
-                                <tr className="text-[12px] font-black uppercase tracking-widest leading-none">
-                                    <th className="p-4 border-r border-gray-400 w-56 sticky left-0 bg-gray-50 z-20">{t.goats.nickname}</th>
-                                    <th className="p-4 border-r border-gray-400 w-44 text-center">{t.goats.breed}</th>
-                                    <th className="p-4 border-r border-gray-400 w-24 text-center text-blue-800">Σ %</th>
-                                    <th className="p-4 border-r border-gray-400 w-24 text-center">{t.goats.sex}</th>
-                                    <th className="p-4 border-r border-gray-400 w-28 text-center">{t.goats.idAbg}</th>
-                                    <th className="p-4 border-r border-gray-400 w-56">{t.goats.breeder}</th>
-                                    <th className="p-4 border-r border-gray-400 w-56">{t.goats.owner}</th>
-                                    <th className="p-4 text-center w-36">{t.goats.birthDate || 'Born'}</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-[11px] font-black uppercase tracking-tight divide-y divide-gray-200 bg-white text-black">
-                                {goats.map((goat: any) => {
-                                    const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
-                                    return (
-                                        <tr key={goat.id} className="hover:bg-amber-50/50 transition-colors">
-                                            <td className="p-3 border-r border-gray-100 font-black text-blue-900 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(0,0,0,0.1)]">
-                                                {hasAccess ? (
-                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline leading-none truncate block">➔ {goat.name}</a>
-                                                ) : (
-                                                    <span className="leading-none truncate block opacity-50">➔ {goat.name}</span>
-                                                )}
-                                            </td>
-                                            <td className="p-3 border-r border-gray-100 text-center text-primary font-black opacity-80">{goat.breed_name}</td>
-                                            <td className="p-3 border-r border-gray-100 text-center font-black text-blue-700 bg-blue-50/20">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
-                                            <td className="p-3 border-r border-gray-100 text-center font-bold text-black">{goat.sex === 1 ? t.goats.male : t.goats.female}</td>
-                                            <td className="p-3 border-r border-gray-100 text-center font-mono text-[10px]">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
-                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60">{goat.manuf}</td>
-                                            <td className="p-3 border-r border-gray-100 truncate text-[10px] opacity-60">{goat.owner}</td>
-                                            <td className="p-3 text-center font-mono opacity-50 whitespace-nowrap">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
-                                        </tr>
-                                    );
-                                })}
-                                {goats.length === 0 && (
-                                    <tr><td colSpan={8} className="p-40 text-center font-black uppercase opacity-20 text-3xl tracking-widest">{t.farms.emptyStock}</td></tr>
-                                )}
-                            </tbody>
-                        </table>
+                <header className="flex items-center justify-between py-2 border-b border-[#491907]/10">
+                    <h2 className="text-[22px] font-light text-[#491907] uppercase tracking-tight leading-none">
+                        {t.farms.activeStockRegistry}
+                    </h2>
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                        {goats.length} RECORDS FOUND
                     </div>
+                </header>
+
+                <div className="flex-1 min-h-[300px] overflow-auto bg-white border border-black relative">
+                    <table className="w-full text-left border-collapse table-auto min-w-[1300px] text-[10.5px] font-normal leading-none">
+                        <thead className="sticky top-0 z-30 shadow-sm">
+                            <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-[#5F2000] border-b border-black">
+                                <th colSpan={8} className="p-1.5 text-center border-r border-black uppercase tracking-widest">
+                                    {t.farms.activeStockRegistry}
+                                </th>
+                            </tr>
+                            <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#B5F4BB]">
+                                <th className="p-1 px-4 border-r border-black sticky left-0 bg-[#B5F4BB] z-40 w-64">{t.goats.nickname}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.breed}</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">Σ %</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.sex}</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.idAbg}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.breeder}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.owner}</th>
+                                <th className="p-1 px-4 border-black text-center w-36">{t.goats.birthDate || 'Born'}</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-black bg-white">
+                            {goats.map((goat: any, idx: number) => {
+                                const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
+                                const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#B5F4BB';
+                                return (
+                                    <tr 
+                                      key={goat.id} 
+                                      style={{ backgroundColor: rowBg }}
+                                      className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
+                                    >
+                                        <td 
+                                          style={{ backgroundColor: rowBg }}
+                                          className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
+                                        >
+                                            {hasAccess ? (
+                                                <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-2 text-black">
+                                                    <span className="opacity-30">➔</span>
+                                                    {goat.name}
+                                                </a>
+                                            ) : (
+                                                <span className="flex items-center gap-2 opacity-50 text-black">
+                                                    <span className="opacity-30">➔</span>
+                                                    {goat.name}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="p-1 px-4 text-center uppercase opacity-80">{goat.breed_name}</td>
+                                        <td className="p-1 px-4 text-center font-bold text-blue-900">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
+                                        <td className="p-1 px-4 text-center uppercase font-bold">{goat.sex === 1 ? t.goats.male : t.goats.female}</td>
+                                        <td className="p-1 px-4 text-center font-bold">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
+                                        <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.manuf}</td>
+                                        <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.owner}</td>
+                                        <td className="p-1 px-4 text-center font-mono tabular-nums">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
+                                    </tr>
+                                );
+                            })}
+                            {goats.length === 0 && (
+                                <tr>
+                                    <td colSpan={8} className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                        {t.farms.emptyStock}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             {/* RELOCATED STOCK */}
             {displaced.length > 0 && (
             <div className="space-y-4 pt-4">
-                <h2 className="text-[12px] font-black uppercase tracking-[0.5em] text-red-950 border-b-2 border-red-200 pb-3 flex items-center gap-3">
-                    <span className="w-2 h-2 bg-red-950 rounded-full animate-pulse"></span>
-                    {t.farms.displacedStock}
-                </h2>
-                <div className="bg-white border border-red-50 rounded-sm overflow-hidden shadow-xl relative">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[1300px]">
-                            <thead className="sticky top-0 z-10 bg-red-50/30 text-black shadow-sm border-b border-red-200">
-                                <tr className="text-[12px] font-black uppercase tracking-widest leading-none">
-                                    <th className="p-4 border-r border-red-100 w-56 sticky left-0 bg-red-50/30 z-20">{t.goats.nickname}</th>
-                                    <th className="p-4 border-r border-red-100 w-44 text-center">{t.goats.breed}</th>
-                                    <th className="p-4 border-r border-red-100 w-24 text-center text-blue-800">Σ %</th>
-                                    <th className="p-4 border-r border-red-100 w-24 text-center">{t.goats.sex}</th>
-                                    <th className="p-4 border-r border-red-100 w-28 text-center">{t.goats.idAbg}</th>
-                                    <th className="p-4 border-r border-red-100 w-56">{t.goats.breeder}</th>
-                                    <th className="p-4 border-r border-red-100 w-56">{t.goats.owner}</th>
-                                    <th className="p-4 text-center w-36">{t.goats.birthDate || 'Born'}</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-[11px] font-black uppercase tracking-tight divide-y divide-red-50 bg-white text-black">
-                                {displaced.map((goat: any) => {
-                                    const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
-                                    return (
-                                        <tr key={goat.id} className="hover:bg-red-50/40 transition-colors">
-                                            <td className="p-3 border-r border-red-50 sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_rgba(153,0,0,0.1)]">
-                                                {hasAccess ? (
-                                                    <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline leading-none truncate block font-black text-black">➔ {goat.name}</a>
-                                                ) : (
-                                                    <span className="leading-none truncate block font-black opacity-30 text-black">➔ {goat.name}</span>
-                                                )}
-                                            </td>
-                                            <td className="p-3 border-r border-red-50 text-center font-mono text-gray-900">{goat.breed_name}</td>
-                                            <td className="p-3 border-r border-red-50 text-center font-black text-blue-700 bg-red-50/10">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
-                                            <td className="p-3 border-r border-red-50 text-center font-black text-black">{goat.sex === 1 ? 'M' : 'F'}</td>
-                                            <td className="p-3 border-r border-red-50 text-center text-black">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
-                                            <td className="p-3 border-r border-red-50 truncate text-[10px] text-gray-700">{goat.manuf}</td>
-                                            <td className="p-3 border-r border-red-50 truncate text-[10px] text-gray-700">{goat.owner}</td>
-                                            <td className="p-3 text-center font-mono whitespace-nowrap opacity-50 text-black">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                <header className="flex items-center justify-between py-2 border-b border-red-900/10">
+                    <h2 className="text-[22px] font-light text-red-950 uppercase tracking-tight leading-none">
+                        {t.farms.displacedStock}
+                    </h2>
+                    <div className="text-[10px] font-bold text-red-400 uppercase tracking-[0.2em]">
+                        {displaced.length} RECORDS FOUND
                     </div>
+                </header>
+
+                <div className="flex-1 min-h-[150px] overflow-auto bg-white border border-black relative">
+                    <table className="w-full text-left border-collapse table-auto min-w-[1300px] text-[10.5px] font-normal leading-none">
+                        <thead className="sticky top-0 z-30 shadow-sm">
+                            <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-red-950 border-b border-black">
+                                <th colSpan={8} className="p-1.5 text-center border-r border-black uppercase tracking-widest">
+                                    {t.farms.displacedStock}
+                                </th>
+                            </tr>
+                            <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-red-50">
+                                <th className="p-1 px-4 border-r border-black sticky left-0 bg-red-50 z-40 w-64">{t.goats.nickname}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.breed}</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">Σ %</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.sex}</th>
+                                <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.idAbg}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.breeder}</th>
+                                <th className="p-1 px-4 border-r border-black text-center">{t.goats.owner}</th>
+                                <th className="p-1 px-4 border-black text-center w-36">{t.goats.birthDate || 'Born'}</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-black bg-white">
+                            {displaced.map((goat: any, idx: number) => {
+                                const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
+                                const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#FEF2F2';
+                                return (
+                                    <tr 
+                                      key={goat.id} 
+                                      style={{ backgroundColor: rowBg }}
+                                      className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
+                                    >
+                                        <td 
+                                          style={{ backgroundColor: rowBg }}
+                                          className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
+                                        >
+                                            {hasAccess ? (
+                                                <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-2 text-red-950">
+                                                    <span className="opacity-30">➔</span>
+                                                    {goat.name}
+                                                </a>
+                                            ) : (
+                                                <span className="flex items-center gap-2 opacity-50 text-red-950">
+                                                    <span className="opacity-30">➔</span>
+                                                    {goat.name}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="p-1 px-4 text-center uppercase opacity-80">{goat.breed_name}</td>
+                                        <td className="p-1 px-4 text-center font-bold text-blue-900">{goat.blood_percent ? `${goat.blood_percent}%` : '-'}</td>
+                                        <td className="p-1 px-4 text-center uppercase font-bold">{goat.sex === 1 ? 'M' : 'F'}</td>
+                                        <td className="p-1 px-4 text-center font-bold">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
+                                        <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.manuf}</td>
+                                        <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.owner}</td>
+                                        <td className="p-1 px-4 text-center font-mono tabular-nums">{goat.date_born ? new Date(goat.date_born).toLocaleDateString('ru-RU') : '-'}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             )}

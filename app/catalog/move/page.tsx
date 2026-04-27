@@ -88,105 +88,93 @@ export default async function TransferredGoatsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFFF0] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
-      <div className="max-w-[1400px] mx-auto min-h-screen flex flex-col space-y-6">
+    <div className="min-h-screen bg-[#FEFBF5] py-6 px-4 md:px-12 lg:px-24 tracking-tight">
+      <div className="max-w-[1500px] mx-auto flex flex-col h-[calc(100vh-100px)] space-y-4">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <header className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-primary/5 pb-6 gap-6">
-          <div>
-            <h2 className="text-3xl font-black text-primary uppercase leading-tight tracking-tighter mb-2">
-              {breed ? `${breed.name} / ` : ""}{t.catalog.transferredAnimalsList}
+        <header className="flex items-center justify-between py-2 border-b border-[#491907]/10">
+            <h2 className="text-[22px] font-light text-[#491907] uppercase tracking-tight leading-none">
+              <span className="opacity-40">{breed ? `${breed.name} / ` : ""}</span>
+              {t.catalog.transferredAnimalsList}
             </h2>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#CFA97A]">
-                {breed ? "BREED REGISTRY VIEW" : "GLOBAL MOVEMENT LOG"}
-            </p>
-          </div>
-          <div className="bg-primary/5 px-4 py-2 rounded-lg border border-primary/10 self-start md:self-end">
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">
-              TOTAL RECORDS: <span className="text-primary">{goats.length}</span>
-            </p>
-          </div>
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                {goats.length} RECORDS FOUND
+            </div>
         </header>
 
-        <section className="h-full flex flex-col space-y-4 flex-1">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden flex-1 overflow-x-auto relative">
-            <table className="w-full text-left border-separate border-spacing-0 min-w-[1100px]">
-              <thead className="bg-[#441a0e] text-amber-50">
-                <tr className="text-[11px] font-black uppercase tracking-widest">
-                  <th className="p-4 border-b border-white/10 sticky left-0 z-20 bg-[#441a0e]">Кличка</th>
-                  <th className="p-4 border-b border-white/10">Порода</th>
-                  <th className="p-4 border-b border-white/10">Дата рождения</th>
-                  <th className="p-4 border-b border-white/10">Пол</th>
-                  <th className="p-4 border-b border-white/10">Ферма продавец</th>
-                  <th className="p-4 border-b border-white/10">Ферма покупатель</th>
-                  <th className="p-4 border-b border-white/10 text-right">Дата продажи</th>
+        <div className="flex-1 min-h-0 overflow-auto bg-white border border-black relative">
+            <table className="w-full text-left border-collapse table-auto min-w-[1400px] text-[10.5px] font-normal leading-none">
+              <thead className="sticky top-0 z-30 shadow-sm">
+                <tr className="text-[9px] font-bold uppercase tracking-tight text-black bg-[#23DC69] border-b border-black">
+                  <th colSpan={8} className="p-1.5 text-center border-r border-black uppercase tracking-widest">
+                    {t.catalog.transferredAnimalsList}
+                  </th>
+                </tr>
+                <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#B5F4BB]">
+                  <th className="p-1 px-4 border-r border-black sticky left-0 bg-[#B5F4BB] z-40 w-64">1. Кличка</th>
+                  <th className="p-1 px-4 border-r border-black text-center">2. порода</th>
+                  <th className="p-1 px-4 border-r border-black text-center">3. Дата рождения</th>
+                  <th className="p-1 px-4 border-r border-black text-center">4. Дата продажи</th>
+                  <th className="p-1 px-4 border-r border-black text-center">5. Пол</th>
+                  <th className="p-1 px-4 border-r border-black text-center">6. Член ABG</th>
+                  <th className="p-1 px-4 border-r border-black text-center">7. Заводчик</th>
+                  <th className="p-1 px-4 border-black text-center">8. Владелец</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 bg-white">
+              <tbody className="divide-y divide-black bg-white">
                 {goats.map((g, idx) => {
-                  // Unique key fix: using move_id OR index if missing
                   const rowKey = g.move_id || `move-${idx}`;
+                  const rowBg = idx % 2 === 0 ? '#FFFFFF' : '#B5F4BB';
+                  
                   return (
-                    <tr key={rowKey} className="hover:bg-primary/5 transition-colors group">
-                        <td className="p-4 align-top sticky left-0 z-10 bg-white group-hover:bg-[#FDF6F0] border-r border-gray-100">
-                        <Link href={`/goats/${g.id}`} className="inline-block relative">
-                            <span className="text-sm font-black text-primary leading-tight hover:text-secondary hover:underline underline-offset-4 decoration-2 overflow-hidden text-ellipsis line-clamp-2 uppercase">
-                            ➔ {g.goat_name || "UNKNOWN"}
-                            </span>
-                        </Link>
+                    <tr 
+                      key={rowKey} 
+                      style={{ backgroundColor: rowBg }}
+                      className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
+                    >
+                        <td 
+                          style={{ backgroundColor: rowBg }}
+                          className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
+                        >
+                            <Link href={`/goats/${g.id}`} target="_blank" className="hover:underline flex items-center gap-2">
+                                <span className="opacity-30">➔</span>
+                                {g.goat_name || "UNKNOWN"}
+                            </Link>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-[10px] font-black uppercase text-gray-400">
+                        <td className="p-1 px-4 text-center uppercase opacity-80">
                             {g.breed_name || "-"}
-                        </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-xs font-bold text-gray-900 border border-black/5 bg-black/5 px-2 py-0.5 rounded-sm tabular-nums whitespace-nowrap">
+                        <td className="p-1 px-4 text-center font-mono tabular-nums">
                             {formatDate(g.date_born)}
-                        </span>
                         </td>
-                        <td className="p-4 align-top">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60 bg-gray-50 px-2 py-1 rounded">
-                            {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
-                        </span>
-                        </td>
-                        <td className="p-4 align-top">
-                        <div className="flex flex-col">
-                            <span className="text-xs font-bold text-gray-700 leading-tight uppercase">
-                            {g.seller_name || "-"}
-                            </span>
-                            <span className="text-[8px] font-black text-gray-300 uppercase">BREEDER</span>
-                        </div>
-                        </td>
-                        <td className="p-4 align-top">
-                        <div className="flex flex-col text-green-700 uppercase">
-                            <span className="text-xs font-bold leading-tight">
-                            {g.buyer_name || "-"}
-                            </span>
-                            <span className="text-[8px] font-black opacity-50">OWNER</span>
-                        </div>
-                        </td>
-                        <td className="p-4 align-top text-right">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 inline-block border border-primary/10 rounded tabular-nums">
+                        <td className="p-1 px-4 text-center font-mono tabular-nums bg-yellow-50/10">
                             {formatDate(g.sale_date)}
-                        </span>
+                        </td>
+                        <td className="p-1 px-4 text-center uppercase font-bold">
+                            {g.goat_sex === 1 ? t.goats.male : g.goat_sex === 0 ? t.goats.female : "Kids"}
+                        </td>
+                        <td className="p-1 px-4 text-center font-bold">
+                            {g.is_abg ? "YES" : "NO"}
+                        </td>
+                        <td className="p-1 px-4 uppercase truncate max-w-[250px]">
+                            {g.seller_name || "-"}
+                        </td>
+                        <td className="p-1 px-4 uppercase truncate max-w-[250px]">
+                            {g.buyer_name || "-"}
                         </td>
                     </tr>
-                );
+                  );
                 })}
                 {goats.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="p-20 text-center">
-                      <div className="inline-block bg-gray-50 text-gray-400 font-bold px-8 py-4 uppercase text-xs tracking-widest rounded-3xl border border-gray-100">
-                         NO MOVEMENT RECORDS FOUND
-                      </div>
+                    <td colSpan={8} className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                       NO MOVEMENT RECORDS FOUND
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-          </div>
-        </section>
+        </div>
       </div>
     </div>
   );
