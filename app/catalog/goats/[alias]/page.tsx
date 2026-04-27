@@ -111,9 +111,7 @@ export default async function BreedPage({
         <section className="space-y-6 pt-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {categories.map((cat) => {
-              const href = isUkrainian 
-                ? `/catalog/goats/${breed.alias.trim()}/${cat.id}?show=all`
-                : `/catalog/goats/${breed.alias.trim()}/${cat.id}`;
+              const href = `/catalog/goats/${breed.alias.trim()}/${cat.id}?show=all`;
               
               return (
                 <Link

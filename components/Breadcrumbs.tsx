@@ -11,6 +11,7 @@ interface BreadcrumbItem {
 
 export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbItem[], isGuest?: boolean, t?: any }) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const params = useParams();
   
@@ -18,6 +19,10 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
   const slug = params.slug as string[];
   const sex = slug ? slug[0] : 'female';
   const locale = (params.lang as string) || 'ru';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -96,7 +101,6 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
     { label: t?.rules?.rfbTitle?.toUpperCase() || "PHENOTYPE REGISTRY (RFB)", href: `/catalog/goats/${alias}/${sex}?reg=rfb` },
     { label: t?.rules?.rexbTitle?.toUpperCase() || "EXPERIMENTAL REGISTRY (RExB)", href: `/catalog/goats/${alias}/${sex}?view=ex` },
   ];
-
   const genders = [
     { label: t?.goats?.female?.toUpperCase() || "DOES (GOATS)", href: `/catalog/goats/${alias}/female` },
     { label: t?.goats?.male?.toUpperCase() || "BUCKS (GOATS)", href: `/catalog/goats/${alias}/male` },
@@ -111,13 +115,16 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
     const isBreed = Object.keys(breedNames.ru).some(k => 
       breedNames.ru[k].toLowerCase() === l || 
       breedNames.en[k].toLowerCase() === l || 
+      (breedNames.uk && breedNames.uk[k]?.toLowerCase() === l) ||
       (l.includes('пестрая') && breedNames.ru[k].toLowerCase().includes('цветная')) ||
       (l.includes('цветная') && breedNames.ru[k].toLowerCase().includes('пестрая'))
     );
-    if (isBreed || (index === 0 && !isGuest && items.length <= 1)) return 'breed';
+    
+    // If it's the first item after Catalog and we have a breed alias, it's almost certainly the breed
+    if (isBreed || (index === 0 && alias && !isGuest)) return 'breed';
 
-    if (l.includes('реестр') || l.includes('registry') || l.includes('registries') || l.includes('племінні')) return 'registry';
-    if (l.includes('коз') || l.includes('goat') || l.includes('doe') || l.includes('buck') || l.includes('коза') || l.includes('козел') || l.includes('кози')) return 'gender';
+    if (l.includes('реестр') || l.includes('registry') || l.includes('registries') || l.includes('племінні') || l.includes('rhb') || l.includes('rcb') || l.includes('rfb') || l.includes('rexb') || l.startsWith('f')) return 'registry';
+    if (l.includes('коз') || l.includes('goat') || l.includes('doe') || l.includes('buck') || l.includes('коза') || l.includes('козел') || l.includes('кози') || l.includes('kid') || l.includes('young') || l.includes('молодняк')) return 'gender';
     
     return null;
   };
@@ -169,7 +176,44 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
         }
 
         let dropdownItems: {label: string, href: string}[] = [];
-        if (type === 'registry') dropdownItems = registries;
+        if (type === 'registry') {
+            const l = item.label.toLowerCase();
+            const isCategory = l.includes('breeding registries') || l.includes('племенные реестры') || l.includes('племінні реєстри') || l.includes('registries');
+            
+            if (sex === 'child') {
+                dropdownItems = [
+                    { label: t?.catalog?.kidsGrid?.male03?.toUpperCase() || "BUCKS 0-3 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=3` },
+                    { label: t?.catalog?.kidsGrid?.male36?.toUpperCase() || "BUCKS 3-6 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=6` },
+                    { label: t?.catalog?.kidsGrid?.male612?.toUpperCase() || "BUCKS 6-12 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=12` },
+                    { label: t?.catalog?.kidsGrid?.female03?.toUpperCase() || "DOES 0-3 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=3` },
+                    { label: t?.catalog?.kidsGrid?.female36?.toUpperCase() || "DOES 3-6 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=6` },
+                    { label: t?.catalog?.kidsGrid?.female612?.toUpperCase() || "DOES 6-12 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=12` },
+                ];
+            } else if (l.includes('rcb') || l.includes('absorption')) {
+                dropdownItems = [
+                    { label: "F1", href: `/catalog/goats/${alias}/${sex}?reg=f1` },
+                    { label: "F2", href: `/catalog/goats/${alias}/${sex}?reg=f2` },
+                    { label: "F3", href: `/catalog/goats/${alias}/${sex}?reg=f3` },
+                    { label: "F4", href: `/catalog/goats/${alias}/${sex}?reg=f4` },
+                    { label: "F5", href: `/catalog/goats/${alias}/${sex}?reg=f5` },
+                    { label: "F6", href: `/catalog/goats/${alias}/${sex}?reg=f6` },
+                    { label: "F7", href: `/catalog/goats/${alias}/${sex}?reg=f7` },
+                    { label: "F8", href: `/catalog/goats/${alias}/${sex}?reg=f8` },
+                ];
+            } else if (l.includes('rexb') || l.includes('experimental')) {
+                dropdownItems = [
+                    { label: "RExB 1", href: `/catalog/goats/${alias}/${sex}?reg=ex1` },
+                    { label: "RExB 2", href: `/catalog/goats/${alias}/${sex}?reg=ex2` },
+                    { label: "RExB 3", href: `/catalog/goats/${alias}/${sex}?reg=ex3` },
+                ];
+            } else if (isCategory) {
+                dropdownItems = registries;
+            } else if (isLast) {
+                dropdownItems = [];
+            } else {
+                dropdownItems = registries;
+            }
+        }
         else if (type === 'gender') dropdownItems = genders;
         else if (type === 'breed') dropdownItems = currentBreeds.map(b => ({ label: b.name.toUpperCase(), href: `/catalog/goats/${b.alias.trim()}` }));
 
@@ -188,7 +232,7 @@ export default function Breadcrumbs({ items, isGuest, t }: { items: BreadcrumbIt
                     {labelToDisplay}
                 </span>
                 
-                {dropdownItems.length > 0 && (
+                {mounted && dropdownItems.length > 0 && (
                     <svg className={`w-2 h-2 ml-1 transition-transform ${isOpen ? 'rotate-180 text-white' : 'opacity-40'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M19 9l-7 7-7-7" />
                     </svg>
