@@ -28,7 +28,7 @@ export default async function CatalogPage() {
     return (
       <div className="min-h-screen py-8 px-6 md:px-12 lg:px-20 font-sans text-gray-800 tracking-tight">
         <div className="max-w-[1700px] mx-auto space-y-12">
-          <Breadcrumbs items={[{ label: t.catalog.breadcrumbs }]} />
+          <Breadcrumbs items={[{ label: t.catalog.breadcrumbs }]} t={t} locale={lang} />
 
           {/* Client Component Grid for interactivity */}
           <BreedCatalogDisplay breeds={breeds} t={t} />

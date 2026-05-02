@@ -42,11 +42,11 @@
   }
 
   .modern-table th {
-    @apply bg-primary text-secondary p-5 text-left font-black uppercase text-[10px] tracking-widest;
+    @apply bg-primary text-secondary p-5 text-left font-black uppercase text-[13px] tracking-widest;
   }
 
   .modern-table td {
-    @apply p-5 border-b border-primary/3 text-sm text-gray-700;
+    @apply p-5 border-b border-primary/3 text-lg text-gray-700;
   }
 
   /* Farm Template Content Styling */

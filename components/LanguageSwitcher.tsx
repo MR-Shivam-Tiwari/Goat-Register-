@@ -56,39 +56,36 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: 'ru' | 
       <button
         onClick={() => handleSwitch('ru')}
         disabled={isPending}
-        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+        className={`relative z-10 flex items-center justify-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
           active === 'ru' 
             ? 'text-[#491907]' 
             : 'text-white/40 hover:text-white/60'
         }`}
       >
-        <span className="text-xs">🇷🇺</span>
         <span>RU</span>
       </button>
 
       <button
         onClick={() => handleSwitch('en')}
         disabled={isPending}
-        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+        className={`relative z-10 flex items-center justify-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
           active === 'en' 
             ? 'text-[#491907]' 
             : 'text-white/40 hover:text-white/60'
         }`}
       >
-        <span className="text-xs">🇺🇸</span>
         <span>EN</span>
       </button>
 
       <button
         onClick={() => handleSwitch('uk')}
         disabled={isPending}
-        className={`relative z-10 flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
+        className={`relative z-10 flex items-center justify-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${
           active === 'uk' 
             ? 'text-[#491907]' 
             : 'text-white/40 hover:text-white/60'
         }`}
       >
-        <span className="text-xs">🇺🇦</span>
         <span>UA</span>
       </button>
 

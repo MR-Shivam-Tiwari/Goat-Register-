@@ -10,7 +10,7 @@ export default async function FeedbackPage() {
   return (
     <div className="min-h-screen bg-bg-site py-24 px-10 lg:px-24 font-inter">
       <div className="max-w-7xl mx-auto">
-        <Breadcrumbs items={[{ label: t.feedback.adminSupport }]} />
+        <Breadcrumbs items={[{ label: t.feedback.adminSupport }]} t={t} locale={lang} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 mt-24 items-center">
             <div>

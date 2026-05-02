@@ -34,7 +34,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
   return (
     <div className="min-h-screen bg-bg-site py-24 px-10 lg:px-24">
       <div className="max-w-7xl mx-auto">
-        <Breadcrumbs items={[{ label: t.search.title }]} />
+        <Breadcrumbs items={[{ label: t.search.title }]} t={t} locale={lang} />
 
         <header className="mb-24 text-left group">
             <h2 className="text-7xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">{t.search.results.split(' ')[0]} <br/> {t.search.results.split(' ')[1]}.</h2>

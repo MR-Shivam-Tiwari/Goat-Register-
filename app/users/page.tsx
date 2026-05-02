@@ -36,7 +36,7 @@ export default async function UsersPage() {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-6">
             <div className="max-w-[1400px] mx-auto space-y-8 font-sans">
-                <Breadcrumbs items={[{ label: t.nav.users }]} />
+                <Breadcrumbs items={[{ label: t.nav.users }]} t={t} locale={lang} />
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>

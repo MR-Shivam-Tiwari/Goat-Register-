@@ -86,7 +86,7 @@ export default function BreedCatalogDisplay({
             className="group bg-white border border-[#491907]/5 rounded-xl overflow-hidden hover:border-[#491907]/30 hover:shadow-[0_15px_40px_rgba(73,25,7,0.08)] transition-all duration-500 flex flex-col shadow-sm relative h-full"
           >
             {/* IMAGE SECTION */}
-            <div className="aspect-[4/3] w-full overflow-hidden bg-[#D88D33] relative border-b border-gray-100 flex items-center justify-center p-3">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-[#E2E0D9] relative flex items-center justify-center p-2.5 rounded-t-xl">
               <img
                 src={
                   breed.name.toLowerCase().includes("альпийская")
@@ -110,7 +110,7 @@ export default function BreedCatalogDisplay({
                                 : breed.name
                                       .toLowerCase()
                                       .includes("украинская цветная")
-                                  ? "/breedimage/ukrainskaya_korotkouhaya.jpg"
+                                  ? "/breedimage/ukrainskaya_korotkouhaya.png"
                                   : breed.name
                                         .toLowerCase()
                                         .includes("украинская короткоухая")
@@ -134,12 +134,12 @@ export default function BreedCatalogDisplay({
                   (e.target as HTMLImageElement).src =
                     "/img/breeds/default.png";
                 }}
-                className="w-full h-full mb-2 object-cover group-hover:scale-105 transition-transform duration-700 ease-out rounded-xl border border-[#491907]/10 shadow-sm"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out rounded-lg border border-[#491907]/10 shadow-sm"
               />
 
               {/* ALIAS LABEL */}
-              <div className="absolute top-6 right-6">
-                <span className="bg-white/90 backdrop-blur-md text-[#491907] font-mono text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border border-[#491907]/10 shadow-sm">
+              <div className="absolute top-4 right-4">
+                <span className="bg-white/80 backdrop-blur-md text-[#491907] font-mono text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-[#491907]/10 shadow-sm">
                   {breed.alias}
                 </span>
               </div>

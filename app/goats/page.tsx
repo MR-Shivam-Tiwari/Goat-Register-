@@ -117,7 +117,9 @@ export default async function AllGoatsPage({
     <div className="min-h-screen bg-[#FDFDFD] py-8 px-2 md:px-6 lg:px-8 font-sans leading-tight text-gray-800">
       <div className="max-w-[1700px] mx-auto space-y-6">
         <Breadcrumbs
-          items={[{ label: t.nav.home, href: "/" }, { label: t.nav.registry }]}
+          items={[{ label: t.nav.registry }]}
+          t={t}
+          locale={lang}
         />
         <GoatFilters breeds={breeds} lang={lang} t={t} />
 
@@ -131,8 +133,6 @@ export default async function AllGoatsPage({
             </p>
           </div>
         </div> */}
-
-        
 
         <div className="overflow-hidden border border-gray-300 shadow-sm transition-all duration-300">
           <div className="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar">
@@ -196,7 +196,9 @@ export default async function AllGoatsPage({
                         </div>
                         <div className="flex items-center gap-2">
                           {(() => {
-                            const canAccess = user && (user.role >= 10 || user.id === goat.id_user);
+                            const canAccess =
+                              user &&
+                              (user.role >= 10 || user.id === goat.id_user);
                             if (!canAccess) {
                               return (
                                 <span className="text-[#491907] text-lg font-bold">

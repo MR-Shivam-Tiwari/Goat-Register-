@@ -41,7 +41,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                         placeholder={t.goats.searchLabel} 
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-4 h-8 bg-white border border-gray-300 rounded shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all font-bold placeholder:font-normal"
+                        className="w-full pl-11 pr-4 h-10 bg-white border border-gray-300 rounded shadow-sm text-lg focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all font-bold placeholder:font-normal"
                     />
                 </div>
 
@@ -51,7 +51,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                     <select 
                         value={breed}
                         onChange={(e) => setBreed(e.target.value)}
-                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                        className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-[13px] font-black uppercase tracking-wider text-gray-700 outline-none"
                     >
                         <option value="">{t.goats.breedFilter}</option>
                         {breeds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -60,7 +60,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                     <select 
                         value={sex}
                         onChange={(e) => setSex(e.target.value)}
-                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                        className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-[13px] font-black uppercase tracking-wider text-gray-700 outline-none"
                     >
                         <option value="">{t.goats.sexFilter}</option>
                         <option value="1">{t.goats.male}</option>
@@ -71,7 +71,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                     <select 
                         value={view}
                         onChange={(e) => setView(e.target.value)}
-                        className="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded text-[10px] font-black uppercase tracking-wider text-gray-700 outline-none"
+                        className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-[13px] font-black uppercase tracking-wider text-gray-700 outline-none"
                     >
                         <option value="all">-- {t.goats.showAll} --</option>
                         <option value="living">{t.goats.showLiving}</option>
@@ -89,7 +89,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                                 onChange={(e) => setRegType(e.target.checked ? 'x' : 'all')}
                                 className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showX}</span>
+                            <span className="text-[13px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showX}</span>
                         </label>
 
                         <label className="flex items-center gap-2 cursor-pointer group">
@@ -97,9 +97,9 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                                 type="checkbox" 
                                 checked={regType === 'r'} 
                                 onChange={(e) => setRegType(e.target.checked ? 'r' : 'all')}
-                                className="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary transition-all"
+                                className="w-5 h-5 border-gray-300 rounded text-primary focus:ring-primary transition-all"
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showR}</span>
+                            <span className="text-[13px] font-black uppercase tracking-widest text-gray-600 group-hover:text-primary">{t.goats.showR}</span>
                         </label>
                     </div>
 
@@ -115,10 +115,18 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                 </div>
             </div>
             
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
+                <Link 
+                    href="/manage"
+                    target="_blank"
+                    className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
+                >
+                    {t.nav.managegoat}
+                </Link>
                 <Link 
                     href="/catalog/goats/add" 
-                    className="px-4 py-1.5 bg-[#4D2C1A] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
+                    target="_blank"
+                    className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
                 >
                     + {t.nav.addGoat}
                 </Link>

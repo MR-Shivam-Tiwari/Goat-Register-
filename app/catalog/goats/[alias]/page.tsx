@@ -105,6 +105,8 @@ export default async function BreedPage({
           items={[
             { label: breed.name },
           ]}
+          t={t}
+          locale={lang}
         />
 
         {/* MODULE 1: BREED REGISTRIES (Top) */}
@@ -127,7 +129,7 @@ export default async function BreedPage({
                     />
                   </div>
                         <div className="flex flex-col items-center">
-                            <h3 className="text-base font-bold text-primary uppercase tracking-tight leading-none group-hover:text-secondary transition-colors not-italic">
+                            <h3 translate="no" className="text-base font-bold text-primary uppercase tracking-tight leading-none group-hover:text-secondary transition-colors not-italic">
                                 {cat.name}
                             </h3>
                         </div>
@@ -141,7 +143,7 @@ export default async function BreedPage({
         {true && (
           <section className="py-2 space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
+              <span translate="no" className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
                 {t.catalog.movementTitle}
               </span>
               <div className="flex-1 h-px bg-primary/10" />
@@ -150,13 +152,13 @@ export default async function BreedPage({
             <div className="flex items-center justify-center">
               <Link
                 href={`/catalog/goats/${breed.alias.trim()}/move`}
-                className="group flex items-center gap-6 p-6 rounded-2xl bg-[#ECC41E] border border-[#ECC41E] hover:opacity-90 w-[600px] transition-all"
+                className="group flex items-center gap-6 p-6 rounded-2xl bg-[#481907] border border-[#ECC41E] hover:opacity-90 w-[600px] transition-all"
               >
                 <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 text-white">
                   <History size={24} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xl font-black text-white uppercase tracking-tighter leading-none">
+                  <p translate="no" className="text-xl font-black text-white uppercase tracking-tighter leading-none">
                     {t.catalog.transferredAnimalsList}
                   </p>
                 </div>
@@ -170,7 +172,7 @@ export default async function BreedPage({
         {true && (
           <section className="pt-6 pb-12 space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
+              <span translate="no" className="text-base font-black uppercase tracking-tight text-primary whitespace-nowrap not-italic">
                 {t.catalog.deceasedTitle}
               </span>
               <div className="flex-1 h-px bg-primary/10" />
@@ -225,6 +227,7 @@ function MovementLink({ href, label, icon, theme, textColor }: any) {
       </div>
       <div>
         <p
+          translate="no"
           className={`text-[16px] font-black uppercase tracking-tight ${textColor}`}
         >
           {label}

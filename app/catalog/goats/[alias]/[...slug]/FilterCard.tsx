@@ -17,10 +17,10 @@ export default function FilterCard({
     const searchParams = useSearchParams();
 
     return (
-        <div className="flex flex-col gap-1 ">
+        <div className="flex flex-col gap-1   flex-1 ">
             <span className="text-[9px] font-black text-primary/40 uppercase tracking-widest px-1">{label}</span>
             <select 
-                className="bg-white border mr-3 border-primary/10 w-[180px]  rounded-md px-3 py-2 text-[11px] font-bold uppercase focus:ring-1 focus:ring-secondary outline-none cursor-pointer hover:border-primary/30 transition-colors"
+                className="bg-white border border-primary/10 w-full rounded-md px-3 py-2 text-[11px] font-bold uppercase focus:ring-1 focus:ring-secondary outline-none cursor-pointer hover:border-primary/30 transition-colors"
                 value={currentValue || "all"}
                 onChange={(e) => {
                     const val = e.target.value;

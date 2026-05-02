@@ -629,33 +629,76 @@ function CertRows({
   return <>{rows}</>;
 }
 
-function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
+function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
   if (!ancestry) return null;
+
+  // Walk tree to find repeated ancestors (Inbreeding detection)
+  const idCounts = new Map<number, number>();
+  const idColors = new Map<number, string>();
+
+  function countIds(node: any) {
+    if (!node || !node.id) return;
+    idCounts.set(node.id, (idCounts.get(node.id) || 0) + 1);
+    countIds(node.father);
+    countIds(node.mother);
+  }
+
+  countIds(ancestry.father);
+  countIds(ancestry.mother);
+
+  // Palette from the screenshot for repeated ancestors
+  const repeatPalette = [
+    "#D2B48C", // Tan (Matches Zucker Zw Z)
+    "#B0C4DE", // Blue-Gray (Matches Jolante D)
+    "#BC8F8F", // Rosy Brown
+    "#E6E6FA", // Lavender
+    "#D1D5DB", // Light Gray
+  ];
+  let pIdx = 0;
+
+  idCounts.forEach((count, id) => {
+    if (count > 1) {
+      idColors.set(id, `bg-[${repeatPalette[pIdx % repeatPalette.length]}]`);
+      pIdx++;
+    }
+  });
+
+  function getNodeColor(node: any) {
+    if (!node || !node.id) return "bg-[#E9E9E9]";
+    if (idColors.has(node.id)) return idColors.get(node.id)!;
+
+    // Solid colors as per screenshot
+    return node.sex === 1 ? "bg-[#D9F2D9]" : "bg-[#FDE2E8]";
+  }
 
   return (
     <div className="flex flex-col w-full text-xs uppercase font-black bg-white">
       {/* HEADER STRIPE */}
       <div className="bg-[#491907] flex h-8 items-center border-b border-white/10 px-4">
-         <span className="text-white/40 text-xs tracking-widest font-black uppercase">{t.goats.ancestralLineage}</span>
+        <span className="text-white/40 text-xs tracking-widest font-black uppercase">
+          {t.goats.ancestralLineage}
+        </span>
       </div>
 
       <div className="flex divide-x divide-gray-400">
+        {/* GENERATION 1 */}
         <div className="flex-1 flex-col flex">
           <PedigreeNode
             node={ancestry.father}
             prefix={t.common.pedigreePrefix.father}
-            color="bg-[#C5E0B4]"
+            color={getNodeColor(ancestry.father)}
             border
             t={t}
           />
           <PedigreeNode
             node={ancestry.mother}
             prefix={t.common.pedigreePrefix.mother}
-            color="bg-[#F8CBAD]"
+            color={getNodeColor(ancestry.mother)}
             t={t}
           />
         </div>
 
+        {/* GENERATION 2 */}
         <div className="flex-1 flex flex-col">
           {[ancestry.father, ancestry.mother].map((p, i) => (
             <div
@@ -665,20 +708,21 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
               <PedigreeNode
                 node={p?.father}
                 prefix={t.common.pedigreePrefix.father}
-                color="bg-[#E2F0D9]"
+                color={getNodeColor(p?.father)}
                 border
                 t={t}
               />
               <PedigreeNode
                 node={p?.mother}
                 prefix={t.common.pedigreePrefix.mother}
-                color="bg-[#F6B8EB]/50"
+                color={getNodeColor(p?.mother)}
                 t={t}
               />
             </div>
           ))}
         </div>
 
+        {/* GENERATION 3 */}
         <div className="flex-1 flex flex-col">
           {[ancestry.father, ancestry.mother].map((p, i) =>
             [p?.father, p?.mother].map((gp, j) => (
@@ -689,14 +733,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
                 <PedigreeNode
                   node={gp?.father}
                   prefix={t.common.pedigreePrefix.father}
-                  color="bg-[#E2F0D9]/40"
+                  color={getNodeColor(gp?.father)}
                   border
                   t={t}
                 />
                 <PedigreeNode
                   node={gp?.mother}
                   prefix={t.common.pedigreePrefix.mother}
-                  color="bg-[#F6B8EB]/30"
+                  color={getNodeColor(gp?.mother)}
                   t={t}
                 />
               </div>
@@ -704,6 +748,7 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
           )}
         </div>
 
+        {/* GENERATION 4 */}
         <div className="flex-1 flex flex-col">
           {[ancestry.father, ancestry.mother].map((p, i) =>
             [p?.father, p?.mother].map((gp, j) =>
@@ -715,14 +760,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any, t: any }) {
                   <PedigreeNode
                     node={ggp?.father}
                     prefix={t.common.pedigreePrefix.father}
-                    color="bg-gray-100"
+                    color={getNodeColor(ggp?.father)}
                     border
                     t={t}
                   />
                   <PedigreeNode
                     node={ggp?.mother}
                     prefix={t.common.pedigreePrefix.mother}
-                    color="bg-gray-50"
+                    color={getNodeColor(ggp?.mother)}
                     t={t}
                   />
                 </div>

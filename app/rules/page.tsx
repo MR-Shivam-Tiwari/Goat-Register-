@@ -12,7 +12,7 @@ export default async function RulesPage() {
       <div className="max-w-[1400px] mx-auto space-y-12">
         
         {/* Simplified Breadcrumb Header */}
-        <Breadcrumbs items={[{ label: t.nav.rules }]} />
+        <Breadcrumbs items={[{ label: t.nav.rules }]} t={t} locale={lang} />
 
         {/* Association Rules Title Section */}
         <header className="border-b border-primary/10 pb-10">
