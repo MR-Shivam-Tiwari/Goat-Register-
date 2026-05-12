@@ -145,7 +145,8 @@ async function getFarmGoats(id: string) {
       SELECT DISTINCT ON (A.id)
         A.id, A.name, A.sex, A.id_user, A.id_farm, B.name as breed_name, 
         Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
-        F.name as current_farm_name
+        F.name as current_farm_name,
+        COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as main_photo
       FROM animals A
       LEFT JOIN goats_data Di ON A.id = Di.id_goat
       LEFT JOIN breeds B ON Di.id_breed = B.id
@@ -158,7 +159,8 @@ async function getFarmGoats(id: string) {
       SELECT DISTINCT ON (A.id)
         A.id, A.name, A.sex, A.id_user, A.id_farm, B.name as breed_name, 
         Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
-        F.name as current_farm_name
+        F.name as current_farm_name,
+        COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as main_photo
       FROM animals A
       LEFT JOIN goats_data Di ON A.id = Di.id_goat
       LEFT JOIN breeds B ON Di.id_breed = B.id
@@ -181,7 +183,8 @@ async function getDisplacedGoats(id: string, prefix: string) {
   const result = await query(`
     SELECT DISTINCT ON (A.id)
       A.id, A.name, A.sex, A.id_user, B.name as breed_name, 
-      Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
+      Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
+      COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as main_photo
     FROM animals A
     LEFT JOIN goats_move M ON A.id = M.id_goat
     LEFT JOIN goats_data Di ON A.id = Di.id_goat
@@ -317,13 +320,16 @@ export default async function FarmDetailPage({
                 <thead className="sticky top-0 z-30 shadow-sm">
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-[#491907] border-b border-black">
                     <th
-                      colSpan={10}
+                      colSpan={11}
                       className="p-1.5 text-center border-r border-black uppercase tracking-widest"
                     >
                       {t.farms.activeStock || "ACTIVE STOCK REGISTRY"}
                     </th>
                   </tr>
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#DCFCE7]">
+                    <th className="p-1 px-4 border-r border-black text-center w-12">
+                      IMG
+                    </th>
                     <th className="p-1 px-4 border-r border-black sticky left-0 bg-[#DCFCE7] z-40 w-64">
                       {t.goats.nickname}
                     </th>
@@ -369,6 +375,19 @@ export default async function FarmDetailPage({
                         style={{ backgroundColor: rowBg }}
                         className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
                       >
+                        <td className="p-0 border-r border-black text-center">
+                          <div className="w-10 h-10 mx-auto bg-gray-50 flex items-center justify-center overflow-hidden">
+                            {goat.main_photo ? (
+                              <img 
+                                src={`/uploads/${goat.main_photo}`} 
+                                alt="" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[7px] text-gray-300">NO IMG</span>
+                            )}
+                          </div>
+                        </td>
                         <td
                           style={{ backgroundColor: rowBg }}
                           className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
@@ -434,7 +453,7 @@ export default async function FarmDetailPage({
                   {goats.length === 0 && (
                     <tr>
                       <td
-                        colSpan={10}
+                        colSpan={11}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}
@@ -463,13 +482,16 @@ export default async function FarmDetailPage({
                 <thead className="sticky top-0 z-30 shadow-sm">
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-red-950 border-b border-black">
                     <th
-                      colSpan={9}
+                      colSpan={11}
                       className="p-1.5 text-center border-r border-black uppercase tracking-widest"
                     >
                       {t.farms.displacedStock}
                     </th>
                   </tr>
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-red-50">
+                    <th className="p-1 px-4 border-r border-black text-center w-12">
+                      IMG
+                    </th>
                     <th className="p-1 px-4 border-r border-black sticky left-0 bg-red-50 z-40 w-64">
                       {t.goats.nickname}
                     </th>
@@ -515,6 +537,19 @@ export default async function FarmDetailPage({
                         style={{ backgroundColor: rowBg }}
                         className="divide-x divide-black h-8 hover:opacity-90 transition-opacity"
                       >
+                        <td className="p-0 border-r border-black text-center">
+                          <div className="w-10 h-10 mx-auto bg-gray-50 flex items-center justify-center overflow-hidden">
+                            {goat.main_photo ? (
+                              <img 
+                                src={`/uploads/${goat.main_photo}`} 
+                                alt="" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[7px] text-gray-300">NO IMG</span>
+                            )}
+                          </div>
+                        </td>
                         <td
                           style={{ backgroundColor: rowBg }}
                           className="p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap"
@@ -580,7 +615,7 @@ export default async function FarmDetailPage({
                   {displaced.length === 0 && (
                     <tr>
                       <td
-                        colSpan={10}
+                        colSpan={11}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}
