@@ -155,7 +155,7 @@ export default function GoatForm({
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
             <div className="bg-red-500 text-white rounded-full p-1">
-              <svg size="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
             <p className="text-red-800 font-bold text-sm uppercase tracking-tight">{error}</p>
           </div>
@@ -163,7 +163,7 @@ export default function GoatForm({
         {success && (
           <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
             <div className="bg-green-500 text-white rounded-full p-1">
-              <svg size="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <p className="text-green-800 font-bold text-sm uppercase tracking-tight">
               {isEdit ? t.common.toast.updated : t.common.toast.registered}
