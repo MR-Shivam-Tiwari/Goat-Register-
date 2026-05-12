@@ -15,7 +15,7 @@ async function getFarms() {
     
     const rawFarms = result.rows.map((farm: any) => {
         const name = farm.name.toLowerCase();
-        const isKamdhenu = name.includes('kamdhenu') || name.includes('kamadhenu') || name.includes('камадхену');
+        const isKamdhenu = farm.id === 1 || farm.id === '1' || name.includes('kamdhenu') || name.includes('kamadhenu') || name.includes('камадхену');
         
         let displayPic = '/breedimage/farmimg.png'; // Default fallback
         
