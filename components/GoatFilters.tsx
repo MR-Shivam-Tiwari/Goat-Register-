@@ -10,14 +10,23 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
     const searchParams = useSearchParams();
     
     const [search, setSearch] = useState(searchParams.get('q') || '');
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
     const [breed, setBreed] = useState(searchParams.get('breed') || '');
     const [sex, setSex] = useState(searchParams.get('sex') || '');
     const [view, setView] = useState(searchParams.get('view') || 'all');
     const [regType, setRegType] = useState(searchParams.get('reg') || 'all');
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [search]);
+
     useEffect(() => {
         const params = new URLSearchParams();
-        if (search) params.set('q', search);
+        if (debouncedSearch) params.set('q', debouncedSearch);
         if (breed) params.set('breed', breed);
         if (sex) params.set('sex', sex);
         if (view && view !== 'all') params.set('view', view);
@@ -26,7 +35,7 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
         const queryString = params.toString();
         router.push(`/goats${queryString ? '?' + queryString : ''}`);
         router.refresh();
-    }, [search, breed, sex, view, regType, router]);
+    }, [debouncedSearch, breed, sex, view, regType, router]);
 
     return (
         <div className="space-y-4 mb-6">

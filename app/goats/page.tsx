@@ -24,8 +24,27 @@ async function getAllGoats(filters: {
   const params: any[] = [];
 
   if (filters.q) {
-    params.push(`%${filters.q}%`);
-    whereClause += ` AND (A.name ILIKE $${params.length} OR Di.code_ua ILIKE $${params.length} OR B.name ILIKE $${params.length})`;
+    const q = filters.q.trim();
+    params.push(`%${q}%`);
+    let subClause = `(A.name ILIKE $${params.length} OR Di.code_ua ILIKE $${params.length} OR B.name ILIKE $${params.length})`;
+
+    // Check if searching for a registry code like R10023 or X10023
+    const regMatch = q.match(/^[rx](\d+)$/i);
+    if (regMatch) {
+      const idSearch = parseInt(regMatch[1]) - 10000;
+      if (!isNaN(idSearch)) {
+        params.push(idSearch);
+        subClause += ` OR A.id = $${params.length}`;
+      }
+    }
+    
+    // Check if numeric ID
+    if (!isNaN(Number(q)) && q.length > 0) {
+        params.push(Number(q));
+        subClause += ` OR A.id = $${params.length}`;
+    }
+
+    whereClause += ` AND (${subClause})`;
   }
 
   if (filters.breed) {
@@ -76,8 +95,8 @@ async function getAllGoats(filters: {
       U.login as operator,
       (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1) as main_photo
     FROM animals A
-    JOIN goats_data Di ON A.id = Di.id_goat
-    JOIN breeds B ON Di.id_breed = B.id
+    LEFT JOIN goats_data Di ON A.id = Di.id_goat
+    LEFT JOIN breeds B ON Di.id_breed = B.id
     LEFT JOIN users U ON A.id_user = U.id
     ${whereClause}
     ORDER BY A.time_added DESC

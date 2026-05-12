@@ -143,6 +143,7 @@ async function getGoats(
   showDead?: boolean,
   farmId?: string,
   owner?: string,
+  q?: string
 ) {
   const sex = sex_slug === "male" ? 1 : sex_slug === "child" ? 2 : 0;
   const statusCondition = showDead ? "A.status = 0" : "A.status = 1";
@@ -156,6 +157,34 @@ async function getGoats(
   }
   if (owner && owner !== "all") {
     filterClause += ` AND Di.owner = '${owner.replace(/'/g, "''")}'`;
+  }
+
+  const params: any[] = [sex];
+  let paramIdx = 2;
+
+  if (q) {
+    const searchQ = q.trim();
+    params.push(`%${searchQ}%`);
+    let subClause = `(A.name ILIKE $${params.length} OR Di.code_ua ILIKE $${params.length} OR B.name ILIKE $${params.length})`;
+
+    // Check if searching for a registry code like R10023 or X10023
+    const regMatch = searchQ.match(/^[rx](\d+)$/i);
+    if (regMatch) {
+      const idSearch = parseInt(regMatch[1]) - 10000;
+      if (!isNaN(idSearch)) {
+        params.push(idSearch);
+        subClause += ` OR A.id = $${params.length}`;
+      }
+    }
+    
+    // Check if numeric ID
+    if (!isNaN(Number(searchQ)) && searchQ.length > 0) {
+        params.push(Number(searchQ));
+        subClause += ` OR A.id = $${params.length}`;
+    }
+
+    filterClause += ` AND (${subClause})`;
+    paramIdx = params.length + 1;
   }
 
   let sql = `
@@ -196,12 +225,11 @@ async function getGoats(
     `;
 
   if (breed_id !== 0) {
-    sql = sql.replace("WHERE ", "WHERE Di.id_breed = $2 AND ");
+    sql = sql.replace("WHERE ", `WHERE Di.id_breed = $${paramIdx} AND `);
+    params.push(breed_id);
+    paramIdx++;
   }
 
-  const params: any[] = [sex];
-  if (breed_id !== 0) params.push(breed_id);
-  let paramIdx = breed_id !== 0 ? 3 : 2;
   if (reg && STOODBOOK_MAP[reg]) {
     sql += ` AND Di.id_stoodbook = $${paramIdx}`;
     // Registry pages show ONLY animals with is_reg = 1 (R prefix)
@@ -244,6 +272,7 @@ export default async function GoatsListPage({
     owner?: string;
     show?: string;
     breed?: string;
+    q?: string;
   }>;
 }) {
   const params = await paramsPromise;
@@ -251,7 +280,7 @@ export default async function GoatsListPage({
   const { slug } = params;
   const sex = slug[0];
   const status = slug[1];
-  const { reg, age, view, farm, owner, show, breed: breedParam } = searchParams;
+  const { reg, age, view, farm, owner, show, breed: breedParam, q } = searchParams;
   const alias = breedParam || params.alias;
   const s = searchParams.s || sex;
 
@@ -649,6 +678,7 @@ export default async function GoatsListPage({
                       age={age}
                       farm={farm}
                       owner={owner}
+                      q={q}
                       t={t}
                       lang={lang}
                       showDead={isDead}
@@ -672,6 +702,7 @@ async function GoatTableContainer({
   age,
   farm,
   owner,
+  q,
   t,
   lang,
   showDead,
@@ -683,11 +714,12 @@ async function GoatTableContainer({
   age?: string;
   farm?: string;
   owner?: string;
+  q?: string;
   t: any;
   lang: string;
   showDead?: boolean;
   currentUser?: any;
 }) {
-  const goats = await getGoats(breedId, sex, reg, age, showDead, farm, owner);
+  const goats = await getGoats(breedId, sex, reg, age, showDead, farm, owner, q);
   return <ClassicGoatTable goats={goats} t={t} currentUser={currentUser} />;
 }

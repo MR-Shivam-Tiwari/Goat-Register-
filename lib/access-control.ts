@@ -19,8 +19,7 @@ export async function getSessionUser() {
 
 export async function adminOnly() {
     const user = await getSessionUser();
-    // BYPASS: Allow any logged in user
-    if (!user) {
+    if (!user || user.role < 10) {
         redirect('/login');
     }
     return user;

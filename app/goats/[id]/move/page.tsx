@@ -27,12 +27,15 @@ export default async function MovementPage({
   const goat = goatRes.rows[0];
   if (!goat) notFound();
   
-  const farmsRes = await query("SELECT id, name FROM farms WHERE id != '0' ORDER BY name");
-  const farms = farmsRes.rows;
-
   const cookieStore = await cookies();
   const locale = (cookieStore.get("nxt-lang")?.value || "ru") as Locale;
   const t = getTranslation(locale);
+
+  const farmsRes = await query("SELECT id, name FROM farms WHERE id != 0 ORDER BY name");
+  const farms = [
+    { id: 0, name: t.goats.withoutFarm || 'Without a farm' },
+    ...farmsRes.rows
+  ];
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]/50 py-20 px-6 font-sans">

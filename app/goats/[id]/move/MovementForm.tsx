@@ -72,7 +72,7 @@ export default function MovementForm({
           <div className="space-y-1.5">
             <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">MOVING FROM</label>
             <div className="text-[11px] font-black text-[#491907] p-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
-               {currentFarmName === "Unknown Farm" || currentFarmId === 0 ? "CENTRAL REGISTRY (DEFAULT)" : currentFarmName}
+               {currentFarmId === 0 ? (t.goats.withoutFarm || "Without a farm") : currentFarmName}
             </div>
           </div>
 

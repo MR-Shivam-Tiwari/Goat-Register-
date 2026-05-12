@@ -46,6 +46,15 @@ function extractPrefix(farmName: string, goats: any[]): string {
 }
 
 async function getFarmData(id: string): Promise<Farm | null> {
+  if (id === '0') {
+    return {
+      id: 0,
+      name: 'WITHOUT FARM',
+      tmpl: '<p>ANIMALS NOT TIED TO A FARM</p>',
+      pic1: 'no_pic.png',
+      pic2: null
+    };
+  }
   const result = await query(
     "SELECT id, name, tmpl, pic1, pic2 FROM farms WHERE id = $1",
     [id],
@@ -127,22 +136,40 @@ async function getFarmData(id: string): Promise<Farm | null> {
 
   return { ...farm, displayAva, displayPic2 };
 }
-
 async function getFarmGoats(id: string) {
-  if (!id || id === "0") return [];
-  const result = await query(
-    `
-    SELECT DISTINCT ON (A.id)
-      A.id, A.name, A.sex, A.id_user, B.name as breed_name, 
-      Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent
-    FROM animals A
-    LEFT JOIN goats_data Di ON A.id = Di.id_goat
-    LEFT JOIN breeds B ON Di.id_breed = B.id
-    WHERE A.id_farm = $1::int
-    ORDER BY A.id, A.name ASC
-  `,
-    [id],
-  );
+  let sql = "";
+  let params: any[] = [];
+
+  if (id === "0") {
+    sql = `
+      SELECT DISTINCT ON (A.id)
+        A.id, A.name, A.sex, A.id_user, A.id_farm, B.name as breed_name, 
+        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
+        F.name as current_farm_name
+      FROM animals A
+      LEFT JOIN goats_data Di ON A.id = Di.id_goat
+      LEFT JOIN breeds B ON Di.id_breed = B.id
+      LEFT JOIN farms F ON A.id_farm = F.id
+      WHERE A.id_farm IS NULL OR A.id_farm = 0
+      ORDER BY A.id, A.name ASC
+    `;
+  } else {
+    sql = `
+      SELECT DISTINCT ON (A.id)
+        A.id, A.name, A.sex, A.id_user, A.id_farm, B.name as breed_name, 
+        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
+        F.name as current_farm_name
+      FROM animals A
+      LEFT JOIN goats_data Di ON A.id = Di.id_goat
+      LEFT JOIN breeds B ON Di.id_breed = B.id
+      LEFT JOIN farms F ON A.id_farm = F.id
+      WHERE A.id_farm = $1::int
+      ORDER BY A.id, A.name ASC
+    `;
+    params = [id];
+  }
+
+  const result = await query(sql, params);
   return result.rows;
 }
 
@@ -194,8 +221,9 @@ export default async function FarmDetailPage({
     );
 
   const goats = await getFarmGoats(id);
-  const detectedPrefix = extractPrefix(farm.name, goats);
-  const displaced = await getDisplacedGoats(id, detectedPrefix);
+  const detectedPrefix = id === '0' ? '' : extractPrefix(farm.name, goats);
+  const displaced = id === '0' ? [] : await getDisplacedGoats(id, detectedPrefix);
+  const displayName = id === '0' ? (t.goats.withoutFarm || 'WITHOUT FARM') : farm.name;
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 md:px-12 lg:px-24 tracking-tight">
@@ -203,17 +231,18 @@ export default async function FarmDetailPage({
         <Breadcrumbs
           items={[
             { label: t.farms.breadcrumbs, href: "/farms" },
-            { label: farm.name },
-          ]}
-          t={t}
-          locale={lang}
-        />
+          {label: t.farms.breadcrumbs, href: "/farms"},
+          {label: displayName},
+        ]}
+        t={t}
+        locale={lang}
+      />
 
-        {/* FARM NAME & PREFIX - TOP LEVEL */}
-        <div className="pb-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#491907] uppercase tracking-tight">
-            {farm.name}
-          </h1>
+      {/* FARM NAME & PREFIX - TOP LEVEL */}
+      <div className="pb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#491907] uppercase tracking-tight">
+          {displayName}
+        </h1>
           {detectedPrefix && (
             <p className="text-sm font-bold text-[#491907] uppercase tracking-widest mt-1 opacity-70">
               Prefix: {detectedPrefix}
@@ -222,53 +251,44 @@ export default async function FarmDetailPage({
         </div>
 
         {/* MAIN DISPLAY SECTION */}
-        <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
-          {/* IMAGE COLUMN (Left) */}
-          <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-r border-gray-200 relative group min-h-[500px]">
-            <SmartFarmImage
-              src={(farm.displayPic2 || farm.displayAva) ?? null}
-              alt={farm.name}
-              className="max-w-full max-h-[500px] object-contain shadow-inner"
-              emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
-            />
-            
-            {/* Special overlay logo if both images exist */}
-            {farm.displayPic2 && farm.displayAva && (
-              <div className="absolute top-4 right-4 w-32 h-32 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-2xl border border-white/50 animate-in zoom-in duration-500">
-                <SmartFarmImage 
-                  src={farm.displayAva ?? null} 
-                  alt="Logo" 
-                  className="w-full h-full object-contain"
-                  emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* DESCRIPTION COLUMN (Right) */}
-          <div className="flex-1 p-12 flex flex-col items-center justify-center text-center">
-            <div className="max-w-2xl w-full">
-              <div
-                className="text-[#491907] leading-loose font-medium prose prose-slate max-w-none prose-p:my-4 prose-strong:text-[#491907] text-[15px]"
-                dangerouslySetInnerHTML={{ __html: farm.tmpl }}
+        {id !== "0" && (
+          <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
+            {/* IMAGE COLUMN (Left) */}
+            <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-r border-gray-200 relative group min-h-[500px]">
+              <SmartFarmImage
+                src={(farm.displayPic2 || farm.displayAva) ?? null}
+                alt={farm.name}
+                fill={true}
+                className="object-contain shadow-inner"
+                emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
               />
             </div>
 
-            {isAdmin && (
-              <div className="mt-8">
-                <a
-                  href={`/farms/${farm.id}/edit`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-2 bg-[#491907] text-white rounded-sm font-bold text-[11px] uppercase tracking-widest hover:bg-black transition-all group"
-                >
-                  <Pencil size={14} />
-                  {t.common.edit}
-                </a>
+            {/* DESCRIPTION COLUMN (Right) */}
+            <div className="flex-1 p-12 flex flex-col items-center justify-center text-center">
+              <div className="max-w-2xl w-full">
+                <div
+                  className="text-[#491907] leading-loose font-medium prose prose-slate max-w-none prose-p:my-4 prose-strong:text-[#491907] text-[15px]"
+                  dangerouslySetInnerHTML={{ __html: farm.tmpl }}
+                />
               </div>
-            )}
-          </div>
-        </section>
+
+              {isAdmin && id !== '0' && (
+                <div className="mt-8">
+                  <a
+                    href={`/farms/${farm.id}/edit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-2 bg-[#491907] text-white rounded-sm font-bold text-[11px] uppercase tracking-widest hover:bg-black transition-all group"
+                  >
+                    <Pencil size={14} />
+                    {t.common.edit}
+                  </a>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         <div className="pt-4">
           <Link
@@ -297,7 +317,7 @@ export default async function FarmDetailPage({
                 <thead className="sticky top-0 z-30 shadow-sm">
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-[#491907] border-b border-black">
                     <th
-                      colSpan={8}
+                      colSpan={9}
                       className="p-1.5 text-center border-r border-black uppercase tracking-widest"
                     >
                       {t.farms.activeStock || "ACTIVE STOCK REGISTRY"}
@@ -314,10 +334,13 @@ export default async function FarmDetailPage({
                       Σ %
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center w-24">
-                      {t.goats.sex}
+                      {t.goats.sex} (Floor)
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center w-24">
                       {t.goats.idAbg}
+                    </th>
+                    <th className="p-1 px-4 border-r border-black text-center">
+                      {t.goats.farm}
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center">
                       {t.goats.breeder}
@@ -376,6 +399,9 @@ export default async function FarmDetailPage({
                         <td className="p-1 px-4 text-center font-bold">
                           {goat.is_abg === 1 ? t.users.yes : t.users.no}
                         </td>
+                        <td className="p-1 px-4 text-center truncate max-w-[200px] opacity-70">
+                          {goat.id_farm === 0 || !goat.id_farm ? (t.goats.withoutFarm || "Without a farm") : (goat.current_farm_name || "-")}
+                        </td>
                         <td className="p-1 px-4 truncate max-w-[250px] uppercase">
                           {goat.manuf}
                         </td>
@@ -395,7 +421,7 @@ export default async function FarmDetailPage({
                   {goats.length === 0 && (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={9}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}
@@ -408,22 +434,23 @@ export default async function FarmDetailPage({
           </div>
 
           {/* SECTION 2: DISPLACED STOCK REGISTRY */}
-          <div className="space-y-4 pt-10">
-            <header className="flex items-center justify-between border-b border-gray-200 pb-2">
-              <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">
-                {t.farms.displacedStock || "DISPLACED STOCK"}
-              </h2>
-              <div className="text-[10px] font-bold text-red-400 uppercase tracking-[0.2em]">
-                {displaced.length} RECORDS FOUND
-              </div>
-            </header>
+          {displaced.length > 0 && (
+            <div className="space-y-4 pt-10">
+              <header className="flex items-center justify-between border-b border-gray-200 pb-2">
+                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">
+                  {t.farms.displacedStock || "DISPLACED STOCK"}
+                </h2>
+                <div className="text-[10px] font-bold text-red-400 uppercase tracking-[0.2em]">
+                  {displaced.length} RECORDS FOUND
+                </div>
+              </header>
 
             <div className="flex-1 min-h-[150px] overflow-auto bg-white border border-black relative">
               <table className="w-full text-left border-collapse table-auto min-w-[1300px] text-[10.5px] font-normal leading-none">
                 <thead className="sticky top-0 z-30 shadow-sm">
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-red-950 border-b border-black">
                     <th
-                      colSpan={8}
+                      colSpan={9}
                       className="p-1.5 text-center border-r border-black uppercase tracking-widest"
                     >
                       {t.farms.displacedStock}
@@ -440,10 +467,13 @@ export default async function FarmDetailPage({
                       Σ %
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center w-24">
-                      {t.goats.sex}
+                      {t.goats.sex} (Floor)
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center w-24">
                       {t.goats.idAbg}
+                    </th>
+                    <th className="p-1 px-4 border-r border-black text-center">
+                      {t.goats.farm}
                     </th>
                     <th className="p-1 px-4 border-r border-black text-center">
                       {t.goats.breeder}
@@ -502,6 +532,9 @@ export default async function FarmDetailPage({
                         <td className="p-1 px-4 text-center font-bold">
                           {goat.is_abg === 1 ? t.users.yes : t.users.no}
                         </td>
+                        <td className="p-1 px-4 text-center truncate max-w-[200px] opacity-70">
+                          {goat.id_farm === 0 || !goat.id_farm ? (t.goats.withoutFarm || "Without a farm") : (goat.current_farm_name || "-")}
+                        </td>
                         <td className="p-1 px-4 truncate max-w-[250px] uppercase">
                           {goat.manuf}
                         </td>
@@ -521,7 +554,7 @@ export default async function FarmDetailPage({
                   {displaced.length === 0 && (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={9}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}
@@ -532,8 +565,9 @@ export default async function FarmDetailPage({
               </table>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
+  </div>
   );
 }

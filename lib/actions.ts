@@ -511,8 +511,121 @@ export async function deleteFarmAction(farmId: number | string) {
     }
 }
 
+export async function addBreedAction(formData: FormData) {
+    const t = await getT();
+    const name = formData.get('name') as string;
+    const alias = formData.get('alias') as string;
+    const id_family = parseInt(formData.get('id_family') as string) || 1;
+    const place = parseInt(formData.get('place') as string) || 0;
+    const icoFile = formData.get('icoFile') as File | null;
+
+    if (!name || !alias) return { error: "Name and Alias are required" };
+
+    try {
+        let ico = formData.get('ico') as string || '';
+        if (icoFile && icoFile.size > 0) {
+            const savedName = await saveFile(icoFile, 'breed');
+            if (savedName) ico = savedName;
+        }
+
+        await query(
+            'INSERT INTO breeds (name, alias, id_family, place, ico) VALUES ($1, $2, $3, $4, $5)',
+            [name, alias, id_family, place, ico]
+        );
+
+        revalidatePath('/catalog/breeds');
+        revalidatePath('/catalog/goats');
+        return { success: true };
+    } catch (e: any) {
+        console.error('Add Breed Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+export async function updateBreedAction(formData: FormData) {
+    const t = await getT();
+    const id = formData.get('breedId') as string;
+    const name = formData.get('name') as string;
+    const alias = formData.get('alias') as string;
+    const id_family = parseInt(formData.get('id_family') as string) || 1;
+    const place = parseInt(formData.get('place') as string) || 0;
+    const icoFile = formData.get('icoFile') as File | null;
+    const removeIco = formData.get('removeIco') === 'true';
+
+    if (!id || !name || !alias) return { error: "ID, Name and Alias are required" };
+
+    try {
+        let ico = formData.get('ico') as string;
+        if (icoFile && icoFile.size > 0) {
+            const savedName = await saveFile(icoFile, 'breed');
+            if (savedName) ico = savedName;
+        } else if (removeIco) {
+            ico = '';
+        }
+
+        await query(
+            'UPDATE breeds SET name = $1, alias = $2, id_family = $3, place = $4, ico = $5 WHERE id = $6',
+            [name, alias, id_family, place, ico, id]
+        );
+
+        revalidatePath('/catalog/breeds');
+        revalidatePath('/catalog/goats');
+        return { success: true };
+    } catch (e: any) {
+        console.error('Update Breed Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
 
 
 
 
 
+
+
+export async function deleteUserAction(id: string | number) {
+    const t = await getT();
+    try {
+        await query('DELETE FROM users WHERE id = $1', [id]);
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) {
+        return { error: t.errors.deleteFailed + (e.message || '') };
+    }
+}
+
+export async function updateUserAction(formData: FormData) {
+    const t = await getT();
+    const id = formData.get('id') as string;
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const is_apk = parseInt(formData.get('is_apk') as string) || 0;
+    const roleValue = parseInt(formData.get('role') as string) || 1;
+    const password = formData.get('password') as string;
+
+    if (!id) return { error: t.errors.invalidData };
+
+    try {
+        const updateFields = ['name = $1', 'email = $2', 'phone = $3', 'is_apk = $4', 'role = $5'];
+        const values: any[] = [name, email, phone, is_apk, roleValue];
+
+        if (password && password.trim() !== '') {
+            const hash = crypto.createHash('md5').update(password).digest('hex');
+            updateFields.push(`pass = $${values.length + 1}`);
+            values.push(hash);
+        }
+
+        values.push(id);
+        await query(
+            `UPDATE users SET ${updateFields.join(', ')} WHERE id = $${values.length}`,
+            values
+        );
+
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) {
+        console.error('Update User Error:', e.message);
+        return { error: t.errors.dbError + (e.message || '') };
+    }
+}

@@ -56,11 +56,22 @@ async function getFarms() {
         return { ...farm, displayPic, isKamdhenu };
     });
 
-    // Reorder: Kamdhenu first, then others
+    // Reorder: Kamdhenu first, then others, then virtual "Without Farm"
     const kamdhenuFarms = rawFarms.filter(f => f.isKamdhenu);
     const otherFarms = rawFarms.filter(f => !f.isKamdhenu);
     
-    return [...kamdhenuFarms, ...otherFarms];
+    return [
+        ...kamdhenuFarms, 
+        ...otherFarms,
+        {
+            id: 0,
+            name: 'WITHOUT FARM', // Fallback, will be translated in component if needed
+            pic1: 'no_pic.png',
+            displayPic: null,
+            isKamdhenu: false,
+            isVirtual: true
+        }
+    ];
 }
 
 export default async function FarmsPage() {
@@ -128,7 +139,7 @@ export default async function FarmsPage() {
                                     
                                     <Link href={`/farms/${farm.id}`} className="block">
                                         <h3 className="text-sm font-black text-[#491907] uppercase tracking-tight leading-tight hover:text-black transition-colors">
-                                            {farm.name}
+                                            {farm.isVirtual ? (t.goats.withoutFarm || 'WITHOUT FARM') : farm.name}
                                         </h3>
                                     </Link>
 
@@ -146,14 +157,16 @@ export default async function FarmsPage() {
                                         >
                                             {t.farms.view}
                                         </Link>
-                                        <Link 
-                                            href={`/farms/${farm.id}/edit`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-700 border-b border-amber-700/30 pb-0.5 hover:border-amber-700 transition-all"
-                                        >
-                                            {t.common.edit}
-                                        </Link>
+                                        {!farm.isVirtual && (
+                                            <Link 
+                                                href={`/farms/${farm.id}/edit`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-700 border-b border-amber-700/30 pb-0.5 hover:border-amber-700 transition-all"
+                                            >
+                                                {t.common.edit}
+                                            </Link>
+                                        )}
                                     </div>
                                 </div>
                             </div>

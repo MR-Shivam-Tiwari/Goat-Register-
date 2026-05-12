@@ -22,6 +22,7 @@ export default function Breadcrumbs({
 }) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [dbBreeds, setDbBreeds] = useState<{ name: string; alias: string }[]>([]);
   const navRef = useRef<HTMLElement>(null);
   const params = useParams();
 
@@ -32,6 +33,15 @@ export default function Breadcrumbs({
 
   useEffect(() => {
     setMounted(true);
+    // Fetch breeds dynamically to replace static lists
+    fetch('/api/breeds')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setDbBreeds(data.map(b => ({ name: b.name, alias: b.alias })));
+        }
+      })
+      .catch(err => console.error('Failed to fetch breeds for breadcrumbs:', err));
   }, []);
 
   // Close dropdown when clicking outside
@@ -44,66 +54,6 @@ export default function Breadcrumbs({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const breedNames: Record<string, Record<string, string>> = {
-    ru: {
-      TFG: "Тюрингская лесная коза",
-      AN: "Англо-нубийская",
-      ZAA: "Зааненская",
-      ALP: "Альпийская",
-      TOG: "Тоггенбургская",
-      LAM: "Ла-Манча",
-      BUR: "Бурская",
-      OBH: "Оберхазли",
-      ELF: "Карликовая группа коз",
-      UAW: "Украинская белая",
-      UAC: "Украинская Пёстрая",
-      UAS: "Украинская Короткоухая",
-    },
-    en: {
-      TFG: "Thuringian Forest Goat",
-      AN: "Anglo-Nubian",
-      ZAA: "Saanen",
-      ALP: "Alpine",
-      TOG: "Toggenburg",
-      LAM: "La Mancha",
-      BUR: "Boer",
-      OBH: "Oberhasli",
-      ELF: "Dwarf group of goats",
-      UAW: "Ukrainian White",
-      UAC: "Ukrainian Pied",
-      UAS: "Ukrainian Short-eared",
-    },
-    uk: {
-      TFG: "Тюрингська лісова коза",
-      AN: "Англо-Нубійська",
-      ZAA: "Зааненська",
-      ALP: "Альпійська",
-      TOG: "Тоггенбурзька",
-      LAM: "Ла-Манча",
-      BUR: "Бурська",
-      OBH: "Оберхазлі",
-      ELF: "Карликова група кіз",
-      UAW: "Українська біла",
-      UAC: "Українська Строката",
-      UAS: "Українська Коротковуха",
-    },
-  };
-
-  const currentBreeds = [
-    { name: "Тюрингская лесная коза", alias: "TFG" },
-    { name: "Англо-нубийская", alias: "AN" },
-    { name: "Зааненская", alias: "ZAA" },
-    { name: "Альпийская", alias: "ALP" },
-    { name: "Тоггенбургская", alias: "TOG" },
-    { name: "Ла-Манча", alias: "LAM" },
-    { name: "Бурская", alias: "BUR" },
-    { name: "Оберхазли", alias: "OBH" },
-    { name: "Карликовая группа коз", alias: "ELF" },
-    { name: "Украинская белая", alias: "UAW" },
-    { name: "Украинская Пёстрая", alias: "UAC" },
-    { name: "Украинская Короткоухая", alias: "UAS" },
-  ];
 
   const registries = [
     {
@@ -126,6 +76,7 @@ export default function Breadcrumbs({
       href: `/catalog/goats/${alias}/${sex}?view=ex`,
     },
   ];
+
   const genders = [
     {
       label: t?.goats?.female?.toUpperCase() || "DOES (GOATS)",
@@ -145,20 +96,8 @@ export default function Breadcrumbs({
     const l = (label || "").toString().toLowerCase();
     if (!l || l.includes("catalog") || l.includes("каталог")) return null;
 
-    // Check for breed first to avoid conflicts with words like 'коза' in breed names
-    const isBreed = Object.keys(breedNames.ru).some(
-      (k) =>
-        breedNames.ru[k].toLowerCase() === l ||
-        breedNames.en[k].toLowerCase() === l ||
-        (breedNames.uk && breedNames.uk[k]?.toLowerCase() === l) ||
-        (l.includes("пестрая") &&
-          breedNames.ru[k].toLowerCase().includes("цветная")) ||
-        (l.includes("цветная") &&
-          breedNames.ru[k].toLowerCase().includes("пестрая")),
-    );
-
-    // If it's the first item after Catalog and we have a breed alias, it's almost certainly the breed
-    if (isBreed || (index === 0 && alias && !isGuest)) return "breed";
+    // Determine type based on context and current data
+    if ((index === 0 && alias && !isGuest)) return "breed";
 
     if (
       l.includes("реестр") ||
@@ -240,29 +179,8 @@ export default function Breadcrumbs({
             const type = getItemType(item.label, index);
             const isOpen = activeIdx === index;
 
+            // No more static renaming - use backend label directly
             let labelToDisplay = item.label;
-            // Improved breed translation/normalization
-            if (
-              type === "breed" ||
-              (index === 0 &&
-                !isGuest &&
-                !item.label.toLowerCase().includes("catalog") &&
-                !item.label.toLowerCase().includes("каталог"))
-            ) {
-              const breedKey = Object.keys(breedNames.en).find(
-                (k) =>
-                  breedNames.en[k].toLowerCase() === item.label.toLowerCase() ||
-                  breedNames.ru[k].toLowerCase() === item.label.toLowerCase() ||
-                  (item.label.toLowerCase().includes("пестрая") &&
-                    breedNames.ru[k].toLowerCase().includes("цветная")) ||
-                  (item.label.toLowerCase().includes("цветная") &&
-                    breedNames.ru[k].toLowerCase().includes("пестрая")) ||
-                  k === alias,
-              );
-              if (breedKey) {
-                labelToDisplay = breedNames[locale]?.[breedKey] || item.label;
-              }
-            }
 
             let dropdownItems: { label: string; href: string }[] = [];
             if (type === "registry") {
@@ -276,91 +194,46 @@ export default function Breadcrumbs({
               if (sex === "child") {
                 dropdownItems = [
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.male03?.toUpperCase() ||
-                      "BUCKS 0-3 MONTHS",
+                    label: t?.catalog?.kidsGrid?.male03?.toUpperCase() || "BUCKS 0-3 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=male&age=3`,
                   },
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.male36?.toUpperCase() ||
-                      "BUCKS 3-6 MONTHS",
+                    label: t?.catalog?.kidsGrid?.male36?.toUpperCase() || "BUCKS 3-6 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=male&age=6`,
                   },
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.male612?.toUpperCase() ||
-                      "BUCKS 6-12 MONTHS",
+                    label: t?.catalog?.kidsGrid?.male612?.toUpperCase() || "BUCKS 6-12 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=male&age=12`,
                   },
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.female03?.toUpperCase() ||
-                      "DOES 0-3 MONTHS",
+                    label: t?.catalog?.kidsGrid?.female03?.toUpperCase() || "DOES 0-3 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=female&age=3`,
                   },
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.female36?.toUpperCase() ||
-                      "DOES 3-6 MONTHS",
+                    label: t?.catalog?.kidsGrid?.female36?.toUpperCase() || "DOES 3-6 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=female&age=6`,
                   },
                   {
-                    label:
-                      t?.catalog?.kidsGrid?.female612?.toUpperCase() ||
-                      "DOES 6-12 MONTHS",
+                    label: t?.catalog?.kidsGrid?.female612?.toUpperCase() || "DOES 6-12 MONTHS",
                     href: `/catalog/goats/${alias}/child?s=female&age=12`,
                   },
                 ];
               } else if (l.includes("rcb") || l.includes("absorption")) {
                 dropdownItems = [
-                  {
-                    label: "F1",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f1`,
-                  },
-                  {
-                    label: "F2",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f2`,
-                  },
-                  {
-                    label: "F3",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f3`,
-                  },
-                  {
-                    label: "F4",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f4`,
-                  },
-                  {
-                    label: "F5",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f5`,
-                  },
-                  {
-                    label: "F6",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f6`,
-                  },
-                  {
-                    label: "F7",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f7`,
-                  },
-                  {
-                    label: "F8",
-                    href: `/catalog/goats/${alias}/${sex}?reg=f8`,
-                  },
+                  { label: "F1", href: `/catalog/goats/${alias}/${sex}?reg=f1` },
+                  { label: "F2", href: `/catalog/goats/${alias}/${sex}?reg=f2` },
+                  { label: "F3", href: `/catalog/goats/${alias}/${sex}?reg=f3` },
+                  { label: "F4", href: `/catalog/goats/${alias}/${sex}?reg=f4` },
+                  { label: "F5", href: `/catalog/goats/${alias}/${sex}?reg=f5` },
+                  { label: "F6", href: `/catalog/goats/${alias}/${sex}?reg=f6` },
+                  { label: "F7", href: `/catalog/goats/${alias}/${sex}?reg=f7` },
+                  { label: "F8", href: `/catalog/goats/${alias}/${sex}?reg=f8` },
                 ];
               } else if (l.includes("rexb") || l.includes("experimental")) {
                 dropdownItems = [
-                  {
-                    label: "RExB 1",
-                    href: `/catalog/goats/${alias}/${sex}?reg=ex1`,
-                  },
-                  {
-                    label: "RExB 2",
-                    href: `/catalog/goats/${alias}/${sex}?reg=ex2`,
-                  },
-                  {
-                    label: "RExB 3",
-                    href: `/catalog/goats/${alias}/${sex}?reg=ex3`,
-                  },
+                  { label: "RExB 1", href: `/catalog/goats/${alias}/${sex}?reg=ex1` },
+                  { label: "RExB 2", href: `/catalog/goats/${alias}/${sex}?reg=ex2` },
+                  { label: "RExB 3", href: `/catalog/goats/${alias}/${sex}?reg=ex3` },
                 ];
               } else if (isCategory) {
                 dropdownItems = registries;
@@ -375,51 +248,22 @@ export default function Breadcrumbs({
                 l.includes("descendant")
               ) {
                 dropdownItems = [
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.male03?.toUpperCase() ||
-                      "BUCKS 0-3 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=male&age=3`,
-                  },
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.male36?.toUpperCase() ||
-                      "BUCKS 3-6 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=male&age=6`,
-                  },
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.male612?.toUpperCase() ||
-                      "BUCKS 6-12 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=male&age=12`,
-                  },
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.female03?.toUpperCase() ||
-                      "DOES 0-3 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=female&age=3`,
-                  },
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.female36?.toUpperCase() ||
-                      "DOES 3-6 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=female&age=6`,
-                  },
-                  {
-                    label:
-                      t?.catalog?.kidsGrid?.female612?.toUpperCase() ||
-                      "DOES 6-12 MONTHS",
-                    href: `/catalog/goats/${alias}/child?s=female&age=12`,
-                  },
+                  { label: t?.catalog?.kidsGrid?.male03?.toUpperCase() || "BUCKS 0-3 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=3` },
+                  { label: t?.catalog?.kidsGrid?.male36?.toUpperCase() || "BUCKS 3-6 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=6` },
+                  { label: t?.catalog?.kidsGrid?.male612?.toUpperCase() || "BUCKS 6-12 MONTHS", href: `/catalog/goats/${alias}/child?s=male&age=12` },
+                  { label: t?.catalog?.kidsGrid?.female03?.toUpperCase() || "DOES 0-3 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=3` },
+                  { label: t?.catalog?.kidsGrid?.female36?.toUpperCase() || "DOES 3-6 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=6` },
+                  { label: t?.catalog?.kidsGrid?.female612?.toUpperCase() || "DOES 6-12 MONTHS", href: `/catalog/goats/${alias}/child?s=female&age=12` },
                 ];
               } else {
                 dropdownItems = genders;
               }
-            } else if (type === "breed")
-              dropdownItems = currentBreeds.map((b) => ({
+            } else if (type === "breed") {
+              dropdownItems = dbBreeds.map((b) => ({
                 label: b.name.toUpperCase(),
                 href: `/catalog/goats/${b.alias.trim()}`,
               }));
+            }
 
             return (
               <div

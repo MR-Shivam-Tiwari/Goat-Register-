@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { ImageIcon } from "lucide-react";
 
 interface Breed {
   id: number;
   name: string;
   alias: string;
+  id_family: number;
+  place: number;
+  ico: string;
   total_animals: string | number;
   living_animals: string | number;
 }
@@ -13,57 +17,18 @@ interface Breed {
 interface BreedCatalogGridProps {
   breeds: Breed[];
   t: any;
+  isAdmin?: boolean;
 }
 
 export default function BreedCatalogDisplay({
   breeds,
   t,
+  isAdmin = false,
 }: BreedCatalogGridProps) {
-  // Predefined order by name
-  const order = [
-    "Тюрингская Лесная Коза",
-    "Англо-нубийская",
-    "Зааненская",
-    "Альпийская",
-    "Тоггенбургская",
-    "Ла-Манча",
-    "Бурская",
-    "Оберхазли",
-    "Карликовая группа коз",
-    "Украинская Белая",
-    "Украинская цветная", // We'll rename this in the map
-    "Украинская Пёстрая",
-    "Украинская Короткоухая",
-  ];
-
+  // Sort solely by database 'place' and then name
   const sortedBreeds = [...(breeds || [])]
-    .filter((b) => b && b.name !== "Чешская бурая" && b.alias?.trim() !== "CHB")
-    .sort((a, b) => {
-      const cleanName = (name: string) =>
-        name.toLowerCase().trim().replace(/ё/g, "е");
-
-      const getIndex = (name: string) => {
-        const cleaned = cleanName(name);
-        // Special case for Thuringian variations
-        if (cleaned.includes("тюринг")) return 0;
-
-        return order.findIndex((o) => {
-          const oClean = cleanName(o);
-          return (
-            oClean === cleaned ||
-            (name === "Украинская цветная" && oClean === "украинская пестрая")
-          );
-        });
-      };
-
-      const indexA = getIndex(a.name);
-      const indexB = getIndex(b.name);
-
-      if (indexA === -1 && indexB === -1) return a.name.localeCompare(b.name);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    });
+    .filter((b) => b && b.alias?.trim() !== "CHB")
+    .sort((a, b) => (a.place - b.place) || a.name.localeCompare(b.name));
 
   return (
     <div
@@ -71,11 +36,8 @@ export default function BreedCatalogDisplay({
       suppressHydrationWarning
     >
       {sortedBreeds.map((breed) => {
-        // Rename logic
-        const displayName =
-          breed.name === "Украинская цветная"
-            ? "Украинская Пёстрая"
-            : breed.name;
+        const displayName = breed.name;
+        const hasImage = breed.ico && breed.ico.trim() !== "";
 
         return (
           <Link
@@ -86,56 +48,23 @@ export default function BreedCatalogDisplay({
             className="group bg-white border border-[#491907]/5 rounded-xl overflow-hidden hover:border-[#491907]/30 hover:shadow-[0_15px_40px_rgba(73,25,7,0.08)] transition-all duration-500 flex flex-col shadow-sm relative h-full"
           >
             {/* IMAGE SECTION */}
-            <div className="aspect-[4/3] w-full overflow-hidden bg-[#E2E0D9] relative flex items-center justify-center p-2.5 rounded-t-xl">
-              <img
-                src={
-                  breed.name.toLowerCase().includes("альпийская")
-                    ? "/breedimage/alpijskaya.png"
-                    : breed.name.toLowerCase().includes("зааненская")
-                      ? "/breedimage/zaanenskaya.png"
-                      : breed.name.toLowerCase().includes("англо-нубийская")
-                        ? "/breedimage/anglo_nubijskaya.png"
-                        : breed.name.toLowerCase().includes("тоггенбургская")
-                          ? "/breedimage/toggenburgskaya.png"
-                          : breed.name
-                                .toLowerCase()
-                                .includes("карликовая группа")
-                            ? "/breedimage/karlikovaya.png"
-                            : breed.name.toLowerCase().includes("оберхазли")
-                              ? "/breedimage/oberhazli.jpg"
-                              : breed.name
-                                    .toLowerCase()
-                                    .includes("украинская белая")
-                                ? "/breedimage/ukrainskaya_belaya.png"
-                                : breed.name
-                                      .toLowerCase()
-                                      .includes("украинская цветная")
-                                  ? "/breedimage/ukrainskaya_korotkouhaya.png"
-                                  : breed.name
-                                        .toLowerCase()
-                                        .includes("украинская короткоухая")
-                                    ? "/breedimage/ukrainskaya_korotkouhaya_v2.jpg"
-                                    : breed.name
-                                          .toLowerCase()
-                                          .includes("тюринг")
-                                      ? "/breedimage/thuringian.jpg"
-                                      : breed.name
-                                            .toLowerCase()
-                                            .includes("бурская")
-                                        ? "/breedimage/burskaya.jpg"
-                                        : breed.name
-                                              .toLowerCase()
-                                              .includes("ла-манча")
-                                          ? "/breedimage/lamancha.jpg"
-                                          : `/img/breeds/${breed.alias?.trim()}.png`
-                }
-                alt={displayName}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "/img/breeds/default.png";
-                }}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out rounded-lg border border-[#491907]/10 shadow-sm"
-              />
+            <div className="aspect-[4/3] w-full overflow-hidden bg-[#F5F4F0] relative flex items-center justify-center p-2.5 rounded-t-xl border-b border-[#491907]/5">
+              {hasImage ? (
+                <img
+                  src={breed.ico.startsWith('breed_') ? `/uploads/${breed.ico}` : `/breedimage/${breed.ico}`}
+                  alt={displayName}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    // Show icon if image fails
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out rounded-lg border border-[#491907]/10 shadow-sm"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-gray-300 gap-3">
+                  <ImageIcon size={48} strokeWidth={1} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">No Image Found</span>
+                </div>
+              )}
 
               {/* ALIAS LABEL */}
               <div className="absolute top-4 right-4">

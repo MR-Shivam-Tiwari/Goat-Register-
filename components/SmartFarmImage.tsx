@@ -24,12 +24,17 @@ export default function SmartFarmImage({ src, alt, fill, className, emptyText }:
         );
     }
 
+    // If fill is not provided, we must use a regular img tag or provide width/height
+    // For simplicity and since we are using a custom API route, unoptimized Image with fill={true} is best
+    // but we need to ensure the container is relative.
+    
     return (
         <Image
             src={src}
             alt={alt}
-            fill={fill}
+            fill={fill ?? true}
             className={className}
+            unoptimized={true}
             onError={() => setError(true)}
         />
     );

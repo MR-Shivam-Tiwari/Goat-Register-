@@ -11,7 +11,10 @@ async function getBreeds() {
 
 async function getFarms() {
     const result = await query('SELECT id, name FROM farms ORDER BY name ASC');
-    return result.rows;
+    return [
+        { id: 0, name: 'Without a farm' }, 
+        ...result.rows
+    ];
 }
 
 export default async function AddGoatPage() {
