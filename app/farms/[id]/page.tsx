@@ -57,57 +57,62 @@ async function getFarmData(id: string): Promise<Farm | null> {
     farm.name.includes("КАМАДХЕНУ") ||
     farm.name.includes("Камадхену");
 
-  if (!isKamdhenu) {
-    return {
-      ...farm,
-      displayAva: "/breedimage/farmimg.png",
-      displayPic2: "/breedimage/farmimg.png",
-    };
+  let displayAva = "/breedimage/farmimg.png";
+  
+  if (isKamdhenu) {
+    displayAva = "/uploads/kamadhenu_card.jpg";
   }
 
-  let finalAva = "/img/farm_placeholder.png";
   if (farm.pic1 && farm.pic1 !== "no_pic.png") {
-    const pathsToCheck = [
-      path.join(process.cwd(), "public", "uploads", farm.pic1),
-      path.join(process.cwd(), "public", "img", "farm", farm.pic1),
-      path.join(process.cwd(), "public", "img", farm.pic1),
-    ];
-    for (const p of pathsToCheck) {
-      if (fs.existsSync(p)) {
-        if (p.includes("public/uploads/")) {
-          finalAva = `/uploads/${farm.pic1}`;
-        } else if (p.includes("public/img/farm/")) {
-          finalAva = `/img/farm/${farm.pic1}`;
-        } else {
-          finalAva = `/img/${farm.pic1}`;
+    let targetPath = "";
+    if (farm.pic1 === "kamadhenu.jpg") {
+      targetPath = "/img/kamadhenu.jpg";
+    } else if (farm.pic1 === "11.jpg") {
+      targetPath = "/img/farm/11.jpg";
+    } else if (farm.pic1 === "new_farm.png") {
+      targetPath = "/img/farm/new_farm.png";
+    } else {
+      targetPath = `/uploads/${farm.pic1}`;
+    }
+
+    try {
+      const fullPath = path.join(process.cwd(), "public", targetPath);
+      if (fs.existsSync(fullPath)) {
+        displayAva = targetPath;
+      } else if (isKamdhenu) {
+        if (fs.existsSync(path.join(process.cwd(), "public/uploads/kamadhenu.jpg"))) {
+          displayAva = "/uploads/kamadhenu.jpg";
         }
-        break;
       }
+    } catch (err) {
+      console.error(`Error checking file existence for ${targetPath}:`, err);
     }
   }
 
-  let finalPic2 = null;
+  let displayPic2 = null;
   if (farm.pic2 && farm.pic2 !== "no_pic.png") {
-    const pathsToCheck2 = [
-      path.join(process.cwd(), "public", "uploads", farm.pic2),
-      path.join(process.cwd(), "public", "img", "farm", farm.pic2),
-      path.join(process.cwd(), "public", "img", farm.pic2),
-    ];
-    for (const p of pathsToCheck2) {
-      if (fs.existsSync(p)) {
-        if (p.includes("public/uploads/")) {
-          finalPic2 = `/uploads/${farm.pic2}`;
-        } else if (p.includes("public/img/farm/")) {
-          finalPic2 = `/img/farm/${farm.pic2}`;
-        } else {
-          finalPic2 = `/img/${farm.pic2}`;
-        }
-        break;
+    let targetPath = "";
+    if (farm.pic2 === "kamadhenu.jpg") {
+      targetPath = "/img/kamadhenu.jpg";
+    } else if (farm.pic2 === "11.jpg") {
+      targetPath = "/img/farm/11.jpg";
+    } else if (farm.pic2 === "new_farm.png") {
+      targetPath = "/img/farm/new_farm.png";
+    } else {
+      targetPath = `/uploads/${farm.pic2}`;
+    }
+
+    try {
+      const fullPath = path.join(process.cwd(), "public", targetPath);
+      if (fs.existsSync(fullPath)) {
+        displayPic2 = targetPath;
       }
+    } catch (err) {
+      console.error(`Error checking file existence for ${targetPath}:`, err);
     }
   }
 
-  return { ...farm, displayAva: finalAva, displayPic2: finalPic2 };
+  return { ...farm, displayAva, displayPic2 };
 }
 
 async function getFarmGoats(id: string) {
@@ -206,7 +211,7 @@ export default async function FarmDetailPage({
         {/* MAIN DISPLAY SECTION */}
         <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
           {/* IMAGE COLUMN (Left) */}
-          <div className="lg:w-[500px] shrink-0 bg-[#FFB000] flex items-center justify-center p-1 border-r border-gray-200">
+          <div className="lg:w-[500px] shrink-0 bg-[#FFB000] flex items-center justify-center p-1 border-r border-gray-200 relative group">
             <img
               src={
                 farm.displayPic2 ||
@@ -216,6 +221,16 @@ export default async function FarmDetailPage({
               alt={farm.name}
               className="max-w-full max-h-[500px] object-contain shadow-inner"
             />
+            {/* Special overlay logo for Kamadhenu */}
+            {farm.id === 1 && farm.displayPic2 && farm.displayAva && (
+              <div className="absolute top-4 right-4 w-32 h-32 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-2xl border border-white/50 animate-in zoom-in duration-500">
+                <img 
+                  src={farm.displayAva} 
+                  alt="Kamadhenu Logo" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
           </div>
 
           {/* DESCRIPTION COLUMN (Right) */}

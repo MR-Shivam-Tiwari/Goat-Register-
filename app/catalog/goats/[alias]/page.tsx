@@ -152,17 +152,21 @@ export default async function BreedPage({
             <div className="flex items-center justify-center">
               <Link
                 href={`/catalog/goats/${breed.alias.trim()}/move`}
-                className="group flex items-center gap-6 p-6 rounded-2xl bg-[#481907] border border-[#ECC41E] hover:opacity-90 w-[600px] transition-all"
+                className="group flex items-center gap-6 p-6 rounded-2xl hover:opacity-90 w-[600px] transition-all"
+                style={{ backgroundColor: '#ECC41E' }}
               >
-                <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 text-white">
-                  <History size={24} />
+                <div 
+                  className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(72, 25, 7, 0.1)', color: '#481907' }}
+                >
+                  <History color="white" size={24} />
                 </div>
                 <div className="flex-1">
-                  <p translate="no" className="text-xl font-black text-white uppercase tracking-tighter leading-none">
+                  <p translate="no" className="text-xl  font-black uppercase  leading-none" style={{ color: '#481907' }}>
                     {t.catalog.transferredAnimalsList}
                   </p>
                 </div>
-                <ArrowRight size={20} className="text-white opacity-40 group-hover:opacity-100 transition-all" />
+                <ArrowRight color="white" size={20} className="opacity-40 group-hover:opacity-100 transition-all" style={{ color: '#481907' }} />
               </Link>
             </div>
           </section>

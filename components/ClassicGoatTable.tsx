@@ -432,13 +432,13 @@ export default function ClassicGoatTable({
                   <td className="p-0.5 px-2 text-center font-mono">
                     {g.born_qty || "-"}
                   </td>
-                  <td className="p-0.5 px-2 text-center uppercase font-bold">
+                  <td className="p-0.5 px-2 text-center font-bold">
                     {g.horns_type === 1 || g.horns_type === "1"
-                      ? "TO"
+                      ? (t.goatForm?.polled || "Polled")
                       : g.horns_type === 2 || g.horns_type === "2"
-                        ? "ABOUT"
+                        ? (t.goatForm?.dehorned || "Dehorned")
                         : g.horns_type === 3 || g.horns_type === "3"
-                          ? "R"
+                          ? (t.goatForm?.horned || "Horned")
                           : "-"}
                   </td>
                   <td className="p-0.5 px-2 text-center">

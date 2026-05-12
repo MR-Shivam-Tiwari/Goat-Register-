@@ -142,6 +142,7 @@ export async function addGoatAction(formData: FormData) {
     const studbook = formData.get('studbook') as string; // needs mapping
     const statusVal = formData.get('status') as string;
     const abg = formData.get('abg') === 'yes' ? 1 : 0;
+    const isReg = formData.get('is_reg') !== null ? parseInt(formData.get('is_reg') as string) : 1;
     
     // Dates
     const birthDate = formData.get('birthDate') as string || null;
@@ -155,13 +156,18 @@ export async function addGoatAction(formData: FormData) {
     const owner = formData.get('owner') as string || null;
     const idUa = formData.get('idUa') as string || null;
     const idAbg = formData.get('idAbg') as string || null;
+    const idFx = formData.get('idFx') as string || null;
     const chipId = formData.get('chipId') as string || null;
     const idInt = formData.get('idInt') as string || null;
+    const brand = formData.get('brand') as string || null;
     const certSeries = formData.get('certSeries') as string || null;
     const certNo = formData.get('certNum') as string || null;
     const genetic = formData.get('genetic') as string || null;
     const source = formData.get('source') as string || null;
     const notes = formData.get('notes') as string || null;
+    const hornsType = parseInt(formData.get('horns_type') as string) || 1;
+    const haveGen = parseInt(formData.get('have_gen') as string) || 0;
+    const bornQty = parseInt(formData.get('bornQty') as string) || null;
 
     // Photo
     const photoFile = formData.get('photo') as File | null;
@@ -188,7 +194,7 @@ export async function addGoatAction(formData: FormData) {
         const animalRes = await client.query(
             `INSERT INTO animals (id_family, id_farm, id_mother, id_father, is_reg, name, sex, status, id_user) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-            [1, farmId, 0, 0, 1, nickname, sex, status, userId]
+            [1, farmId, 0, 0, isReg, nickname, sex, status, userId]
         );
         const goatId = animalRes.rows[0].id;
 
@@ -197,12 +203,12 @@ export async function addGoatAction(formData: FormData) {
             `INSERT INTO goats_data (
                 id_goat, id_breed, id_stoodbook, is_abg, date_born, date_dead, 
                 born_weight, manuf, owner, ava, score, code_ua, code_abg, 
-                code_chip, code_int, cert_serial, cert_no, gen_mat, source, special, blood_percent
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
+                code_chip, code_int, cert_serial, cert_no, gen_mat, source, special, blood_percent, horns_type, have_gen, code_farm, code_brand, born_qty
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)`,
             [
                 goatId, breedId, studbookId, abg, birthDate, deathDate,
                 birthWeight, breeder, owner, photoName, score, idUa, idAbg,
-                chipId, idInt, certSeries, certNo, genetic, source, notes, totalPercent
+                chipId, idInt, certSeries, certNo, genetic, source, notes, totalPercent, hornsType, haveGen, idFx, brand, bornQty
             ]
         );
 
@@ -315,6 +321,7 @@ export async function updateGoatAction(formData: FormData) {
         const sex = formData.get('sex') === 'male' ? 1 : 0;
         const status = formData.get('status') === 'alive' ? 1 : formData.get('status') === 'dead' ? 0 : 2;
         const isAbg = formData.get('abg') === 'yes' ? 1 : 0;
+        const isReg = formData.get('is_reg') !== null ? parseInt(formData.get('is_reg') as string) : 1;
         const dateBorn = formData.get('birthDate') as string || null;
         const dateDeath = formData.get('deathDate') as string || null;
         const birthWeight = formData.get('birthWeight') as string || null;
@@ -325,8 +332,10 @@ export async function updateGoatAction(formData: FormData) {
         
         const idUa = formData.get('idUa') as string;
         const idAbg = formData.get('idAbg') as string;
+        const idFx = formData.get('idFx') as string;
         const chipId = formData.get('chipId') as string;
         const idInt = formData.get('idInt') as string;
+        const brand = formData.get('brand') as string;
         const certSeries = formData.get('certSeries') as string;
         const certNum = formData.get('certNum') as string;
         
@@ -334,6 +343,9 @@ export async function updateGoatAction(formData: FormData) {
         const source = formData.get('source') as string;
         const notes = formData.get('notes') as string;
         const studbook = formData.get('studbook') as string;
+        const hornsType = parseInt(formData.get('horns_type') as string) || 1;
+        const haveGen = parseInt(formData.get('have_gen') as string) || 0;
+        const bornQty = formData.get('bornQty') as string || null;
 
         const studbookMap: Record<string, number> = { 
             'main': 1, 'rhb': 1, 
@@ -344,8 +356,8 @@ export async function updateGoatAction(formData: FormData) {
 
         // 1. Update animals table
         await client.query(
-            'UPDATE animals SET name = $1, sex = $2, status = $3, id_farm = $4 WHERE id = $5',
-            [nickname, sex, status, parseInt(farm) || null, goatId]
+            'UPDATE animals SET name = $1, sex = $2, status = $3, id_farm = $4, is_reg = $5 WHERE id = $6',
+            [nickname, sex, status, parseInt(farm) || null, isReg, goatId]
         );
 
         // Update goats_data
@@ -357,7 +369,8 @@ export async function updateGoatAction(formData: FormData) {
             'date_born = $5', 'date_dead = $6', 'born_weight = $7',
             'code_ua = $8', 'code_abg = $9', 'code_chip = $10', 'code_int = $11',
             'cert_serial = $12', 'cert_no = $13', 'special = $14', 'source = $15', 'gen_mat = $16',
-            'score = $17', 'blood_percent = $18', 'id_stoodbook = $19'
+            'score = $17', 'blood_percent = $18', 'id_stoodbook = $19',
+            'horns_type = $20', 'have_gen = $21', 'code_farm = $22', 'code_brand = $23', 'born_qty = $24'
         ];
         const dataValues = [
             parseInt(breed), isAbg, breeder, owner, 
@@ -366,7 +379,12 @@ export async function updateGoatAction(formData: FormData) {
             certSeries, certNum, notes, source, genetic,
             score,
             totalPercent,
-            studbookId
+            studbookId,
+            hornsType,
+            haveGen,
+            idFx,
+            brand,
+            bornQty ? parseInt(bornQty) : null
         ];
 
         if (photoName) {
@@ -439,19 +457,29 @@ export async function updateFarmAction(formData: FormData) {
         const updateFields = ['name = $1', 'tmpl = $2'];
         const values: any[] = [name, description];
 
+        const removePic1 = formData.get('removePic1') === 'true';
+        const removePic2 = formData.get('removePic2') === 'true';
+
         if (pic1File && pic1File.size > 0) {
             const pic1 = await saveFile(pic1File, 'farm_p1');
             if (pic1) {
                 updateFields.push(`pic1 = $${values.length + 1}`);
                 values.push(pic1);
             }
+        } else if (removePic1) {
+            updateFields.push(`pic1 = $${values.length + 1}`);
+            values.push('no_pic.png');
         }
+
         if (pic2File && pic2File.size > 0) {
             const pic2 = await saveFile(pic2File, 'farm_p2');
             if (pic2) {
                 updateFields.push(`pic2 = $${values.length + 1}`);
                 values.push(pic2);
             }
+        } else if (removePic2) {
+            updateFields.push(`pic2 = $${values.length + 1}`);
+            values.push('no_pic.png');
         }
 
         values.push(id);

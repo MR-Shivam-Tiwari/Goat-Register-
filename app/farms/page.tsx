@@ -17,28 +17,33 @@ async function getFarms() {
         const name = farm.name.toLowerCase();
         const isKamdhenu = name.includes('kamdhenu') || name.includes('kamadhenu') || name.includes('камадхену');
         
-        let displayPic = '/breedimage/farmimg.png';
+        let displayPic = '/breedimage/farmimg.png'; // Default fallback
         
+        // Priority for Kamadhenu - Use the card/logo version for the list
         if (isKamdhenu) {
-            displayPic = '/img/farm_placeholder.png';
-            if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
-                const pathsToCheck = [
-                    path.join(process.cwd(), 'public', 'uploads', farm.pic1),
-                    path.join(process.cwd(), 'public', 'img', 'farm', farm.pic1),
-                    path.join(process.cwd(), 'public', 'img', farm.pic1)
-                ];
-                for (const p of pathsToCheck) {
-                    if (fs.existsSync(p)) {
-                        if (p.includes('public/uploads/')) {
-                            displayPic = `/uploads/${farm.pic1}`;
-                        } else if (p.includes('public/img/farm/')) {
-                            displayPic = `/img/farm/${farm.pic1}`;
-                        } else {
-                            displayPic = `/img/${farm.pic1}`;
-                        }
-                        break;
-                    }
+            displayPic = '/uploads/kamadhenu_card.jpg';
+        }
+        
+        if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
+            let targetPath = '';
+            if (farm.pic1 === 'kamadhenu.jpg') {
+                targetPath = '/img/kamadhenu.jpg';
+            } else if (farm.pic1 === '11.jpg') {
+                targetPath = '/img/farm/11.jpg';
+            } else if (farm.pic1 === 'new_farm.png') {
+                targetPath = '/img/farm/new_farm.png';
+            } else {
+                targetPath = `/uploads/${farm.pic1}`;
+            }
+
+            // Check if file actually exists on disk
+            try {
+                const fullPath = path.join(process.cwd(), 'public', targetPath);
+                if (fs.existsSync(fullPath)) {
+                    displayPic = targetPath;
                 }
+            } catch (err) {
+                console.error(`Error checking file existence for ${targetPath}:`, err);
             }
         }
         return { ...farm, displayPic, isKamdhenu };

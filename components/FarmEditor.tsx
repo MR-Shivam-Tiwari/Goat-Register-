@@ -6,7 +6,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { getTranslation, Locale } from '@/lib/translations';
 import { addFarmAction, updateFarmAction } from '@/lib/actions';
-import { Save, ChevronLeft, Loader2, Upload, Layout, FileText, Image as ImageIcon } from 'lucide-react';
+import { Save, ChevronLeft, Loader2, Upload, Layout, FileText, Image as ImageIcon, X } from 'lucide-react';
 import 'react-quill-new/dist/quill.snow.css';
 
 // Dynamic import for ReactQuill
@@ -39,6 +39,26 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
 
     const [pic1, setPic1] = useState<File | null>(null);
     const [pic2, setPic2] = useState<File | null>(null);
+    const [img1Error, setImg1Error] = useState(false);
+    const [img2Error, setImg2Error] = useState(false);
+    const [removePic1, setRemovePic1] = useState(false);
+    const [removePic2, setRemovePic2] = useState(false);
+
+    const getDisplayPic = (picName: string | undefined) => {
+        if (!picName || picName === 'no_pic.png') return null;
+        
+        // Special case for Kamadhenu if it's ID 1 and we have the logo
+        if (initialData?.id === 1 || initialData?.id === '1') {
+            if (picName === 'farm_p1_1778242837576_6363_.jpg' || picName === 'kamadhenu.jpg') {
+                return '/uploads/kamadhenu_card.jpg';
+            }
+        }
+
+        if (picName === 'kamadhenu.jpg') return '/img/kamadhenu.jpg';
+        if (picName === '11.jpg') return '/img/farm/11.jpg';
+        if (picName === 'new_farm.png') return '/img/farm/new_farm.png';
+        return `/uploads/${picName}`;
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -66,7 +86,9 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
         if (pic2) formData.set('pic2', pic2);
 
         if (isEdit && initialData?.id) {
-            formData.set('farmId', initialData.id.toString());
+            formData.append('farmId', initialData.id.toString());
+            formData.append('removePic1', removePic1.toString());
+            formData.append('removePic2', removePic2.toString());
         }
 
         try {
@@ -158,6 +180,43 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
                             {/* Pic 1 */}
                             <div className="space-y-4">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t.farms.photoWindow}</label>
+                                
+                                {!pic1 && !removePic1 && initialData?.pic1 && initialData.pic1 !== 'no_pic.png' && (
+                                    <div className="mb-4 relative w-full aspect-video bg-gray-100 rounded-sm overflow-hidden border-2 border-gray-200 flex items-center justify-center group">
+                                        {!img1Error ? (
+                                            <img 
+                                                src={getDisplayPic(initialData.pic1) || ''} 
+                                                alt="Current" 
+                                                className="w-full h-full object-contain"
+                                                onError={() => setImg1Error(true)}
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2 text-gray-400">
+                                                <ImageIcon size={40} className="opacity-20" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">{t.catalog?.empty || 'NO IMAGE UPLOADED'}</span>
+                                            </div>
+                                        )}
+                                        <div className="absolute top-2 left-2 bg-[#491907] text-white text-[8px] font-bold px-2 py-1 uppercase tracking-widest rounded-full shadow-lg">
+                                            {t.common.currentPhoto}
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setRemovePic1(true)}
+                                            className="absolute top-2 right-2 bg-red-600 text-white text-[8px] font-bold px-3 py-1 uppercase tracking-widest rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hover:bg-black"
+                                        >
+                                            <X size={10} />
+                                            {t.common.remove}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {removePic1 && !pic1 && (
+                                    <div className="mb-4 p-4 bg-red-50 border-2 border-red-100 rounded-sm flex items-center justify-between">
+                                        <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Will be removed</span>
+                                        <button type="button" onClick={() => setRemovePic1(false)} className="text-[10px] font-black text-gray-400 uppercase underline">Undo</button>
+                                    </div>
+                                )}
+
                                 {!pic1 ? (
                                     <div className="relative">
                                         <input type="file" accept="image/*" onChange={(e) => setPic1(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
@@ -177,6 +236,43 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
                             {/* Pic 2 */}
                             <div className="space-y-4">
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t.farms.photosPage}</label>
+                                
+                                {!pic2 && !removePic2 && initialData?.pic2 && initialData.pic2 !== 'no_pic.png' && (
+                                    <div className="mb-4 relative w-full aspect-video bg-gray-100 rounded-sm overflow-hidden border-2 border-gray-200 flex items-center justify-center group">
+                                        {!img2Error ? (
+                                            <img 
+                                                src={getDisplayPic(initialData.pic2) || ''} 
+                                                alt="Current" 
+                                                className="w-full h-full object-contain"
+                                                onError={() => setImg2Error(true)}
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2 text-gray-400">
+                                                <ImageIcon size={40} className="opacity-20" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">{t.catalog?.empty || 'NO IMAGE UPLOADED'}</span>
+                                            </div>
+                                        )}
+                                        <div className="absolute top-2 left-2 bg-[#491907] text-white text-[8px] font-bold px-2 py-1 uppercase tracking-widest rounded-full shadow-lg">
+                                            {t.common.currentPhoto}
+                                        </div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setRemovePic2(true)}
+                                            className="absolute top-2 right-2 bg-red-600 text-white text-[8px] font-bold px-3 py-1 uppercase tracking-widest rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hover:bg-black"
+                                        >
+                                            <X size={10} />
+                                            {t.common.remove}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {removePic2 && !pic2 && (
+                                    <div className="mb-4 p-4 bg-red-50 border-2 border-red-100 rounded-sm flex items-center justify-between">
+                                        <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Will be removed</span>
+                                        <button type="button" onClick={() => setRemovePic2(false)} className="text-[10px] font-black text-gray-400 uppercase underline">Undo</button>
+                                    </div>
+                                )}
+
                                 {!pic2 ? (
                                     <div className="relative">
                                         <input type="file" accept="image/*" onChange={(e) => setPic2(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />

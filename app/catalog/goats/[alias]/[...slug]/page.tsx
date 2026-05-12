@@ -470,11 +470,11 @@ export default async function GoatsListPage({
                       />
                     </div>
                     <div className="flex flex-col items-center space-y-1 transition-colors duration-300">
-                      <span className="text-[11px] font-black text-[#0088CC] group-hover:text-primary uppercase leading-tight">
+                      <span className="text-[13px] font-black text-[#0088CC] group-hover:text-primary uppercase leading-tight">
                         {item.name}
                       </span>
                       {item.desc && (
-                        <span className="text-[9px] font-normal text-gray-400 leading-snug max-w-[180px]">
+                        <span className="text-[11px] font-normal text-gray-500 leading-snug max-w-[220px]">
                           {item.desc}
                         </span>
                       )}

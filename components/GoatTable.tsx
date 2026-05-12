@@ -389,9 +389,9 @@ export default function GoatTable({
               </td>
               <td className="p-1 text-center font-mono">{g.born_qty || "-"}</td>
               <td className="p-1 text-center font-black">
-                {g.horns_type === 1 || g.horns_type === '1' ? "TO" : 
-                 g.horns_type === 2 || g.horns_type === '2' ? "ABOUT" : 
-                 g.horns_type === 3 || g.horns_type === '3' ? "R" : "-"}
+                {g.horns_type === 1 || g.horns_type === '1' ? (t.goatForm?.polled || "Polled") : 
+                 g.horns_type === 2 || g.horns_type === '2' ? (t.goatForm?.dehorned || "Dehorned") : 
+                 g.horns_type === 3 || g.horns_type === '3' ? (t.goatForm?.horned || "Horned") : "-"}
               </td>
               <td className="p-1 text-center">
                 {g.have_gen === 1 || g.have_gen === '1' || g.have_gen === true ? "Yes" : "No"}
