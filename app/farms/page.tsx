@@ -41,7 +41,12 @@ async function getFarms() {
             try {
                 const fullPath = path.join(process.cwd(), 'public', targetPath);
                 if (fs.existsSync(fullPath)) {
-                    displayPic = targetPath;
+                    // Only use pic1 as the display pic if:
+                    // 1. It's not Kamadhenu (because Kamadhenu prefers its logo)
+                    // 2. OR if it is Kamadhenu but we don't have the logo yet
+                    if (!isKamdhenu || displayPic === null) {
+                        displayPic = targetPath;
+                    }
                 }
             } catch (err) {
                 console.error(`Error checking file existence for ${targetPath}:`, err);
