@@ -22,7 +22,7 @@ async function getFarms() {
         
         // Priority for Kamadhenu - Use the card/logo version for the list
         if (isKamdhenu) {
-            displayPic = '/uploads/kamadhenu_card.jpg';
+            displayPic = '/api/uploads/kamadhenu_card.jpg';
         }
         
         if (farm.pic1 && farm.pic1 !== 'no_pic.png') {
@@ -34,12 +34,13 @@ async function getFarms() {
             } else if (farm.pic1 === 'new_farm.png') {
                 targetPath = '/img/farm/new_farm.png';
             } else {
-                targetPath = `/uploads/${farm.pic1}`;
+                targetPath = `/api/uploads/${farm.pic1}`;
             }
 
             // Check if file actually exists on disk
             try {
-                const fullPath = path.join(process.cwd(), 'public', targetPath);
+                const actualFile = targetPath.replace('/api/uploads/', '');
+                const fullPath = path.join(process.cwd(), 'public', 'uploads', actualFile);
                 if (fs.existsSync(fullPath)) {
                     // Only use pic1 as the display pic if:
                     // 1. It's not Kamadhenu (because Kamadhenu prefers its logo)

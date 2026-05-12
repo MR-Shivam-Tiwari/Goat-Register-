@@ -61,7 +61,7 @@ async function getFarmData(id: string): Promise<Farm | null> {
   let displayAva = null;
   
   if (isKamdhenu) {
-    displayAva = "/uploads/kamadhenu_card.jpg";
+    displayAva = "/api/uploads/kamadhenu_card.jpg";
   }
 
   if (farm.pic1 && farm.pic1 !== "no_pic.png") {
@@ -73,16 +73,22 @@ async function getFarmData(id: string): Promise<Farm | null> {
     } else if (farm.pic1 === "new_farm.png") {
       targetPath = "/img/farm/new_farm.png";
     } else {
-      targetPath = `/uploads/${farm.pic1}`;
+      targetPath = `/api/uploads/${farm.pic1}`;
     }
 
     try {
-      const fullPath = path.join(process.cwd(), "public", targetPath);
+      const actualFile = targetPath.startsWith('/api/uploads/') 
+        ? targetPath.replace('/api/uploads/', '') 
+        : targetPath;
+      const fullPath = targetPath.startsWith('/api/uploads/')
+        ? path.join(process.cwd(), "public", "uploads", actualFile)
+        : path.join(process.cwd(), "public", targetPath);
+
       if (fs.existsSync(fullPath)) {
         displayAva = targetPath;
       } else if (isKamdhenu) {
         if (fs.existsSync(path.join(process.cwd(), "public/uploads/kamadhenu.jpg"))) {
-          displayAva = "/uploads/kamadhenu.jpg";
+          displayAva = "/api/uploads/kamadhenu.jpg";
         }
       }
     } catch (err) {
@@ -100,11 +106,17 @@ async function getFarmData(id: string): Promise<Farm | null> {
     } else if (farm.pic2 === "new_farm.png") {
       targetPath = "/img/farm/new_farm.png";
     } else {
-      targetPath = `/uploads/${farm.pic2}`;
+      targetPath = `/api/uploads/${farm.pic2}`;
     }
 
     try {
-      const fullPath = path.join(process.cwd(), "public", targetPath);
+      const actualFile = targetPath.startsWith('/api/uploads/') 
+        ? targetPath.replace('/api/uploads/', '') 
+        : targetPath;
+      const fullPath = targetPath.startsWith('/api/uploads/')
+        ? path.join(process.cwd(), "public", "uploads", actualFile)
+        : path.join(process.cwd(), "public", targetPath);
+
       if (fs.existsSync(fullPath)) {
         displayPic2 = targetPath;
       }

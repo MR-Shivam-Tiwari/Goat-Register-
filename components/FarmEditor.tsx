@@ -50,14 +50,14 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
         // Special case for Kamadhenu if it's ID 1 and we have the logo
         if (initialData?.id === 1 || initialData?.id === '1') {
             if (picName === 'farm_p1_1778242837576_6363_.jpg' || picName === 'kamadhenu.jpg') {
-                return '/uploads/kamadhenu_card.jpg';
+                return '/api/uploads/kamadhenu_card.jpg';
             }
         }
 
         if (picName === 'kamadhenu.jpg') return '/img/kamadhenu.jpg';
         if (picName === '11.jpg') return '/img/farm/11.jpg';
         if (picName === 'new_farm.png') return '/img/farm/new_farm.png';
-        return `/uploads/${picName}`;
+        return `/api/uploads/${picName}`;
     };
 
     useEffect(() => {
