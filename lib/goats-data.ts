@@ -5,7 +5,7 @@ export async function getGoatData(id: string) {
     `
       SELECT 
         A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm, A.id_mother, A.id_father, A.id_user,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
+        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty, Di.id_breed,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.score,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
