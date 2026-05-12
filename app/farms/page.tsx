@@ -7,6 +7,7 @@ import path from 'path';
 import { Plus, MapPin, Pencil } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
+import SmartFarmImage from '@/components/SmartFarmImage';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ async function getFarms() {
         const name = farm.name.toLowerCase();
         const isKamdhenu = farm.id === 1 || farm.id === '1' || name.includes('kamdhenu') || name.includes('kamadhenu') || name.includes('камадхену');
         
-        let displayPic = '/breedimage/farmimg.png'; // Default fallback
+        let displayPic = null; // No default image, use text placeholder if null
         
         // Priority for Kamadhenu - Use the card/logo version for the list
         if (isKamdhenu) {
@@ -98,12 +99,13 @@ export default async function FarmsPage() {
                                 className="flex flex-col space-y-4 bg-white border border-gray-100 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
                             >
                                 {/* CARD IMAGE */}
-                                <Link href={`/farms/${farm.id}`} className="relative aspect-[4/3] bg-[#F9F8F6] overflow-hidden rounded-lg border border-gray-100 block group">
-                                    <Image
+                                <Link href={`/farms/${farm.id}`} className="relative aspect-[4/3] bg-gray-50 overflow-hidden rounded-lg border border-gray-100 flex items-center justify-center group">
+                                    <SmartFarmImage 
                                         src={farm.displayPic}
                                         alt={farm.name}
                                         fill
                                         className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                                        emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
                                     />
                                 </Link>
 

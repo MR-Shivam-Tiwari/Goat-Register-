@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import { Pencil, Info } from "lucide-react";
 import { getSessionUser } from "@/lib/access-control";
+import SmartFarmImage from "@/components/SmartFarmImage";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ interface Farm {
   tmpl: string; // This is the description
   pic1: string;
   pic2: string | null;
-  displayAva?: string;
+  displayAva?: string | null;
   displayPic2?: string | null;
 }
 
@@ -57,7 +58,7 @@ async function getFarmData(id: string): Promise<Farm | null> {
     farm.name.includes("КАМАДХЕНУ") ||
     farm.name.includes("Камадхену");
 
-  let displayAva = "/breedimage/farmimg.png";
+  let displayAva = null;
   
   if (isKamdhenu) {
     displayAva = "/uploads/kamadhenu_card.jpg";
@@ -211,23 +212,22 @@ export default async function FarmDetailPage({
         {/* MAIN DISPLAY SECTION */}
         <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
           {/* IMAGE COLUMN (Left) */}
-          <div className="lg:w-[500px] shrink-0 bg-[#FFB000] flex items-center justify-center p-1 border-r border-gray-200 relative group">
-            <img
-              src={
-                farm.displayPic2 ||
-                farm.displayAva ||
-                "/img/farm_placeholder.png"
-              }
+          <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-r border-gray-200 relative group min-h-[500px]">
+            <SmartFarmImage
+              src={(farm.displayPic2 || farm.displayAva) ?? null}
               alt={farm.name}
               className="max-w-full max-h-[500px] object-contain shadow-inner"
+              emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
             />
-            {/* Special overlay logo for Kamadhenu */}
-            {farm.id === 1 && farm.displayPic2 && farm.displayAva && (
+            
+            {/* Special overlay logo if both images exist */}
+            {farm.displayPic2 && farm.displayAva && (
               <div className="absolute top-4 right-4 w-32 h-32 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-2xl border border-white/50 animate-in zoom-in duration-500">
-                <img 
-                  src={farm.displayAva} 
-                  alt="Kamadhenu Logo" 
+                <SmartFarmImage 
+                  src={farm.displayAva ?? null} 
+                  alt="Logo" 
                   className="w-full h-full object-contain"
+                  emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
                 />
               </div>
             )}
