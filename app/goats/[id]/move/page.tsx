@@ -13,10 +13,10 @@ export default async function MovementPage({
   searchParams
 }: { 
   params: Promise<{ id: string }>,
-  searchParams: Promise<{ mode?: 'add' | 'view' }>
+  searchParams: Promise<{ mode?: 'add' | 'view', targetFarm?: string }>
 }) {
   const { id } = await params;
-  const { mode = 'view' } = await searchParams;
+  const { mode = 'view', targetFarm } = await searchParams;
   
   const goatRes = await query(`
     SELECT A.id, A.name, A.id_farm, F.name as farm_name 
@@ -79,6 +79,7 @@ export default async function MovementPage({
               goatId={id} 
               currentFarmId={goat.id_farm} 
               currentFarmName={goat.farm_name}
+              targetFarmId={targetFarm}
               farms={farms} 
               t={t} 
             />

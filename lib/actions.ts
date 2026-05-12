@@ -138,14 +138,23 @@ export async function addGoatAction(formData: FormData) {
     const nickname = formData.get('nickname') as string;
     const breedId = parseInt(formData.get('breed') as string);
     const farmId = parseInt(formData.get('farm') as string);
-    const sex = formData.get('sex') === 'male' ? 1 : 0;
-    const studbook = formData.get('studbook') as string; // needs mapping
+    const sexStr = formData.get('sex') as string;
+    const birthDate = formData.get('birthDate') as string || null;
+    const bornQty = parseInt(formData.get('bornQty') as string) || null;
+
+    // Validation
+    if (!nickname) return { error: t.errors.nicknameRequired };
+    if (!breedId) return { error: t.errors.breedRequired };
+    if (!farmId && farmId !== 0) return { error: t.errors.farmRequired };
+    if (!sexStr) return { error: t.errors.sexRequired };
+    if (!birthDate) return { error: t.errors.birthDateRequired };
+    if (bornQty === null) return { error: t.errors.bornQtyRequired };
+
+    const sex = sexStr === 'male' ? 1 : 0;
+    const studbook = formData.get('studbook') as string; 
     const statusVal = formData.get('status') as string;
     const abg = formData.get('abg') === 'yes' ? 1 : 0;
     const isReg = formData.get('is_reg') !== null ? parseInt(formData.get('is_reg') as string) : 1;
-    
-    // Dates
-    const birthDate = formData.get('birthDate') as string || null;
     const deathDate = formData.get('deathDate') as string || null;
     
     // Other fields
@@ -167,7 +176,6 @@ export async function addGoatAction(formData: FormData) {
     const notes = formData.get('notes') as string || null;
     const hornsType = parseInt(formData.get('horns_type') as string) || 1;
     const haveGen = parseInt(formData.get('have_gen') as string) || 0;
-    const bornQty = parseInt(formData.get('bornQty') as string) || null;
 
     // Photo
     const photoFile = formData.get('photo') as File | null;
@@ -318,11 +326,22 @@ export async function updateGoatAction(formData: FormData) {
         const nickname = formData.get('nickname') as string;
         const breed = formData.get('breed') as string;
         const farm = formData.get('farm') as string;
-        const sex = formData.get('sex') === 'male' ? 1 : 0;
+        const sexStr = formData.get('sex') as string;
+        const dateBorn = formData.get('birthDate') as string || null;
+        const bornQty = formData.get('bornQty') as string || null;
+
+        // Validation
+        if (!nickname) return { error: t.errors.nicknameRequired };
+        if (!breed) return { error: t.errors.breedRequired };
+        if (!farm && farm !== '0') return { error: t.errors.farmRequired };
+        if (!sexStr) return { error: t.errors.sexRequired };
+        if (!dateBorn) return { error: t.errors.birthDateRequired };
+        if (bornQty === null || bornQty === '') return { error: t.errors.bornQtyRequired };
+
+        const sex = sexStr === 'male' ? 1 : 0;
         const status = formData.get('status') === 'alive' ? 1 : formData.get('status') === 'dead' ? 0 : 2;
         const isAbg = formData.get('abg') === 'yes' ? 1 : 0;
         const isReg = formData.get('is_reg') !== null ? parseInt(formData.get('is_reg') as string) : 1;
-        const dateBorn = formData.get('birthDate') as string || null;
         const dateDeath = formData.get('deathDate') as string || null;
         const birthWeight = formData.get('birthWeight') as string || null;
         const score = formData.get('score') as string || null;
@@ -345,7 +364,6 @@ export async function updateGoatAction(formData: FormData) {
         const studbook = formData.get('studbook') as string;
         const hornsType = parseInt(formData.get('horns_type') as string) || 1;
         const haveGen = parseInt(formData.get('have_gen') as string) || 0;
-        const bornQty = formData.get('bornQty') as string || null;
 
         const studbookMap: Record<string, number> = { 
             'main': 1, 'rhb': 1, 

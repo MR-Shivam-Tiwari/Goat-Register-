@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getTranslation, Locale } from "@/lib/translations";
@@ -22,6 +22,9 @@ export default function GoatForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLFormElement>(null);
   const t = getTranslation(lang);
   const isEdit = !!initialData;
 
@@ -56,9 +59,6 @@ export default function GoatForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
     const formData = new FormData(e.currentTarget);
     if (selectedFile) {
       formData.set("photo", selectedFile);
@@ -68,19 +68,56 @@ export default function GoatForm({
     }
 
     try {
+      setError(null);
+      setSuccess(false);
+      setFieldErrors({});
+      setIsSubmitting(true);
+
+      const newFieldErrors: Record<string, string> = {};
+      const nickname = formData.get('nickname') as string;
+      const breed = formData.get('breed') as string;
+      const farm = formData.get('farm') as string;
+      const sex = formData.get('sex') as string;
+      const birthDate = formData.get('birthDate') as string;
+      const bornQty = formData.get('bornQty') as string;
+
+      if (!nickname) newFieldErrors.nickname = t.errors.nicknameRequired;
+      if (!breed) newFieldErrors.breed = t.errors.breedRequired;
+      if (!farm && farm !== '0') newFieldErrors.farm = t.errors.farmRequired;
+      if (!sex) newFieldErrors.sex = t.errors.sexRequired;
+      if (!birthDate) newFieldErrors.birthDate = t.errors.birthDateRequired;
+      if (!bornQty) newFieldErrors.bornQty = t.errors.bornQtyRequired;
+
+      if (Object.keys(newFieldErrors).length > 0) {
+        setFieldErrors(newFieldErrors);
+        setIsSubmitting(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       const action = isEdit ? updateGoatAction : addGoatAction;
       const result = await action(formData);
 
       if (result.success) {
-        router.push(isEdit ? `/goats/${initialData.id}` : "/goats?success=1");
-        router.refresh();
+        setSuccess(true);
+        setIsSubmitting(false);
+        if (!isEdit && formRef.current) {
+           formRef.current.reset();
+           setSelectedFile(null);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          router.push(isEdit ? `/goats/${initialData.id}` : "/goats?success=1");
+        }, 1500);
       } else {
         setError(result.error || t.errors.somethingWrong);
         setIsSubmitting(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err: any) {
       setError(err.message || t.errors.unexpectedError);
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -95,7 +132,6 @@ export default function GoatForm({
 
   return (
     <div className="bg-white border-2 border-gray-100 rounded-sm p-4 md:p-8 font-sans max-w-4xl mx-auto text-gray-900 shadow-sm">
-      {/* Simple Header */}
       <div className="border-b-2 border-gray-100 pb-4 mb-6 flex justify-between items-center">
         <div>
           <h2 className="text-xl font-bold uppercase tracking-tight text-[#491907]">
@@ -115,68 +151,95 @@ export default function GoatForm({
         </Link>
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-sm text-sm font-bold">
-          ⚠️ {error}
-        </div>
-      )}
+      <div className="max-w-4xl mx-auto px-4 mb-4">
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+            <div className="bg-red-500 text-white rounded-full p-1">
+              <svg size="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+            <p className="text-red-800 font-bold text-sm uppercase tracking-tight">{error}</p>
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+            <div className="bg-green-500 text-white rounded-full p-1">
+              <svg size="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <p className="text-green-800 font-bold text-sm uppercase tracking-tight">
+              {isEdit ? t.common.toast.updated : t.common.toast.registered}
+            </p>
+          </div>
+        )}
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* 1. Basic Information */}
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
         <section className="space-y-4">
           <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">
             {t.goats.basicInformation}
           </h3>
-          {/* Row 1: 2 fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goats.nickname}
+                {t.goats.nickname} <span className="text-red-500">*</span>
               </label>
               <input
                 name="nickname"
                 type="text"
                 defaultValue={initialData?.name}
-                className="w-full border-2 border-gray-200 rounded-sm px-4 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none transition-all placeholder:text-gray-300 bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
-                required
+                className={`w-full border-2 rounded-sm px-4 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none transition-all placeholder:text-gray-300 bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.nickname ? 'border-red-500' : 'border-gray-200'}`}
               />
+              {fieldErrors.nickname && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.nickname}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goats.breed}
+                {t.goats.breed} <span className="text-red-500">*</span>
               </label>
               <select
                 name="breed"
                 defaultValue={initialData?.id_breed}
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.breed ? 'border-red-500' : 'border-gray-200'}`}
               >
+                <option value="">{t.catalog.allBreeds}</option>
                 {breeds.map((breed: any) => (
                   <option key={breed.id} value={breed.id}>
                     {breed.name}
                   </option>
                 ))}
               </select>
+              {fieldErrors.breed && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.breed}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Row 2: 3 fields */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goats.farm}
+                {t.goats.farm} <span className="text-red-500">*</span>
               </label>
               <select
                 name="farm"
                 defaultValue={initialData?.id_farm || "0"}
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.farm ? 'border-red-500' : 'border-gray-200'}`}
               >
                 <option value="0">{t.goats.withoutFarm}</option>
-                {farms.map((farm: any) => (
+                {farms.filter(f => Number(f.id) !== 0).map((farm: any) => (
                   <option key={farm.id} value={farm.id}>
                     {farm.name}
                   </option>
                 ))}
               </select>
+              {fieldErrors.farm && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.farm}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
@@ -185,11 +248,16 @@ export default function GoatForm({
               <select
                 name="sex"
                 defaultValue={initialData?.sex === 1 ? "male" : "female"}
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.sex ? 'border-red-500' : 'border-gray-200'}`}
               >
                 <option value="female">{t.goats.female}</option>
                 <option value="male">{t.goats.male}</option>
               </select>
+              {fieldErrors.sex && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.sex}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
@@ -281,14 +349,19 @@ export default function GoatForm({
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goats.birthDate}
+                {t.goats.birthDate} <span className="text-red-500">*</span>
               </label>
               <input
                 name="birthDate"
                 type="date"
                 defaultValue={formatDate(initialData?.date_born)}
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none ${fieldErrors.birthDate ? 'border-red-500' : 'border-gray-200'}`}
               />
+              {fieldErrors.birthDate && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.birthDate}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
@@ -315,15 +388,20 @@ export default function GoatForm({
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goats.bornQty}
+                {t.goats.bornQty} <span className="text-red-500">*</span>
               </label>
               <input
                 name="bornQty"
                 type="number"
                 defaultValue={initialData?.born_qty}
                 placeholder="1"
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none ${fieldErrors.bornQty ? 'border-red-500' : 'border-gray-200'}`}
               />
+              {fieldErrors.bornQty && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.bornQty}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">

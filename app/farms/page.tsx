@@ -121,7 +121,7 @@ export default async function FarmsPage() {
                                         src={farm.displayPic}
                                         alt={farm.name}
                                         fill
-                                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-700 ease-in-out"
                                         emptyText={t.catalog?.empty || 'NO PHOTO AVAILABLE'}
                                     />
                                 </Link>

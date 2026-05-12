@@ -48,10 +48,10 @@ export default function MovementHistory({ goatId, t }: { goatId: string, t: any 
                 {new Date(item.time_added).toLocaleDateString()}
               </td>
               <td className="p-3 text-gray-400">
-                 {item.farm_from_name || (item.id_farm_of === 0 ? "Without farm" : "Unknown")}
+                 {item.farm_from_name || (Number(item.id_farm_of) === 0 ? (t.goats.withoutFarm || "Without farm") : "Unknown")}
               </td>
               <td className="p-3 text-[#491907]">
-                {item.farm_to_name || "-"}
+                 {item.farm_to_name || (Number(item.id_farm_on) === 0 ? (t.goats.withoutFarm || "Without farm") : "-")}
               </td>
               <td className="p-3 text-amber-600">
                  {item.date_return ? new Date(item.date_return).toLocaleDateString() : '-'}

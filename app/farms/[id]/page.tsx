@@ -5,7 +5,7 @@ import path from "path";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
-import { Pencil, Info } from "lucide-react";
+import { Pencil, Info, Truck } from "lucide-react";
 import { getSessionUser } from "@/lib/access-control";
 import SmartFarmImage from "@/components/SmartFarmImage";
 
@@ -150,7 +150,7 @@ async function getFarmGoats(id: string) {
       LEFT JOIN goats_data Di ON A.id = Di.id_goat
       LEFT JOIN breeds B ON Di.id_breed = B.id
       LEFT JOIN farms F ON A.id_farm = F.id
-      WHERE A.id_farm IS NULL OR A.id_farm = 0
+      WHERE A.id_farm = 0
       ORDER BY A.id, A.name ASC
     `;
   } else {
@@ -192,6 +192,7 @@ async function getDisplacedGoats(id: string, prefix: string) {
         ($2 != '' AND Di.manuf ILIKE $2 || '%')
       )
       AND A.id_farm != $1::int
+      AND A.id_farm != 0
     ORDER BY A.id, A.name ASC
   `, [id, prefix]);
   return result.rows;
@@ -231,12 +232,11 @@ export default async function FarmDetailPage({
         <Breadcrumbs
           items={[
             { label: t.farms.breadcrumbs, href: "/farms" },
-          {label: t.farms.breadcrumbs, href: "/farms"},
-          {label: displayName},
-        ]}
-        t={t}
-        locale={lang}
-      />
+            { label: displayName },
+          ]}
+          t={t}
+          locale={lang}
+        />
 
       {/* FARM NAME & PREFIX - TOP LEVEL */}
       <div className="pb-2">
@@ -317,7 +317,7 @@ export default async function FarmDetailPage({
                 <thead className="sticky top-0 z-30 shadow-sm">
                   <tr className="text-[9px] font-bold uppercase tracking-tight text-white bg-[#491907] border-b border-black">
                     <th
-                      colSpan={9}
+                      colSpan={10}
                       className="p-1.5 text-center border-r border-black uppercase tracking-widest"
                     >
                       {t.farms.activeStock || "ACTIVE STOCK REGISTRY"}
@@ -348,8 +348,11 @@ export default async function FarmDetailPage({
                     <th className="p-1 px-4 border-r border-black text-center">
                       {t.goats.owner}
                     </th>
-                    <th className="p-1 px-4 border-black text-center w-36">
+                    <th className="p-1 px-4 border-r border-black text-center w-36">
                       {t.goats.birthDate || "Born"}
+                    </th>
+                    <th className="p-1 px-4 border-black text-center w-24">
+                      ACTIONS
                     </th>
                   </tr>
                 </thead>
@@ -408,12 +411,22 @@ export default async function FarmDetailPage({
                         <td className="p-1 px-4 truncate max-w-[250px] uppercase">
                           {goat.owner}
                         </td>
-                        <td className="p-1 px-4 text-center font-mono tabular-nums">
+                        <td className="p-1 px-4 text-center font-mono tabular-nums border-r border-black">
                           {goat.date_born
                             ? new Date(goat.date_born).toLocaleDateString(
                                 "ru-RU",
                               )
                             : "-"}
+                        </td>
+                        <td className="p-1 px-4 text-center">
+                           <Link 
+                            href={`/goats/${goat.id}/move?mode=add&targetFarm=${id}`}
+                            target="_blank"
+                            className="inline-flex items-center justify-center p-1.5 bg-[#491907] text-white rounded-sm hover:bg-black transition-all shadow-sm"
+                            title={t.goats.animalMovement}
+                           >
+                             <Truck size={14} />
+                           </Link>
                         </td>
                       </tr>
                     );
@@ -421,7 +434,7 @@ export default async function FarmDetailPage({
                   {goats.length === 0 && (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={10}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}
@@ -481,8 +494,11 @@ export default async function FarmDetailPage({
                     <th className="p-1 px-4 border-r border-black text-center">
                       {t.goats.owner}
                     </th>
-                    <th className="p-1 px-4 border-black text-center w-36">
+                    <th className="p-1 px-4 border-r border-black text-center w-36">
                       {t.goats.birthDate || "Born"}
+                    </th>
+                    <th className="p-1 px-4 border-black text-center w-24">
+                      ACTIONS
                     </th>
                   </tr>
                 </thead>
@@ -541,12 +557,22 @@ export default async function FarmDetailPage({
                         <td className="p-1 px-4 truncate max-w-[250px] uppercase">
                           {goat.owner}
                         </td>
-                        <td className="p-1 px-4 text-center font-mono tabular-nums">
+                        <td className="p-1 px-4 text-center font-mono tabular-nums border-r border-black">
                           {goat.date_born
                             ? new Date(goat.date_born).toLocaleDateString(
                                 "ru-RU",
                               )
                             : "-"}
+                        </td>
+                        <td className="p-1 px-4 text-center">
+                           <Link 
+                            href={`/goats/${goat.id}/move?mode=add&targetFarm=${id}`}
+                            target="_blank"
+                            className="inline-flex items-center justify-center p-1.5 bg-red-950 text-white rounded-sm hover:bg-black transition-all shadow-sm"
+                            title={t.goats.animalMovement}
+                           >
+                             <Truck size={14} />
+                           </Link>
                         </td>
                       </tr>
                     );
@@ -554,7 +580,7 @@ export default async function FarmDetailPage({
                   {displaced.length === 0 && (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={10}
                         className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]"
                       >
                         {t.farms.emptyStock || "NO RECORDS"}

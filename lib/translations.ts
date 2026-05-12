@@ -89,7 +89,13 @@ export const translations = {
       unauthorized: 'Неавторизовано',
       somethingWrong: 'Что-то пошло не так',
       unexpectedError: 'Произошла непредвиденная ошибка',
-      uploading: 'Загрузка...'
+      uploading: 'Загрузка...',
+      nicknameRequired: 'Кличка обязательна',
+      breedRequired: 'Порода обязательна',
+      sexRequired: 'Пол обязателен',
+      farmRequired: 'Ферма обязательна',
+      birthDateRequired: 'Дата рождения обязательна',
+      bornQtyRequired: 'Количество при рождении обязательно'
     },
     users: {
       listTitle: 'Список зарегистрированных пользователей:',
@@ -776,7 +782,13 @@ export const translations = {
       unauthorized: 'Unauthorized',
       somethingWrong: 'Something went wrong',
       unexpectedError: 'An unexpected error occurred',
-      uploading: 'Uploading...'
+      uploading: 'Uploading...',
+      nicknameRequired: 'Nickname is required',
+      breedRequired: 'Breed is required',
+      sexRequired: 'Sex is required',
+      farmRequired: 'Farm is required',
+      birthDateRequired: 'Birth date is required',
+      bornQtyRequired: 'Birth quantity is required'
     },
     users: {
       listTitle: 'List of registered users:',
@@ -1408,7 +1420,13 @@ export const translations = {
       unauthorized: 'Неавторизовано',
       somethingWrong: 'Щось пішло не так',
       unexpectedError: 'Сталася непередбачена помилка',
-      uploading: 'Завантаження...'
+      uploading: 'Завантаження...',
+      nicknameRequired: 'Кличка обов’язкова',
+      breedRequired: 'Порода обов’язкова',
+      sexRequired: 'Стать обов’язкова',
+      farmRequired: 'Ферма обов’язкова',
+      birthDateRequired: 'Дата народження обов’язкова',
+      bornQtyRequired: 'Кількість при народженні обов’язкова'
     },
     users: {
       listTitle: 'Список зареєстрованих користувачів:',

@@ -7,20 +7,26 @@ export default function MovementForm({
   goatId, 
   currentFarmId, 
   currentFarmName: propFarmName,
+  targetFarmId,
   farms, 
   t 
 }: { 
   goatId: string, 
   currentFarmId: number, 
   currentFarmName?: string,
+  targetFarmId?: string | number,
   farms: any[], 
   t: any 
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  
+  // Pre-select target farm if it's not the same as current
+  const initialTarget = targetFarmId && Number(targetFarmId) !== currentFarmId ? String(targetFarmId) : '';
+
   const [formData, setFormData] = useState({
     id_farm_of: currentFarmId,
-    id_farm_on: '',
+    id_farm_on: initialTarget,
     id_reason: 0,
     date_return: '',
     info: ''
@@ -69,10 +75,21 @@ export default function MovementForm({
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
         <div className="space-y-6">
           {/* MOVING FROM */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1 block">MOVING FROM</label>
-            <div className="text-[11px] font-black text-[#491907] p-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
-               {currentFarmId === 0 ? (t.goats.withoutFarm || "Without a farm") : currentFarmName}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+               <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+               <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em]">{t.goats.farm || "CURRENT LOCATION"}</label>
+            </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-[#491907]/5 rounded-2xl blur-xl group-hover:bg-[#491907]/10 transition-all"></div>
+              <div className="relative text-[13px] font-black text-[#491907] p-6 bg-white border-2 border-[#491907]/10 rounded-2xl flex items-center justify-between shadow-sm">
+                 <span className="uppercase tracking-tight">
+                   {currentFarmId === 0 ? (t.goats.withoutFarm || "Without a farm") : currentFarmName}
+                 </span>
+                 <div className="px-3 py-1 bg-[#491907] text-white text-[8px] font-black rounded-full uppercase tracking-widest">
+                    Origin
+                 </div>
+              </div>
             </div>
           </div>
 
