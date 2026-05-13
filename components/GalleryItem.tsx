@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { deletePhotoAction } from '@/lib/actions';
 import { Trash2, Maximize2, Loader2, X } from 'lucide-react';
@@ -8,7 +8,14 @@ import { Trash2, Maximize2, Loader2, X } from 'lucide-react';
 export default function GalleryItem({ file, goatId, t }: { file: string, goatId: string | number, t: any }) {
     const [deleting, setDeleting] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return <div className="w-36 h-52 bg-[#B5F4BB] border-r border-b border-[#4D2C1A]" />;
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this photo?')) return;
@@ -17,7 +24,7 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
         try {
             const res = await deletePhotoAction(file, goatId);
             if (res.success) {
-                // revalidatePath handles it, but refresh ensures the client router is in sync
+                window.dispatchEvent(new CustomEvent('gallery-status', { detail: { type: 'delete' } }));
                 router.refresh();
             } else {
                 alert(res.error || 'Failed to delete');
@@ -32,18 +39,19 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
 
     return (
         <>
-            <div className="w-32 h-24 bg-white border border-gray-100 p-1 rounded-xl shadow-sm group relative overflow-hidden ring-1 ring-gray-200">
+        <div className="w-36 h-46 bg-[#B5F4BB] border-r border-b border-[#4D2C1A] last:border-r-0 p-2 group relative overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-full h-full relative overflow-hidden border border-[#491907]/20">
                 <img
-                    src={`/uploads/${file}`}
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-500"
+                    src={file.startsWith('http') || file.startsWith('/') ? file : `/uploads/${file}`}
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
                     alt="Gallery item"
                 />
                 
                 {/* Overlay actions */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     <button 
                         onClick={() => setShowModal(true)}
-                        className="bg-white/20 hover:bg-white/40 text-white p-2 rounded-lg transition-all"
+                        className="bg-white/20 hover:bg-white/40 text-white p-1.5 rounded transition-all backdrop-blur-sm"
                         title={t.goats.viewShort}
                     >
                         <Maximize2 size={16} />
@@ -51,13 +59,14 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
                     <button 
                         onClick={handleDelete}
                         disabled={deleting}
-                        className="bg-red-500/80 hover:bg-red-600 text-white p-2 rounded-lg transition-all disabled:opacity-50"
+                        className="bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded transition-all disabled:opacity-50 backdrop-blur-sm"
                         title="Delete"
                     >
                         {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                     </button>
                 </div>
             </div>
+        </div>
 
             {/* Simple Modal for Viewing */}
             {showModal && (
@@ -70,7 +79,7 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
                     </button>
                     <div className="max-w-5xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl border border-white/10 ring-4 ring-black/50 animate-in zoom-in-95 duration-500">
                         <img 
-                            src={`/uploads/${file}`} 
+                            src={file.startsWith('http') || file.startsWith('/') ? file : `/uploads/${file}`} 
                             className="w-full h-auto max-h-[85vh] object-contain select-none" 
                             alt="Preview" 
                         />

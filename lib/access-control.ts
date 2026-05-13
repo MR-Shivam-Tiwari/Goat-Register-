@@ -1,8 +1,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { query } from './db';
+import { cache } from 'react';
 
-export async function getSessionUser() {
+export const getSessionUser = cache(async () => {
     const cookieStore = await cookies();
     const token = cookieStore.get('uid_token')?.value;
     
@@ -15,7 +16,7 @@ export async function getSessionUser() {
         user.role = Number(user.role);
     }
     return user || null;
-}
+});
 
 export async function adminOnly() {
     const user = await getSessionUser();

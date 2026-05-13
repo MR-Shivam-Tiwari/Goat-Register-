@@ -10,6 +10,7 @@ import InviteSection from "@/components/InviteSection";
 import PedigreeNode from "@/components/PedigreeNode";
 import AddPhotoGallery from "@/components/AddPhotoGallery";
 import GalleryItem from "@/components/GalleryItem";
+import GalleryHeader from "@/components/GalleryHeader";
 
 import { 
   getGoatData, 
@@ -154,21 +155,15 @@ export default async function GoatDetailPage({
 
         {/* GALLERY SECTION */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.gallery}
-            </h2>
-            <AddPhotoGallery goatId={id} t={t} />
-          </div>
+          <GalleryHeader goatId={id} t={t} />
           <div className="p-6">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap border border-[#4D2C1A] bg-[#B5F4BB] w-fit">
               {gallery.length > 0 ? (
                 gallery.map((p: any, idx: number) => (
                   <GalleryItem key={p.id || idx} file={p.file} goatId={id} t={t} />
                 ))
               ) : (
-                <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
+                <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl bg-white">
                    <span className="text-[10px] opacity-40 uppercase tracking-widest">
                      {t.goats.noPhotos}
                    </span>

@@ -91,7 +91,7 @@ export async function getOffspringDetailed(id: string) {
 
 export async function getGallery(id: string) {
   const result = await query(
-    "SELECT file FROM goats_pic WHERE id_goat = $1 ORDER BY time_added DESC",
+    "SELECT file FROM goats_pic WHERE id_goat = $1 ORDER BY time_added ASC",
     [id],
   );
   return result.rows;
