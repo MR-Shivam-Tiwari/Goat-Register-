@@ -28,6 +28,17 @@ export default function GoatForm({
   const t = getTranslation(lang);
   const isEdit = !!initialData;
 
+  const [isReg, setIsReg] = useState<string>(
+    initialData?.is_reg !== undefined && initialData?.is_reg !== null
+      ? String(initialData.is_reg)
+      : "1"
+  );
+  const [farmId, setFarmId] = useState<string>(
+    initialData?.id_farm !== undefined && initialData?.id_farm !== null
+      ? String(initialData.id_farm)
+      : "0"
+  );
+
   const REVERSE_STUD_MAP: Record<number, string> = {
     1: "rhb",
     2: "f1",
@@ -221,12 +232,34 @@ export default function GoatForm({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
+                {t.goatForm.recordType}
+              </label>
+              <select
+                name="is_reg"
+                value={isReg}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setIsReg(val);
+                  if (val === "0") {
+                    setFarmId("0");
+                  }
+                }}
+                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
+              >
+                <option value="0">{t.goatForm.pedigreeOption}</option>
+                <option value="1">{t.goatForm.registryOption}</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-bold text-gray-700">
                 {t.goats.farm} <span className="text-red-500">*</span>
               </label>
               <select
                 name="farm"
-                defaultValue={initialData?.id_farm || "0"}
-                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.farm ? 'border-red-500' : 'border-gray-200'}`}
+                value={farmId}
+                onChange={(e) => setFarmId(e.target.value)}
+                disabled={isReg === "0"}
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.farm ? 'border-red-500' : (isReg === "0" ? 'border-gray-100 opacity-60 bg-gray-50' : 'border-gray-200')}`}
               >
                 <option value="0">{t.goats.withoutFarm}</option>
                 {farms.filter(f => Number(f.id) !== 0).map((farm: any) => (
@@ -235,9 +268,11 @@ export default function GoatForm({
                   </option>
                 ))}
               </select>
-              {fieldErrors.farm && (
-                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
-                  {fieldErrors.farm}
+              {/* Hidden input to ensure farm=0 is sent when select is disabled */}
+              {isReg === "0" && <input type="hidden" name="farm" value="0" />}
+              {isReg === "0" && (
+                <p className="text-[#491907] text-[9px] font-bold uppercase mt-1 italic opacity-70">
+                  {lang === 'ru' ? 'Родословная всегда идет без привязки к ферме' : 'Pedigree is always without farm assignment'}
                 </p>
               )}
             </div>
@@ -258,24 +293,6 @@ export default function GoatForm({
                   {fieldErrors.sex}
                 </p>
               )}
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-bold text-gray-700">
-                {t.goatForm.recordType}
-              </label>
-              <select
-                name="is_reg"
-                defaultValue={
-                  initialData?.is_reg !== undefined &&
-                  initialData?.is_reg !== null
-                    ? String(initialData.is_reg)
-                    : "1"
-                }
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
-              >
-                <option value="0">{t.goatForm.pedigreeOption}</option>
-                <option value="1">{t.goatForm.registryOption}</option>
-              </select>
             </div>
           </div>
 

@@ -151,7 +151,7 @@ async function getFarmGoats(id: string) {
       LEFT JOIN goats_data Di ON A.id = Di.id_goat
       LEFT JOIN breeds B ON Di.id_breed = B.id
       LEFT JOIN farms F ON A.id_farm = F.id
-      WHERE A.id_farm = 0
+      WHERE A.id_farm = 0 AND A.is_reg = 1
       ORDER BY A.id, A.name ASC
     `;
   } else {
@@ -165,7 +165,7 @@ async function getFarmGoats(id: string) {
       LEFT JOIN goats_data Di ON A.id = Di.id_goat
       LEFT JOIN breeds B ON Di.id_breed = B.id
       LEFT JOIN farms F ON A.id_farm = F.id
-      WHERE A.id_farm = $1::int
+      WHERE A.id_farm = $1::int AND A.is_reg = 1
       ORDER BY A.id, A.name ASC
     `;
     params = [id];
@@ -196,6 +196,7 @@ async function getDisplacedGoats(id: string, prefix: string) {
       )
       AND A.id_farm != $1::int
       AND A.id_farm != 0
+      AND A.is_reg = 1
     ORDER BY A.id, A.name ASC
   `, [id, prefix]);
   return result.rows;
