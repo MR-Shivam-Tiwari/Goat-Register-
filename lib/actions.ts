@@ -375,7 +375,7 @@ export async function updateGoatAction(formData: FormData) {
         // 1. Update animals table
         await client.query(
             'UPDATE animals SET name = $1, sex = $2, status = $3, id_farm = $4, is_reg = $5 WHERE id = $6',
-            [nickname, sex, status, parseInt(farm) || null, isReg, goatId]
+            [nickname, sex, status, parseInt(farm), isReg, goatId]
         );
 
         // Update goats_data
@@ -405,9 +405,13 @@ export async function updateGoatAction(formData: FormData) {
             bornQty ? parseInt(bornQty) : null
         ];
 
+        const removePhoto = formData.get('removePhoto') === 'true';
+
         if (photoName) {
             dataUpdateFields.push('ava = $' + (dataValues.length + 1));
             dataValues.push(photoName);
+        } else if (removePhoto) {
+            dataUpdateFields.push('ava = NULL');
         }
         dataValues.push(goatId);
 
@@ -423,7 +427,7 @@ export async function updateGoatAction(formData: FormData) {
     } catch (e: any) {
         await client.query('ROLLBACK');
         console.error('Update Error:', e.message);
-        return { error: t.errors.deleteFailed + e.message }; // Using deleteFailed as a generic error base
+        return { error: t.errors.somethingWrong + ': ' + e.message };
     } finally {
         client.release();
     }

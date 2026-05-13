@@ -93,7 +93,7 @@ async function getAllGoats(filters: {
       B.name as breed_name, 
       B.alias as breed_alias,
       U.login as operator,
-      COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as main_photo
+      Di.ava as main_photo
     FROM animals A
     LEFT JOIN goats_data Di ON A.id = Di.id_goat
     LEFT JOIN breeds B ON Di.id_breed = B.id

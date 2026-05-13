@@ -71,7 +71,9 @@ export const translations = {
         welcome: 'Добро пожаловать в систему!',
         updated: 'Данные успешно обновлены!'
       },
-      youAreHere: 'Вы здесь:'
+      youAreHere: 'Вы здесь:',
+      photoToBeRemoved: 'Фото будет удалено',
+      undo: 'Отменить'
     },
     errors: {
       invalidLogin: 'Неверный логин или пароль',
@@ -766,7 +768,9 @@ export const translations = {
         welcome: 'Welcome to the system!',
         updated: 'Data successfully updated!'
       },
-      youAreHere: 'You are here:'
+      youAreHere: 'You are here:',
+      photoToBeRemoved: 'Photo will be removed',
+      undo: 'Undo'
     },
     errors: {
       invalidLogin: 'Invalid login or password',
@@ -1406,7 +1410,9 @@ export const translations = {
         welcome: 'Ласкаво просимо до системи!',
         updated: 'Дані успішно оновлено!'
       },
-      youAreHere: 'Ви тут:'
+      youAreHere: 'Ви тут:',
+      photoToBeRemoved: 'Фото буде видалено',
+      undo: 'Скасувати'
     },
     errors: {
       invalidLogin: 'Невірний логін або пароль',

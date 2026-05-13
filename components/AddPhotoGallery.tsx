@@ -30,9 +30,9 @@ export default function AddPhotoGallery({ goatId, t }: { goatId: string | number
             } else {
                 alert(res.error || t.errors.uploadFailed);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert(t.errors.somethingWrong);
+            alert(err.message || t.errors.somethingWrong);
         } finally {
             setUploading(false);
             e.target.value = '';

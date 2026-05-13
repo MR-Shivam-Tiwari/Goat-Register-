@@ -21,6 +21,7 @@ export default function GoatForm({
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -61,6 +62,7 @@ export default function GoatForm({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
+      setRemoveExistingPhoto(false);
     }
   };
 
@@ -76,6 +78,9 @@ export default function GoatForm({
     }
     if (isEdit) {
       formData.set("goatId", initialData.id.toString());
+      if (removeExistingPhoto) {
+        formData.set("removePhoto", "true");
+      }
     }
 
     try {
@@ -640,15 +645,35 @@ export default function GoatForm({
               </div>
             )}
 
-            {isEdit && initialData.ava && !selectedFile && (
+            {isEdit && initialData.ava && !selectedFile && !removeExistingPhoto && (
               <div className="flex items-center gap-4 border border-gray-200 p-2 bg-white">
                 <img
-                  src={`/uploads/${initialData.ava}`}
+                  src={initialData.ava.startsWith('http') || initialData.ava.startsWith('/') ? initialData.ava : `/uploads/${initialData.ava}`}
                   className="w-16 h-12 object-cover"
                 />
                 <span className="text-[10px] text-gray-400 font-bold uppercase">
                   {t.common.currentPhoto}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setRemoveExistingPhoto(true)}
+                  className="ml-4 text-red-600 hover:text-red-800 font-black text-xs uppercase underline tracking-tighter"
+                >
+                  {t.common.remove}
+                </button>
+              </div>
+            )}
+            {removeExistingPhoto && (
+              <div className="flex items-center gap-2 p-2 bg-red-50 text-red-700 text-[10px] font-bold uppercase border border-red-100">
+                <X size={12} />
+                {t.common.photoToBeRemoved || "Photo will be removed"}
+                <button 
+                  type="button"
+                  onClick={() => setRemoveExistingPhoto(false)}
+                  className="ml-auto underline"
+                >
+                  {t.common.undo || "Undo"}
+                </button>
               </div>
             )}
           </div>
