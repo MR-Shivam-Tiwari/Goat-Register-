@@ -51,7 +51,7 @@ export async function getOffspringDetailed(id: string) {
   const result = await query(
     `
       SELECT 
-        A.name, A.sex, A.id AS id, A.status, A.time_added, A.id_farm,
+        A.name, A.sex, A.id AS id, A.status, A.is_reg, A.time_added, A.id_farm,
         Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
@@ -89,6 +89,32 @@ export async function getOffspringDetailed(id: string) {
   return result.rows;
 }
 
+export async function getDescendantsTree(id: string, maxLevel: number = 4) {
+  const result = await query(
+    `
+      WITH RECURSIVE descendants_raw AS (
+        SELECT id, name, sex, id_mother, id_father, 1 as level 
+        FROM animals 
+        WHERE id_mother = $1::int OR id_father = $1::int
+        UNION ALL
+        SELECT a.id, a.name, a.sex, a.id_mother, a.id_father, d.level + 1
+        FROM animals a
+        JOIN descendants_raw d ON (a.id_mother = d.id OR a.id_father = d.id)
+        WHERE d.level < $2
+      ),
+      unique_descendants AS (
+        SELECT DISTINCT ON (id) * FROM descendants_raw ORDER BY id, level DESC
+      )
+      SELECT ud.*, gd.date_born 
+      FROM unique_descendants ud
+      LEFT JOIN goats_data gd ON ud.id = gd.id_goat
+      ORDER BY ud.level ASC, gd.date_born ASC, ud.id ASC
+    `,
+    [id, maxLevel],
+  );
+  return result.rows;
+}
+
 export async function getGallery(id: string) {
   const result = await query(
     "SELECT file FROM goats_pic WHERE id_goat = $1 ORDER BY time_added ASC",
@@ -119,7 +145,7 @@ export async function getAncestors(rootId: number | null, maxLevel: number = 4) 
       JOIN ancestry anc ON (a.id = anc.id_mother OR a.id = anc.id_father)
       WHERE anc.level < $2
     )
-    SELECT a.*, d.code_ua 
+    SELECT a.*, d.code_ua, d.is_abg 
     FROM ancestry a
     LEFT JOIN goats_data d ON a.id = d.id_goat
   `, [rootId, maxLevel]);

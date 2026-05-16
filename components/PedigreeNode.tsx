@@ -9,10 +9,19 @@ interface PedigreeNodeProps {
   t: any;
 }
 
-export default function PedigreeNode({ node, prefix, color, border, isGuest = false, t }: PedigreeNodeProps) {
+export default function PedigreeNode({
+  node,
+  prefix,
+  color,
+  border,
+  isGuest = false,
+  t,
+}: PedigreeNodeProps) {
   if (!node) {
     return (
-      <div className={`flex-1 ${color} flex items-center justify-center p-2 text-[10px] font-black opacity-20 uppercase tracking-widest`}>
+      <div
+        className={`flex-1 ${color} flex items-center justify-center p-2 text-[10px] font-black opacity-20 uppercase tracking-widest`}
+      >
         {t.catalog.empty}
       </div>
     );
@@ -22,26 +31,31 @@ export default function PedigreeNode({ node, prefix, color, border, isGuest = fa
     <div
       className={`flex-1 min-h-[32px] p-1.5 flex items-center gap-1 leading-tight ${color} ${border ? "border-b border-gray-400" : ""}`}
     >
-      <span className={prefix === "F:" || prefix === "О:" || prefix === "O:" ? "text-blue-600" : "text-pink-600"}>
+      <span
+        className={
+          prefix === "F:" || prefix === "О:" || prefix === "O:"
+            ? "text-blue-600"
+            : "text-pink-600"
+        }
+      >
         {prefix}
       </span>
       {isGuest ? (
-        <span className="font-bold text-[#491907] truncate max-w-[110px]">
-          {node.name}
+        <span className="font-bold text-[#491907] truncate">
+          {node.name} ({node.is_abg ? "R" : "X"}
+          {10000 + Number(node.id)})
         </span>
       ) : (
         <a
           href={`/goats/${node.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-bold text-[#491907] hover:underline truncate max-w-[110px]"
+          className="font-bold text-[#491907] hover:underline truncate"
         >
-          {node.name}
+          {node.name} ({node.is_abg ? "R" : "X"}
+          {10000 + Number(node.id)})
         </a>
       )}
-      <span className="text-[9px] font-black opacity-30 ml-auto whitespace-nowrap">
-        {node.reg_code || `ID:${node.id}`}
-      </span>
     </div>
   );
 }

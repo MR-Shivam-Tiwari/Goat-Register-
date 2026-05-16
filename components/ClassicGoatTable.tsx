@@ -25,6 +25,10 @@ export default function ClassicGoatTable({
     setMounted(true);
   }, []);
 
+  const filteredGoats = isMain 
+    ? goats 
+    : goats.filter(g => g.is_reg === 1 || g.is_reg === "1" || g.is_reg === true);
+
   if (!mounted) return null;
 
   return (
@@ -75,10 +79,16 @@ export default function ClassicGoatTable({
               >
                 {t.goats.fatherData}
               </th>
-              <th colSpan={8} className="p-1 text-center border-r border-black bg-[#23DC69]">
+              <th
+                colSpan={8}
+                className="p-1 text-center border-r border-black bg-[#23DC69]"
+              >
                 {t.goats.productivitySection}
               </th>
-              <th colSpan={8} className="p-1 text-center border-r border-black bg-[#23DC69]">
+              <th
+                colSpan={8}
+                className="p-1 text-center border-r border-black bg-[#23DC69]"
+              >
                 {t.goats.certSection}
               </th>
               <th
@@ -96,9 +106,7 @@ export default function ClassicGoatTable({
             </tr>
             {/* BOTTOM HEADER - FIELDS (MINT GREEN / MATCHING TONE) */}
             <tr className="text-[12px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#B5F4BB]">
-              <th 
-                className="p-0 border-r text-center text-nowrap border-black sticky left-0 bg-[#B5F4BB] z-40 min-w-[300px]"
-              >
+              <th className="p-0 border-r text-center text-nowrap border-black sticky left-0 bg-[#B5F4BB] z-40 min-w-[300px]">
                 <div className="flex items-center justify-center h-full px-2">
                   {t.goats.nickname}
                 </div>
@@ -163,8 +171,6 @@ export default function ClassicGoatTable({
               <th className="p-0.5 px-2 border-r-[3px] text-center text-nowrap border-black">
                 {t.goats.brand}
               </th>
-
-
 
               {/* Mother Group */}
               <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#E2F0D9]/40">
@@ -294,7 +300,7 @@ export default function ClassicGoatTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-black border-b border-black">
-            {goats.map((g, idx) => {
+            {filteredGoats.map((g, idx) => {
               let rowColor = idx % 2 === 0 ? "#FFFFFF" : "#B5F4BB";
 
               if (g.status === 0 || g.status === "0") {
@@ -331,7 +337,9 @@ export default function ClassicGoatTable({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setHighlightedRow(highlightedRow === idx ? null : idx);
+                          setHighlightedRow(
+                            highlightedRow === idx ? null : idx,
+                          );
                         }}
                         className={`w-3 h-3 rounded-full border border-gray-300 flex items-center justify-center transition-colors ${highlightedRow === idx ? "bg-yellow-400" : "bg-gray-50"}`}
                         title="Highlight Row"
@@ -363,7 +371,9 @@ export default function ClassicGoatTable({
                         const currentUserId = currentUser?.id
                           ? String(currentUser.id)
                           : null;
-                        const goatOwnerId = g.id_user ? String(g.id_user) : null;
+                        const goatOwnerId = g.id_user
+                          ? String(g.id_user)
+                          : null;
                         const userRole = currentUser?.role
                           ? Number(currentUser.role)
                           : 0;
@@ -434,11 +444,11 @@ export default function ClassicGoatTable({
                   </td>
                   <td className="p-0.5 px-2 text-center font-bold">
                     {g.horns_type === 1 || g.horns_type === "1"
-                      ? (t.goatForm?.polled || "Polled")
+                      ? t.goatForm?.polled || "Polled"
                       : g.horns_type === 2 || g.horns_type === "2"
-                        ? (t.goatForm?.dehorned || "Dehorned")
+                        ? t.goatForm?.dehorned || "Dehorned"
                         : g.horns_type === 3 || g.horns_type === "3"
-                          ? (t.goatForm?.horned || "Horned")
+                          ? t.goatForm?.horned || "Horned"
                           : "-"}
                   </td>
                   <td className="p-0.5 px-2 text-center">
@@ -472,8 +482,6 @@ export default function ClassicGoatTable({
                   <td className="p-0.5 px-2 text-center text-nowrap font-mono border-r-[3px] border-black">
                     {g.code_brand || "-"}
                   </td>
-
-
 
                   {/* Mother Group */}
                   <td className="p-0.5 px-2 text-nowrap text-blue-900 truncate max-w-[150px] bg-[#E2F0D9]/10">

@@ -8,6 +8,7 @@ import { Plus, MapPin, Pencil } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
 import SmartFarmImage from '@/components/SmartFarmImage';
+import { getSessionUser } from '@/lib/access-control';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +80,9 @@ export default async function FarmsPage() {
     const cookieStore = await cookies();
     const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
     const t = getTranslation(lang);
+    
+    const user = await getSessionUser();
+    const isAdmin = user && user.role >= 10;
     
     return (
         <div className="min-h-screen py-10 px-4 md:px-12 lg:px-24 font-sans text-gray-800">
@@ -157,7 +161,7 @@ export default async function FarmsPage() {
                                         >
                                             {t.farms.view}
                                         </Link>
-                                        {!farm.isVirtual && (
+                                        {!farm.isVirtual && isAdmin && (
                                             <Link 
                                                 href={`/farms/${farm.id}/edit`}
                                                 target="_blank"

@@ -32,7 +32,7 @@ export default function GoatForm({
   const [isReg, setIsReg] = useState<string>(
     initialData?.is_reg !== undefined && initialData?.is_reg !== null
       ? String(initialData.is_reg)
-      : "1"
+      : ""
   );
   const [farmId, setFarmId] = useState<string>(
     initialData?.id_farm !== undefined && initialData?.id_farm !== null
@@ -96,6 +96,7 @@ export default function GoatForm({
       const sex = formData.get('sex') as string;
       const birthDate = formData.get('birthDate') as string;
       const bornQty = formData.get('bornQty') as string;
+      const is_reg = formData.get('is_reg') as string;
 
       if (!nickname) newFieldErrors.nickname = t.errors.nicknameRequired;
       if (!breed) newFieldErrors.breed = t.errors.breedRequired;
@@ -103,6 +104,7 @@ export default function GoatForm({
       if (!sex) newFieldErrors.sex = t.errors.sexRequired;
       if (!birthDate) newFieldErrors.birthDate = t.errors.birthDateRequired;
       if (!bornQty) newFieldErrors.bornQty = t.errors.bornQtyRequired;
+      if (!is_reg && is_reg !== '0') newFieldErrors.is_reg = t.errors.recordTypeRequired;
 
       if (Object.keys(newFieldErrors).length > 0) {
         setFieldErrors(newFieldErrors);
@@ -237,7 +239,7 @@ export default function GoatForm({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
-                {t.goatForm.recordType}
+                {t.goatForm.recordType} <span className="text-red-500">*</span>
               </label>
               <select
                 name="is_reg"
@@ -249,11 +251,17 @@ export default function GoatForm({
                     setFarmId("0");
                   }
                 }}
-                className="w-full border-2 border-gray-200 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm"
+                className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.is_reg ? 'border-red-500' : 'border-gray-200'}`}
               >
+                <option value="">{lang === 'ru' ? 'Выберите...' : 'Select...'}</option>
                 <option value="0">{t.goatForm.pedigreeOption}</option>
                 <option value="1">{t.goatForm.registryOption}</option>
               </select>
+              {fieldErrors.is_reg && (
+                <p className="text-red-600 text-[10px] font-bold uppercase mt-1">
+                  {fieldErrors.is_reg}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700">
@@ -439,7 +447,7 @@ export default function GoatForm({
             </div>
             <div className="space-y-1">
               <label className="text-sm font-bold text-gray-700 text-blue-600 uppercase text-[10px]">
-                {t.goats.totalBloodPercent || "Total Bloodline %"}
+                {t.goats.totalBloodPercent || "Bloodline %"}
               </label>
               <input
                 name="totalPercent"

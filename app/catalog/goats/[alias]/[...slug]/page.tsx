@@ -5,6 +5,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import FilterCard from "./FilterCard";
+import SearchFilter from "./SearchFilter";
 import ClassicGoatTable from "@/components/ClassicGoatTable";
 import RegistryImage from "@/components/RegistryImage";
 import { getSessionUser } from "@/lib/access-control";
@@ -394,7 +395,11 @@ export default async function GoatsListPage({
             )}
           </div>
           {showTable && reg !== "rfb" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-end w-full">
+            <div className="flex flex-wrap items-end w-full gap-4">
+              <SearchFilter 
+                label={t.goats.nickname} 
+                placeholder={t.goats.searchLabel} 
+              />
               <FilterCard
                 label={t.catalog.allBreeds}
                 param="breed"
@@ -435,13 +440,14 @@ export default async function GoatsListPage({
                   { id: "all", name: t.catalog.allAges },
                 ]}
               />
+              
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] font-black text-transparent uppercase tracking-widest px-1 select-none">
+                <span className="text-[9px] font-black text-transparent uppercase tracking-widest px-1 select-none">
                   RESET
                 </span>
                 <Link
                   href={`/catalog/goats/${alias}/${sex}${reg ? `?reg=${reg}` : "?show=all"}`}
-                  className="px-6 bg-[#CFA97A] border border-[#CFA97A] h-[38px] rounded-md text-[13px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white hover:border-black transition-all shadow-sm flex items-center justify-center"
+                  className="px-6 bg-[#CFA97A] border border-[#CFA97A] h-[38px] rounded-md text-[11px] font-black uppercase tracking-widest text-primary hover:bg-black hover:text-white hover:border-black transition-all shadow-sm flex items-center justify-center whitespace-nowrap"
                 >
                   ← {t.catalog.reset}
                 </Link>
