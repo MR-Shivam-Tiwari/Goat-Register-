@@ -13,11 +13,23 @@ import { getSessionUser } from '@/lib/access-control';
 export const dynamic = 'force-dynamic';
 
 async function getFarms() {
+    // Ensure farm 0 exists in database before querying it
+    try {
+        await query(`
+            INSERT INTO farms (id, name, tmpl, pic1) 
+            VALUES (0, 'Without Farm', '<p>ANIMALS NOT TIED TO A FARM</p>', 'no_pic.png') 
+            ON CONFLICT (id) DO NOTHING
+        `);
+    } catch (err) {
+        console.error('Error ensuring farm 0 exists in DB:', err);
+    }
+
     const result = await query('SELECT id, name, pic1 FROM farms ORDER BY id DESC');
     
     const rawFarms = result.rows.map((farm: any) => {
         const name = farm.name.toLowerCase();
         const isKamdhenu = farm.id === 1 || farm.id === '1' || name.includes('kamdhenu') || name.includes('kamadhenu') || name.includes('камадхену');
+        const isVirtual = farm.id === 0 || farm.id === '0';
         
         let displayPic = null; // No default image, use text placeholder if null
         
@@ -37,7 +49,7 @@ async function getFarms() {
             } else {
                 targetPath = `/api/uploads/${farm.pic1}`;
             }
-
+ 
             // Check if file actually exists on disk
             try {
                 const actualFile = targetPath.replace('/api/uploads/', '');
@@ -54,24 +66,18 @@ async function getFarms() {
                 console.error(`Error checking file existence for ${targetPath}:`, err);
             }
         }
-        return { ...farm, displayPic, isKamdhenu };
+        return { ...farm, displayPic, isKamdhenu, isVirtual };
     });
-
-    // Reorder: Kamdhenu first, then others, then virtual "Without Farm"
+ 
+    // Reorder: Kamdhenu first, then others, then virtual "Without Farm" at the very end
     const kamdhenuFarms = rawFarms.filter(f => f.isKamdhenu);
-    const otherFarms = rawFarms.filter(f => !f.isKamdhenu);
+    const withoutFarm = rawFarms.filter(f => f.isVirtual);
+    const otherFarms = rawFarms.filter(f => !f.isKamdhenu && !f.isVirtual);
     
     return [
         ...kamdhenuFarms, 
         ...otherFarms,
-        {
-            id: 0,
-            name: 'WITHOUT FARM', // Fallback, will be translated in component if needed
-            pic1: 'no_pic.png',
-            displayPic: null,
-            isKamdhenu: false,
-            isVirtual: true
-        }
+        ...withoutFarm
     ];
 }
 
@@ -161,7 +167,7 @@ export default async function FarmsPage() {
                                         >
                                             {t.farms.view}
                                         </Link>
-                                        {!farm.isVirtual && isAdmin && (
+                                        {isAdmin && (
                                             <Link 
                                                 href={`/farms/${farm.id}/edit`}
                                                 target="_blank"

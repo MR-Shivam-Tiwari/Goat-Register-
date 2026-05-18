@@ -85,7 +85,7 @@ export default function FarmEditor({ lang, initialData, isEdit = false }: FarmEd
         if (pic1) formData.set('pic1', pic1);
         if (pic2) formData.set('pic2', pic2);
 
-        if (isEdit && initialData?.id) {
+        if (isEdit && initialData?.id !== undefined && initialData?.id !== null) {
             formData.append('farmId', initialData.id.toString());
             formData.append('removePic1', removePic1.toString());
             formData.append('removePic2', removePic2.toString());

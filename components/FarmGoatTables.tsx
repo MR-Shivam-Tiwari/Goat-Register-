@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Truck, X, Pencil } from "lucide-react";
+import { Truck, X, Pencil, Trash2 } from "lucide-react";
+import { deleteGoatAction } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export default function FarmGoatTables({ 
     goats, 
@@ -20,6 +22,7 @@ export default function FarmGoatTables({
     farmId: string 
 }) {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const router = useRouter();
 
     const isAdmin = sessionUser && sessionUser.role >= 10;
 
@@ -35,25 +38,25 @@ export default function FarmGoatTables({
             </header>
 
             <div className="flex-1 min-h-[150px] overflow-auto bg-white border border-black relative">
-                <table className="w-full text-left border-collapse table-auto min-w-[1300px] text-[10.5px] font-normal leading-none">
+                <table className="w-full text-left border-collapse table-auto min-w-[1300px] text-[15px] font-semibold leading-none text-gray-900">
                     <thead className="sticky top-0 z-30 shadow-sm">
-                        <tr className={`text-[9px] font-bold uppercase tracking-tight text-white ${headerBg} border-b border-black`}>
-                            <th colSpan={11} className="p-1.5 text-center border-r border-black uppercase tracking-widest">
+                        <tr className={`text-[14px] font-black uppercase tracking-widest text-white ${headerBg} border-b border-black`}>
+                            <th colSpan={11} className="p-4 text-center border-r border-black uppercase tracking-widest">
                                 {title}
                             </th>
                         </tr>
-                        <tr className={`text-[9px] font-bold uppercase tracking-tight text-gray-900 border-b border-black ${colorClass}`}>
-                            <th className="p-1 px-4 border-r border-black text-center w-12">IMG</th>
-                            <th className={`p-1 px-4 border-r border-black sticky left-0 ${colorClass} z-40 w-64`}>{t.goats.nickname}</th>
-                            <th className="p-1 px-4 border-r border-black text-center">{t.goats.breed}</th>
-                            <th className="p-1 px-4 border-r border-black text-center w-24">Σ %</th>
-                            <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.sex} (Floor)</th>
-                            <th className="p-1 px-4 border-r border-black text-center w-24">{t.goats.idAbg}</th>
-                            <th className="p-1 px-4 border-r border-black text-center">{t.goats.farm}</th>
-                            <th className="p-1 px-4 border-r border-black text-center">{t.goats.breeder}</th>
-                            <th className="p-1 px-4 border-r border-black text-center">{t.goats.owner}</th>
-                            <th className="p-1 px-4 border-r border-black text-center w-36">{t.goats.birthDate || "Born"}</th>
-                            <th className="p-1 px-4 border-black text-center w-24">ACTIONS</th>
+                        <tr className={`text-[13px] font-black uppercase tracking-wider text-gray-900 border-b border-black ${colorClass}`}>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-16">IMG</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-64">{t.goats.nickname}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center">{t.goats.breed}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-24">Σ %</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-24">{t.goats.sex} (Floor)</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-24">{t.goats.idAbg}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center">{t.goats.farm}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center">{t.goats.breeder}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center">{t.goats.owner}</th>
+                            <th className="p-3.5 px-4 border-r border-black text-center w-36">{t.goats.birthDate || "Born"}</th>
+                            <th className="p-3.5 px-4 border-black text-center w-56">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-black bg-white">
@@ -61,20 +64,20 @@ export default function FarmGoatTables({
                             const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
                             const bg = idx % 2 === 0 ? "#FFFFFF" : rowBgColor;
                             return (
-                                <tr key={goat.id} style={{ backgroundColor: bg }} className="divide-x divide-black h-8 hover:opacity-90 transition-opacity">
-                                    <td className="p-0 border-r border-black text-center">
+                                <tr key={goat.id} style={{ backgroundColor: bg }} className="divide-x divide-black hover:opacity-95 transition-opacity">
+                                    <td className="p-2 border-r border-black text-center">
                                         <div 
-                                            className="w-10 h-10 mx-auto bg-gray-50 flex items-center justify-center overflow-hidden cursor-zoom-in"
+                                            className="w-14 h-14 mx-auto bg-gray-50 flex items-center justify-center overflow-hidden cursor-zoom-in border border-gray-200 rounded-sm shadow-sm"
                                             onClick={() => goat.main_photo && setPreviewImage(`/uploads/${goat.main_photo}`)}
                                         >
                                             {goat.main_photo ? (
                                                 <img src={`/uploads/${goat.main_photo}`} alt="" className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-[7px] text-gray-300">NO IMG</span>
+                                                <span className="text-[9px] text-gray-300 font-bold uppercase">NO IMG</span>
                                             )}
                                         </div>
                                     </td>
-                                    <td style={{ backgroundColor: bg }} className={`p-1 px-4 sticky left-0 z-20 border-r border-black font-bold whitespace-nowrap`}>
+                                    <td className="p-3.5 px-4 border-r border-black font-extrabold text-[15px] whitespace-nowrap">
                                         {hasAccess ? (
                                             <a href={`/goats/${goat.id}`} target="_blank" rel="noopener noreferrer" className={`hover:underline flex items-center gap-2 ${actionColor.replace('bg-', 'text-')}`}>
                                                 <span className="opacity-30">➔</span>{goat.name}
@@ -85,36 +88,55 @@ export default function FarmGoatTables({
                                             </span>
                                         )}
                                     </td>
-                                    <td className="p-1 px-4 text-center uppercase opacity-80">{goat.breed_name}</td>
-                                    <td className="p-1 px-4 text-center font-bold text-blue-900">{goat.blood_percent ? `${goat.blood_percent}%` : "-"}</td>
-                                    <td className="p-1 px-4 text-center uppercase font-bold">{goat.sex === 1 ? "BUCK" : "DOE"}</td>
-                                    <td className="p-1 px-4 text-center font-bold">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
-                                    <td className="p-1 px-4 text-center truncate max-w-[200px] opacity-70">
+                                    <td className="p-3.5 px-4 text-center uppercase font-bold opacity-90">{goat.breed_name}</td>
+                                    <td className="p-3.5 px-4 text-center font-black text-blue-900 text-[15px]">{goat.blood_percent ? `${goat.blood_percent}%` : "-"}</td>
+                                    <td className="p-3.5 px-4 text-center uppercase font-black">{goat.sex === 1 ? "BUCK" : "DOE"}</td>
+                                    <td className="p-3.5 px-4 text-center font-black">{goat.is_abg === 1 ? t.users.yes : t.users.no}</td>
+                                    <td className="p-3.5 px-4 text-center truncate max-w-[200px] font-semibold opacity-85">
                                         {goat.id_farm === 0 || !goat.id_farm ? (t.goats.withoutFarm || "Without a farm") : (goat.current_farm_name || "-")}
                                     </td>
-                                    <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.manuf}</td>
-                                    <td className="p-1 px-4 truncate max-w-[250px] uppercase">{goat.owner}</td>
-                                    <td className="p-1 px-4 text-center font-mono tabular-nums border-r border-black">
+                                    <td className="p-3.5 px-4 truncate max-w-[250px] uppercase font-semibold">{goat.manuf}</td>
+                                    <td className="p-3.5 px-4 truncate max-w-[250px] uppercase font-semibold">{goat.owner}</td>
+                                    <td className="p-3.5 px-4 text-center font-mono font-bold tabular-nums border-r border-black">
                                         {goat.date_born ? new Date(goat.date_born).toLocaleDateString("ru-RU") : "-"}
                                     </td>
-                                    <td className="p-1 px-4 text-center flex items-center justify-center gap-1">
+                                    <td className="p-3.5 px-4 text-center flex items-center justify-center gap-2.5">
                                         {isAdmin && (
                                             <Link 
                                                 href={`/catalog/goats/fix/${goat.id}`}
                                                 target="_blank"
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#491907] text-white rounded-md font-black text-[10px] uppercase hover:bg-black transition-all shadow-md group"
+                                                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#491907] text-white rounded-md font-black text-[12.5px] uppercase hover:bg-black transition-all shadow-md group"
                                             >
-                                                <Pencil size={12} className="group-hover:scale-110 transition-transform" />
+                                                <Pencil size={13} className="group-hover:scale-110 transition-transform" />
                                                 <span>{t.common.edit || "EDIT"}</span>
                                             </Link>
+                                        )}
+                                        {isAdmin && (
+                                            <button 
+                                                onClick={async () => {
+                                                    if (window.confirm(t.common.deleteGoatConfirm || "Are you sure you want to delete this goat?")) {
+                                                        const res = await deleteGoatAction(goat.id);
+                                                        if (res.success) {
+                                                            router.refresh();
+                                                        } else {
+                                                            alert(res.error || "Failed to delete goat");
+                                                        }
+                                                    }
+                                                }}
+                                                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#491907] text-white rounded-md font-black text-[12.5px] uppercase hover:bg-black transition-all shadow-md group cursor-pointer"
+                                                title={t.common.delete || "Delete"}
+                                            >
+                                                <Trash2 size={13} className="group-hover:scale-110 transition-transform" />
+                                                <span>{t.common.delete || "DELETE"}</span>
+                                            </button>
                                         )}
                                         <Link 
                                             href={`/goats/${goat.id}/move?mode=add&targetFarm=${farmId}`}
                                             target="_blank"
-                                            className={`inline-flex items-center justify-center p-1.5 ${actionColor} text-white rounded-sm hover:bg-black transition-all shadow-sm`}
+                                            className={`inline-flex items-center justify-center p-2.5 rounded-md text-white hover:bg-black transition-all shadow-md bg-[#491907]`}
                                             title={t.goats.animalMovement}
                                         >
-                                            <Truck size={14} />
+                                            <Truck size={16} />
                                         </Link>
                                     </td>
                                 </tr>

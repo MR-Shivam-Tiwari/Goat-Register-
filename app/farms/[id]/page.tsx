@@ -23,16 +23,17 @@ interface Farm {
 }
 
 function extractPrefix(farmName: string, goats: any[]): string {
-  if (goats.length === 0) return farmName.split(/[ \.\-\/]/)[0];
+  const farmFirstWord = farmName.trim().split(/[ \.\-\/]/)[0];
+
+  if (goats.length === 0) return farmFirstWord;
 
   // Get the first word of every goat name
   const words = goats
     .map((g) => g.name.trim().split(/[ \.\-\/]/)[0])
-    .filter((w) => w && w.length > 2); // Increased to 3+ characters
+    .filter((w) => w && w.length > 2);
 
   if (words.length === 0) {
-    const defaultPrefix = farmName.split(/[ \.\-\/]/)[0];
-    return defaultPrefix.length > 2 ? defaultPrefix : "";
+    return farmFirstWord.length > 2 ? farmFirstWord : "";
   }
 
   // Count frequencies
@@ -41,20 +42,29 @@ function extractPrefix(farmName: string, goats: any[]): string {
     counts[w] = (counts[w] || 0) + 1;
   });
 
-  // Return the most frequent first word
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  return sorted[0][0];
+  const [topPrefix, topCount] = sorted[0];
+
+  // If the top prefix has a strong majority (e.g., more than 50% of all goats OR topCount >= 3)
+  // then we can trust it. Otherwise, we fall back to the first word of the farm's own name.
+  if (topCount >= 3 || (topCount / words.length) >= 0.5) {
+    return topPrefix;
+  }
+
+  return farmFirstWord.length > 2 ? farmFirstWord : topPrefix;
 }
 
 async function getFarmData(id: string): Promise<Farm | null> {
   if (id === '0') {
-    return {
-      id: 0,
-      name: 'WITHOUT FARM',
-      tmpl: '<p>ANIMALS NOT TIED TO A FARM</p>',
-      pic1: 'no_pic.png',
-      pic2: null
-    };
+    try {
+        await query(`
+            INSERT INTO farms (id, name, tmpl, pic1) 
+            VALUES (0, 'Without Farm', '<p>ANIMALS NOT TIED TO A FARM</p>', 'no_pic.png') 
+            ON CONFLICT (id) DO NOTHING
+        `);
+    } catch (err) {
+        console.error('Error ensuring farm 0 exists in DB:', err);
+    }
   }
   const result = await query(
     "SELECT id, name, tmpl, pic1, pic2 FROM farms WHERE id = $1",
@@ -183,17 +193,19 @@ async function getDisplacedGoats(id: string, prefix: string) {
   // 2. Were BRED by this farm (manuf matches prefix) AND are not here now
   const result = await query(`
     SELECT DISTINCT ON (A.id)
-      A.id, A.name, A.sex, A.id_user, B.name as breed_name, 
+      A.id, A.name, A.sex, A.id_user, A.id_farm, B.name as breed_name, 
       Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.blood_percent,
+      F.name as current_farm_name,
       COALESCE(Di.ava, (SELECT file FROM goats_pic WHERE id_goat = A.id ORDER BY time_added DESC LIMIT 1)) as main_photo
     FROM animals A
     LEFT JOIN goats_move M ON A.id = M.id_goat
     LEFT JOIN goats_data Di ON A.id = Di.id_goat
     LEFT JOIN breeds B ON Di.id_breed = B.id
+    LEFT JOIN farms F ON A.id_farm = F.id
     WHERE (
         (M.id_farm_of = $1::int AND A.id_farm != $1::int)
         OR 
-        ($2 != '' AND Di.manuf ILIKE $2 || '%')
+        ($2 != '' AND LOWER(Di.manuf) LIKE LOWER($2) || '%')
       )
       AND A.id_farm != $1::int
       AND A.id_farm != 0
@@ -229,11 +241,11 @@ export default async function FarmDetailPage({
   const goats = await getFarmGoats(id);
   const detectedPrefix = id === '0' ? '' : extractPrefix(farm.name, goats);
   const displaced = id === '0' ? [] : await getDisplacedGoats(id, detectedPrefix);
-  const displayName = id === '0' ? (t.goats.withoutFarm || 'WITHOUT FARM') : farm.name;
+  const displayName = id === '0' && farm.name === 'Without Farm' ? (t.goats.withoutFarm || 'WITHOUT FARM') : farm.name;
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 md:px-12 lg:px-24 tracking-tight">
-      <div className="max-w-[1500px] mx-auto space-y-4">
+    <div className="min-h-screen  max-w-screen bg-[#FDFDFD] py-8 px-4 mx-24 md:px-6 lg:px-8 tracking-tight">
+      <div className="w-full max-w-none mx-auto space-y-4">
         <Breadcrumbs
           items={[
             { label: t.farms.breadcrumbs, href: "/farms" },
@@ -256,7 +268,7 @@ export default async function FarmDetailPage({
         </div>
 
         {/* MAIN DISPLAY SECTION */}
-        {id !== "0" && (
+        {farm && (
           <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
             {/* IMAGE COLUMN (Left) */}
             <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-r border-gray-200 relative group min-h-[500px]">
@@ -278,7 +290,7 @@ export default async function FarmDetailPage({
                 />
               </div>
 
-              {isAdmin && id !== '0' && (
+              {isAdmin && (
                 <div className="mt-8">
                   <a
                     href={`/farms/${farm.id}/edit`}

@@ -5,15 +5,16 @@ import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
 
 async function searchData(q: string) {
+  const queryVal = q.trim().toLowerCase();
   const goatsRes = await query(
-    'SELECT A.id, A.name, Di.id_breed FROM animals A JOIN goats_data Di ON A.id = Di.id_goat WHERE A.name ILIKE $1 LIMIT 10',
-    [`%${q}%`]
+    'SELECT A.id, A.name, Di.id_breed FROM animals A JOIN goats_data Di ON A.id = Di.id_goat WHERE LOWER(A.name) LIKE $1 LIMIT 10',
+    [`%${queryVal}%`]
   );
   
   // Adjusted for correct farms columns: id, name
   const farmsRes = await query(
-    'SELECT id, name FROM farms WHERE name ILIKE $1 LIMIT 10',
-    [`%${q}%`]
+    'SELECT id, name FROM farms WHERE LOWER(name) LIKE $1 LIMIT 10',
+    [`%${queryVal}%`]
   );
   
   return {

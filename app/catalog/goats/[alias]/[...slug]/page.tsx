@@ -147,7 +147,7 @@ async function getGoats(
   q?: string
 ) {
   const sex = sex_slug === "male" ? 1 : sex_slug === "child" ? 2 : 0;
-  const statusCondition = showDead ? "A.status = 0" : "A.status = 1";
+  const statusCondition = showDead ? "A.status = 0" : "1=1";
   let filterClause = "";
 
   if (age && age !== "all") {
@@ -164,9 +164,9 @@ async function getGoats(
   let paramIdx = 2;
 
   if (q) {
-    const searchQ = q.trim();
+    const searchQ = q.trim().toLowerCase();
     params.push(`%${searchQ}%`);
-    let subClause = `(A.name ILIKE $${params.length} OR Di.code_ua ILIKE $${params.length} OR B.name ILIKE $${params.length})`;
+    let subClause = `(LOWER(A.name) LIKE $${params.length} OR LOWER(Di.code_ua) LIKE $${params.length} OR LOWER(B.name) LIKE $${params.length})`;
 
     // Check if searching for a registry code like R10023 or X10023
     const regMatch = searchQ.match(/^[rx](\d+)$/i);

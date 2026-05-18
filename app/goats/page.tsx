@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import GoatFilters from "@/components/GoatFilters";
 import { getSessionUser } from "@/lib/access-control";
+import GoatDeleteButton from "@/components/GoatDeleteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -24,9 +25,9 @@ async function getAllGoats(filters: {
   const params: any[] = [];
 
   if (filters.q) {
-    const q = filters.q.trim();
+    const q = filters.q.trim().toLowerCase();
     params.push(`%${q}%`);
-    let subClause = `(A.name ILIKE $${params.length} OR Di.code_ua ILIKE $${params.length} OR B.name ILIKE $${params.length})`;
+    let subClause = `(LOWER(A.name) LIKE $${params.length} OR LOWER(Di.code_ua) LIKE $${params.length} OR LOWER(B.name) LIKE $${params.length})`;
 
     // Check if searching for a registry code like R10023 or X10023
     const regMatch = q.match(/^[rx](\d+)$/i);
@@ -127,6 +128,7 @@ export default async function AllGoatsPage({
   ]);
 
   const user = await getSessionUser();
+  const isAdmin = user && user.role >= 10;
 
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
@@ -288,7 +290,7 @@ export default async function AllGoatsPage({
                       <td className="p-2 border-r text-md border-gray-100 text-center text-gray-400 font-black">
                         {goat.operator || "SYSTEM"}
                       </td>
-                      <td className="p-2 text-center">
+                      <td className="p-2 text-center flex items-center justify-center gap-1.5 h-full">
                         <a
                           href={`/catalog/goats/fix/${goat.id}`}
                           target="_blank"
@@ -298,6 +300,13 @@ export default async function AllGoatsPage({
                         >
                           P
                         </a>
+                        {isAdmin && (
+                          <GoatDeleteButton 
+                            goatId={goat.id}
+                            confirmMsg={t.manage?.deleteGoatConfirm || "Are you sure you want to delete this goat?"}
+                            titleText={t.common?.remove || "Delete"}
+                          />
+                        )}
                       </td>
                     </tr>
                   );
