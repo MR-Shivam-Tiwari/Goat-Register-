@@ -139,7 +139,16 @@ export default async function CertificatePage({
               @page { size: portrait; margin: 0.5cm; }
               body { background: white !important; }
               .printable-area { border: 2px solid #000 !important; box-shadow: none !important; padding: 10px !important; }
-              .print-hidden { display: none !important; }
+              .print-hidden, .no-print { display: none !important; }
+              input { 
+                border: none !important; 
+                background: transparent !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                height: auto !important; 
+                line-height: inherit !important;
+                box-shadow: none !important;
+              }
               
               /* Hide unselected lactation rows */
               .lactation-row:has(.lact-picker:not(:checked)) {
@@ -157,7 +166,7 @@ export default async function CertificatePage({
             .productive-table input { width: 100%; height: 100%; border: none; outline: none; text-align: center; background: transparent; font-size: 13px; font-weight: bold; }
         `}} />
         
-        <div className="max-w-[950px] mx-auto bg-white p-6 shadow-none relative printable-area border-2 border-black overflow-hidden">
+        <div className="w-[96%] max-w-[1050px] mx-auto bg-white p-8 shadow-none relative printable-area border-2 border-black overflow-hidden">
           
           {/* Certificate Header Hidden per user request */}
 
@@ -316,8 +325,8 @@ export default async function CertificatePage({
           </main>
         </div>
 
-        <div className="mt-10 text-center print:hidden flex justify-center gap-6 pb-20">
-           <PrintButton label="PRINT FACADE (TYPE 1)" className="bg-blue-950 text-white px-10 py-4 rounded-xl font-black uppercase hover:bg-black transition-all shadow-xl active:scale-95 translate-y-0" />
+        <div className="mt-10 text-center print:hidden print-hidden no-print flex justify-center gap-6 pb-20">
+           <PrintButton label="PRINT FACADE (TYPE 1)" className="bg-[#522513] text-white px-10 py-4 rounded-xl font-black uppercase hover:bg-[#3b1a0d] transition-all shadow-xl active:scale-95 translate-y-0" />
            <Link href={`/goats/${id}`} className="px-10 py-4 border-2 border-gray-300 rounded-xl font-black uppercase hover:bg-gray-100 transition-all text-sm shadow-md">Back to Profile</Link>
         </div>
       </div>
@@ -448,10 +457,10 @@ export default async function CertificatePage({
         const d = detailsMap[p] || {};
         return (
             <div className="p-1 border-[1.5px] border-black bg-white shadow-sm flex flex-col">
-                <div className="flex border-b-2 border-black font-black text-[12px] mb-1 leading-none pb-1 items-end">
-                    <span className="mr-2 text-2xl leading-none text-blue-900/80">{symbol}</span>
-                    <input className="flex-1 w-full border-none outline-none uppercase text-sm tracking-tight bg-transparent" defaultValue={d.name || ''} />
-                    <input className="w-20 border-none outline-none text-right font-bold text-[10px] self-end text-black/60 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
+                <div className="flex border-b-2 border-black font-black text-[12px] mb-1 leading-none pb-1 items-end gap-1 w-full">
+                    <span className="mr-2 text-2xl leading-none text-blue-900/80 shrink-0">{symbol}</span>
+                    <input className="flex-1 min-w-0 border-none outline-none uppercase text-sm tracking-tight bg-transparent" defaultValue={d.name || ''} />
+                    <input className="w-20 shrink-0 border-none outline-none text-right font-bold text-[10px] self-end text-black/60 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
                 </div>
                 
                 <div className="grid grid-cols-4 gap-x-2 text-[7px] font-bold uppercase leading-[1.1] mt-1 mb-1">
@@ -473,13 +482,13 @@ export default async function CertificatePage({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-x-4 text-[8px] font-bold uppercase border-t border-black/20 pt-1 leading-tight">
-                    <div className="flex justify-between"><span>Breed:</span><input className="w-16 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.breed_name || ''} /></div>
-                    <div className="flex justify-between"><span>Born:</span><input className="w-16 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.date_born ? new Date(d.date_born).toLocaleDateString() : ''} /></div>
-                    <div className="flex justify-between"><span>Score:</span><input className="w-12 border-none outline-none text-right bg-transparent text-red-700 font-black text-[9px]" defaultValue={d.test_score || ''} /></div>
-                    <div className="flex justify-between"><span>Blood:</span><input className="w-16 border-none outline-none text-right bg-transparent text-[9px]" defaultValue="100%" /></div>
-                    <div className="flex justify-between"><span>Class:</span><input className="w-16 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.test_class || 'Elite'} /></div>
-                    <div className="flex justify-between"><span>Owner:</span><input className="w-16 border-none outline-none text-right bg-transparent text-[9px] truncate" defaultValue={d.owner || d.manuf || ''} /></div>
+                <div className="grid grid-cols-2 gap-x-4 text-[8px] font-bold uppercase border-t border-black/20 pt-1 leading-tight">
+                    <div className="flex justify-between items-center gap-1"><span>Breed:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.breed_name || ''} /></div>
+                    <div className="flex justify-between items-center gap-1"><span>Born:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.date_born ? new Date(d.date_born).toLocaleDateString() : ''} /></div>
+                    <div className="flex justify-between items-center gap-1"><span>Blood:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue="100%" /></div>
+                    <div className="flex justify-between items-center gap-1"><span>Class:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.test_class || 'Elite'} /></div>
+                    <div className="flex justify-between items-center gap-1"><span>Score:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-red-700 font-black text-[9px]" defaultValue={d.test_score || ''} /></div>
+                    <div className="flex justify-between items-center gap-1"><span>Owner:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px] truncate" defaultValue={d.owner || d.manuf || ''} /></div>
                 </div>
 
                 <div className="border-t border-black mt-1">
@@ -497,12 +506,10 @@ export default async function CertificatePage({
 
         return (
             <div className="border border-black p-0.5 text-[6.5px] font-bold h-full flex flex-col justify-between bg-white/40">
-                <div className="flex border-b border-black/60 mb-0.5 items-end justify-between px-0.5">
-                   <div className="flex items-end">
-                      <span className="font-black mr-1 text-[9px] text-blue-900/60 leading-none">{symbol}</span>
-                      <input className="w-20 border-none outline-none truncate bg-transparent leading-none text-[8px] uppercase" defaultValue={d.name || ''} />
-                   </div>
-                   <input className="w-12 border-none outline-none text-right text-[6px] opacity-40 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
+                <div className="flex border-b border-black/60 mb-0.5 items-center justify-between px-0.5 gap-1 w-full">
+                    <span className="font-black text-[9px] text-blue-900/60 leading-none shrink-0">{symbol}</span>
+                    <input className="flex-1 min-w-0 border-none outline-none truncate bg-transparent leading-none text-[8px] uppercase font-bold" defaultValue={d.name || ''} />
+                    <input className="w-10 shrink-0 border-none outline-none text-right text-[6px] opacity-40 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
                 </div>
                 <div className="grid grid-cols-1 gap-x-0 leading-[1] uppercase px-0.5">
                    <div className="flex justify-between"><span className="opacity-40">A:</span><input className="w-20 border-none outline-none text-right bg-transparent" defaultValue={d.code_abg || ''} /></div>
@@ -522,14 +529,23 @@ export default async function CertificatePage({
         <style dangerouslySetInnerHTML={{ __html: `
           @media print {
             @page { size: landscape; margin: 0.3cm; }
-            body { background: white; zoom: 110%; }
+            body { background: white; }
             .printable-area { border: 2px solid #000 !important; box-shadow: none !important; padding: 10px !important; margin: 0 !important; width: 100% !important; }
-            .no-print { display: none !important; }
+            .no-print, .print-hidden { display: none !important; }
             header, footer, nav { display: none !important; }
+            input { 
+              border: none !important; 
+              background: transparent !important; 
+              padding: 0 !important; 
+              margin: 0 !important; 
+              height: auto !important; 
+              line-height: inherit !important;
+              box-shadow: none !important;
+            }
           }
         `}} />
         
-        <div className="max-w-[1400px] mx-auto bg-white border-[2px] border-black p-4 print:border-solid shadow-xl printable-area relative overflow-hidden">
+        <div className="w-[96%] max-w-[1700px] mx-auto bg-white border-[2px] border-black p-6 print:border-solid shadow-xl printable-area relative overflow-hidden">
            
            <div className="grid grid-cols-2 gap-3 mb-3">
                {await renderAncBlock('m', 'M')}
@@ -568,8 +584,8 @@ export default async function CertificatePage({
 
         </div>
 
-        <div className="mt-16 text-center no-print flex justify-center gap-6 pb-20">
-            <PrintButton label="PRINT 3-GEN TREE (LANDSCAPE)" className="bg-blue-950 text-white px-10 py-4 rounded-xl font-black uppercase hover:bg-black transition-all shadow-2xl active:scale-95" />
+        <div className="mt-16 text-center print:hidden print-hidden no-print flex justify-center gap-6 pb-20">
+            <PrintButton label="PRINT 3-GEN TREE (LANDSCAPE)" className="bg-[#522513] text-white px-10 py-4 rounded-xl font-black uppercase hover:bg-[#3b1a0d] transition-all shadow-2xl active:scale-95" />
             <Link href={`/goats/${id}`} className="px-10 py-4 border-2 border-gray-300 rounded-xl font-black uppercase hover:bg-gray-100 transition-all text-sm shadow-md">Back to Profile</Link>
         </div>
       </div>
