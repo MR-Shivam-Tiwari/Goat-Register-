@@ -496,88 +496,86 @@ export default async function CertificatePage({
             </table>
 
             {/* Lactation Table component */}
-            <div className="w-full">
+            <div className="w-full mt-6 print:mt-4">
               <CertificateLactationTable lactations={lactations} cl1={cl1} />
             </div>
 
             {/* ── BOTTOM SECTION matching physical certificate ── */}
-            <div className="cert-bottom-section mt-3 border border-black/30 rounded-sm overflow-hidden text-black print:border-black">
+            <div className="cert-bottom-section mt-5 border border-dashed border-gray-200 rounded-sm p-4 print:border-none print:p-0 print:mt-8 text-black">
 
               {/* Row 1: Issued to whom */}
-              <div className="flex items-start border-b border-black/20 px-3 py-1.5 gap-3">
-                <div className="text-[10px] font-bold text-black shrink-0 w-52 leading-tight pt-0.5">
-                  {cl1.toWhom}
-                </div>
+              <div className="flex items-start px-2 py-1.5 gap-4 border-b border-dashed border-black/5 print:border-none print:px-0 print:py-1">
                 <input
-                  className="flex-1 bg-transparent border-none outline-none text-[10.5px] font-semibold text-black"
+                  className="text-[11px] font-bold text-black shrink-0 w-60 leading-tight bg-transparent border-none outline-none"
+                  defaultValue={cl1.toWhom}
+                />
+                <input
+                  className="flex-1 bg-transparent border-none outline-none text-[11px] font-semibold text-black"
                   defaultValue={`${goat.user_farm_name || goat.breeder_manual || ''}${goat.user_phone ? ', ' + goat.user_phone : ''}${goat.user_email ? ', ' + goat.user_email : ''}`}
                 />
               </div>
 
               {/* Row 2: Breeder */}
-              <div className="flex items-start px-3 py-1.5 gap-3 border-b border-black/20">
-                <div className="text-[10px] font-bold text-black shrink-0 w-52 leading-tight pt-0.5">
-                  {cl1.breederFull}
-                </div>
+              <div className="flex items-start px-2 py-1.5 gap-4 border-b border-dashed border-black/5 print:border-none print:px-0 print:py-1">
                 <input
-                  className="flex-1 bg-transparent border-none outline-none text-[10.5px] font-semibold text-black"
+                  className="text-[11px] font-bold text-black shrink-0 w-60 leading-tight bg-transparent border-none outline-none"
+                  defaultValue={cl1.breederFull}
+                />
+                <input
+                  className="flex-1 bg-transparent border-none outline-none text-[11px] font-semibold text-black"
                   defaultValue={`${goat.breeder_manual || goat.user_farm_name || ''}${goat.user_phone ? ', ' + goat.user_phone : ''}`}
                 />
               </div>
 
-              {/* Recorded correctly */}
-              <div className="px-3 py-1.5 border-b border-black/20">
-                <span className="font-black text-[11px] text-black italic">{cl1.recordedCorrectly}</span>
+              {/* Row 3: Recorded correctly */}
+              <div className="px-2 py-2 border-b border-dashed border-black/5 print:border-none print:px-0 print:py-2">
+                <input
+                  className="w-full bg-transparent border-none outline-none font-black text-[11.5px] text-black italic"
+                  defaultValue={cl1.recordedCorrectly}
+                />
               </div>
 
-              {/* Bottom strip: date/org left | round stamp center | name + hologram right */}
-              <div className="flex items-stretch gap-0 min-h-[90px] bg-[#f7f5f0] print:bg-white">
+              {/* Row 4: Bottom strip: date/org left | name center-right | empty sticker space far-right */}
+              <div className="flex justify-between items-start relative min-h-[90px] mt-4 px-2 py-2 print:px-0 print:py-0 print:mt-6 bg-transparent text-black">
 
-                {/* Left: date + org details */}
-                <div className="flex flex-col justify-between px-3 py-2 flex-1 min-w-0">
+                {/* Left Column: 3 lines stacked vertically */}
+                <div className="flex flex-col gap-2.5 flex-1 min-w-0 pr-[40px] print:pr-[40px]">
+                  
+                  {/* Line 1: Date Value */}
                   <input
-                    className="bg-transparent border-none outline-none text-[11px] font-bold text-black w-full"
+                    className="bg-transparent border-none outline-none text-[12px] font-bold text-black w-full"
                     defaultValue={formatDate(new Date())}
                   />
-                  <div className="mt-1 space-y-0.5">
-                    <input
-                      className="bg-transparent border-none outline-none text-[10px] font-bold text-black w-full leading-tight"
-                      defaultValue={`${cl1.headOfGs} ${cl1.association}`}
-                    />
-                    <div className="text-[9px] text-black/50 font-bold">{cl1.dateIssued}</div>
-                  </div>
-                </div>
-
-                {/* Center: round stamp SVG */}
-                <div className="flex items-center justify-center shrink-0 w-[110px]">
-                  <svg viewBox="0 0 110 110" width="100" height="100" className="opacity-50 print:opacity-30">
-                    <circle cx="55" cy="55" r="52" fill="none" stroke="#3a5a8c" strokeWidth="2.5"/>
-                    <circle cx="55" cy="55" r="46" fill="none" stroke="#3a5a8c" strokeWidth="1"/>
-                    <circle cx="55" cy="55" r="43" fill="none" stroke="#3a5a8c" strokeWidth="0.5"/>
-                    <path id="topArc1" d="M 13,55 A 42,42 0 0,1 97,55" fill="none"/>
-                    <text fontSize="7.5" fill="#3a5a8c" fontWeight="bold" letterSpacing="1.5">
-                      <textPath href="#topArc1" startOffset="5%">АСОЦІАЦІЯ ПЛЕМІННИХ КІЗ</textPath>
-                    </text>
-                    <path id="botArc1" d="M 15,60 A 40,40 0 0,0 95,60" fill="none"/>
-                    <text fontSize="6" fill="#3a5a8c" fontWeight="bold" letterSpacing="1">
-                      <textPath href="#botArc1" startOffset="8%">ASSOCIATION OF BREEDING GOATS</textPath>
-                    </text>
-                    <text x="55" y="44" textAnchor="middle" fontSize="6.5" fill="#3a5a8c" fontWeight="bold">ГРОМАДСЬКА</text>
-                    <text x="55" y="52" textAnchor="middle" fontSize="6.5" fill="#3a5a8c" fontWeight="bold">ОРГАНІЗАЦІЯ</text>
-                    <text x="55" y="59.5" textAnchor="middle" fontSize="5.5" fill="#3a5a8c">(АКРЕДИТАЦІЙНИЙ</text>
-                    <text x="55" y="66" textAnchor="middle" fontSize="5.5" fill="#3a5a8c">КОД 39...)</text>
-                    <text x="55" y="76" textAnchor="middle" fontSize="8" fill="#3a5a8c">✦</text>
-                  </svg>
-                </div>
-
-                {/* Right: name + hologram circle */}
-                <div className="flex items-center justify-end gap-3 px-3 py-2 shrink-0">
+                  
+                  {/* Line 2: Head of GS / Title */}
                   <input
-                    className="bg-transparent border-none outline-none text-[14px] font-black text-black text-right w-36"
+                    className="bg-transparent border-none outline-none text-[11px] font-bold text-black w-full leading-tight"
+                    defaultValue={
+                      locale === 'en' 
+                        ? 'Head of GS "Association of Breeding Goats"' 
+                        : (locale === 'uk' ? 'Голова ГС "Асоціація Племінних Кіз"' : 'Председатель ГС "Асоціація Племінних Кіз"')
+                    }
+                  />
+                  
+                  {/* Line 3: Date Label */}
+                  <input
+                    className="bg-transparent border-none outline-none text-[10.5px] text-black/60 font-bold w-full"
+                    defaultValue={cl1.dateIssued}
+                  />
+                </div>
+
+                {/* Center-Right Column: Name, aligned vertically with Line 2 */}
+                <div className="flex items-center justify-center self-center shrink-0 pr-12 print:pr-12">
+                  <input
+                    className="bg-transparent border-none outline-none text-[12.5px] font-bold text-black text-center w-48"
                     defaultValue={locale === 'en' ? 'Alekseeva M.V.' : 'Алексєєва М.В.'}
                   />
-                  {/* Holographic sticker space — already on physical blank, hidden when printing */}
-                  <div className="no-print w-10 h-10 rounded-full border-2 border-dashed border-gray-300 opacity-40 shrink-0" title="Holographic sticker is on the physical blank"></div>
+                </div>
+
+                {/* Far Right Column: Empty space for holographic sticker (blank space) */}
+                <div className="w-[120px] print:w-[120px] h-10 shrink-0 self-center flex items-center justify-center">
+                  {/* Faint dashed boundary only on screen as a guide where the sticker goes */}
+                  <div className="no-print w-10 h-10 rounded-full border border-dashed border-gray-300 opacity-40 shrink-0" title="Physical holographic sticker will be placed here after printing"></div>
                 </div>
 
               </div>

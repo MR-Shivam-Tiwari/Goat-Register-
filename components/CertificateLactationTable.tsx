@@ -32,14 +32,14 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
 
   return (
     <div className="w-full">
-      {/* Brown Header Bar */}
-      <div className="productive-table-header flex items-center bg-[#5C2A18] text-white px-4 py-1.5 font-bold text-[11px] uppercase select-none border-[1.5px] border-black border-b-0">
-        <span className="font-sans tracking-wide font-black text-[11px]">{cl1.tribalValue || 'TRIBAL VALUE AND OWN PRODUCTIVITY OF THE ANIMAL'}</span>
+      {/* Table Header Bar (Standalone Heading outside table) */}
+      <div className="productive-table-header flex items-center justify-center text-center text-black py-1 mb-2 font-black text-[11.5px] uppercase select-none">
+        <span className="font-sans tracking-wide">{cl1.tribalValue || 'BREEDING VALUE AND OWN PRODUCTIVITY OF THE ANIMAL'}</span>
       </div>
 
       <table className="productive-table w-full border-[1.5px] border-black text-center border-collapse">
         <thead>
-          <tr className="bg-[#FAF8F5] text-black text-[9px] font-black uppercase h-7 divide-x divide-black border-b border-black">
+          <tr className="bg-white text-black text-[9px] font-black uppercase h-7 divide-x divide-black border-b border-black">
             <th className="w-[5%] border-black">V</th>
             <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.lactHeader || 'LACTATION'}</th>
             <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.milkHeader || 'MILK YIELD'}</th>
