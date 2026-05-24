@@ -9,7 +9,7 @@ export async function getGoatData(id: string) {
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.score,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
-        Di.ava, Di.blood_percent,
+        Di.ava, Di.blood_percent, Di.id_lact_show,
 
         M.name  AS m_name,  M.id AS m_id,
         Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,
@@ -209,9 +209,9 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
   const treeRes = await query(
     `
     WITH RECURSIVE ancestry AS (
-      SELECT id, name, id_mother, id_father, 0 as level, 'ME' as path FROM animals WHERE id = $1
+      SELECT id, name, sex, id_mother, id_father, 0 as level, 'ME' as path FROM animals WHERE id = $1
       UNION ALL
-      SELECT a.id, a.name, a.id_mother, a.id_father, anc.level + 1,
+      SELECT a.id, a.name, a.sex, a.id_mother, a.id_father, anc.level + 1,
              CASE 
                WHEN a.id = anc.id_mother THEN anc.path || 'M' 
                WHEN a.id = anc.id_father THEN anc.path || 'F'
@@ -220,7 +220,7 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
       JOIN ancestry anc ON (a.id = anc.id_mother OR a.id = anc.id_father)
       WHERE anc.level < $2
     )
-    SELECT id, name, path FROM ancestry
+    SELECT id, name, sex, path FROM ancestry
   `,
     [id, maxLevel],
   );
@@ -234,7 +234,7 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
     FROM goats_lact L 
     JOIN animals A ON L.id_goat = A.id 
     WHERE L.id_goat = ANY($1)
-    ORDER BY L.lact_no ASC
+    ORDER BY L.id ASC
   `,
     [ids],
   );
@@ -250,9 +250,63 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
     pathMap[r.path] = {
       id: r.id,
       name: r.name,
+      sex: r.sex,
       lactations: groups[r.id] || [],
     };
   });
 
   return pathMap;
 }
+
+// Mirrors old PHP retChild() – fetches descendants (children/grandchildren) and their lactation records
+export async function getDescendantLactations(id: string, maxLevel: number = 2) {
+  const treeRes = await query(
+    `
+    WITH RECURSIVE descendants AS (
+      SELECT id, name, sex, id_mother, id_father, 1 as level
+      FROM animals
+      WHERE id_mother = $1::int OR id_father = $1::int
+      UNION ALL
+      SELECT a.id, a.name, a.sex, a.id_mother, a.id_father, d.level + 1
+      FROM animals a
+      JOIN descendants d ON (a.id_mother = d.id OR a.id_father = d.id)
+      WHERE d.level < $2
+    )
+    SELECT DISTINCT ON (id) id, name, sex, level
+    FROM descendants
+    ORDER BY id, level ASC
+  `,
+    [id, maxLevel],
+  );
+
+  if (treeRes.rows.length === 0) return [];
+
+  const ids = treeRes.rows.map((r: any) => r.id);
+
+  const lactRes = await query(
+    `
+    SELECT L.*
+    FROM goats_lact L
+    WHERE L.id_goat = ANY($1)
+    ORDER BY L.id ASC
+  `,
+    [ids],
+  );
+
+  const groups: any = {};
+  lactRes.rows.forEach((l: any) => {
+    if (!groups[l.id_goat]) groups[l.id_goat] = [];
+    groups[l.id_goat].push(l);
+  });
+
+  return treeRes.rows
+    .map((r: any) => ({
+      id: Number(r.id),
+      name: r.name,
+      sex: r.sex,
+      level: Number(r.level),
+      lactations: groups[r.id] || [],
+    }))
+    .filter((d: any) => d.lactations.length > 0);
+}
+

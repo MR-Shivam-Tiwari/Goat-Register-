@@ -141,6 +141,8 @@ export async function addGoatAction(formData: FormData) {
     const sexStr = formData.get('sex') as string;
     const birthDate = formData.get('birthDate') as string || null;
     const bornQty = parseInt(formData.get('bornQty') as string) || null;
+    const bindTo = formData.get('bind_to') as string || null;
+    const bindAs = formData.get('bind_as') as string || null;
 
     // Validation
     if (!nickname) return { error: t.errors.nicknameRequired };
@@ -228,8 +230,22 @@ export async function addGoatAction(formData: FormData) {
             );
         }
 
+        if (bindTo && bindAs) {
+            const bindToId = parseInt(bindTo);
+            const fld = bindAs === 'f' ? 'id_father' : 'id_mother';
+            await client.query(
+                `UPDATE animals SET ${fld} = $1 WHERE id = $2`,
+                [goatId, bindToId]
+            );
+        }
+
         await client.query('COMMIT');
-        return { success: true };
+        revalidatePath(`/goats/${goatId}`);
+        if (bindTo) {
+            revalidatePath(`/goats/${bindTo}`);
+        }
+        revalidatePath(`/goats`);
+        return { success: true, bindTo: bindTo };
     } catch (e: any) {
         await client.query('ROLLBACK');
         console.error('Add Goat Error:', e.message);
@@ -651,3 +667,154 @@ export async function updateUserAction(formData: FormData) {
         return { error: t.errors.dbError + (e.message || '') };
     }
 }
+
+export async function bindParentAction(formData: FormData) {
+    const t = await getT();
+    const goatIdStr = formData.get('goatId') as string;
+    const parentCodeStr = formData.get('parentCode') as string;
+    const bindAs = formData.get('bindAs') as string;
+
+    if (!goatIdStr || !parentCodeStr || !bindAs) {
+        return { error: t.errors.invalidData || "Неверные данные" };
+    }
+
+    const goatId = parseInt(goatIdStr);
+    const digitsMatch = parentCodeStr.match(/\d+/);
+    if (!digitsMatch) {
+        return { error: "Неверный формат номера" };
+    }
+    const codeNum = parseInt(digitsMatch[0]);
+    
+    const possibleIds = [codeNum];
+    if (codeNum > 10000) {
+        possibleIds.push(codeNum - 10000);
+    }
+
+    try {
+        const parentRes = await query(
+            `SELECT id, name FROM animals WHERE id = ANY($1)`,
+            [possibleIds]
+        );
+
+        const parent = parentRes.rows[0];
+        if (!parent) {
+            return { error: "Животное с таким номером не найдено" };
+        }
+
+        const fld = bindAs === 'f' ? 'id_father' : 'id_mother';
+        await query(
+            `UPDATE animals SET ${fld} = $1 WHERE id = $2`,
+            [parent.id, goatId]
+        );
+
+        revalidatePath(`/goats/${goatId}`);
+        revalidatePath(`/goats/${parent.id}`);
+        revalidatePath(`/goats`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Bind Parent Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+export async function selectOfficialLactationAction(goatId: number | string, lactId: number | string | null) {
+    const t = await getT();
+    try {
+        await query(
+            `UPDATE goats_data SET id_lact_show = $1 WHERE id_goat = $2`,
+            [lactId ? parseInt(lactId as string) : null, parseInt(goatId as string)]
+        );
+        revalidatePath(`/goats/${goatId}`);
+        revalidatePath(`/goats`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Select Official Lactation Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+export async function updateCertValueAction(goatId: number | string, fieldName: string, value: string | number | null) {
+    const t = await getT();
+    try {
+        const idGoat = parseInt(goatId as string);
+        const allowedFields = [
+            'id_i_row1', 'id_i_row2', 'id_i_row3', 'id_i_row4', 'id_i_row5',
+            'id_m_row1', 'id_m_row2', 'id_m_row3',
+            'id_f_row1', 'id_f_row2', 'id_f_row3',
+            'id_mm_row1', 'id_mm_row2', 'id_mm_row3',
+            'id_fm_row1', 'id_fm_row2', 'id_fm_row3',
+            'id_mf_row1', 'id_mf_row2', 'id_mf_row3',
+            'id_ff_row1', 'id_ff_row2', 'id_ff_row3',
+            'id_mmm_row1', 'id_fmm_row1', 'id_mfm_row1', 'id_ffm_row1', 'id_mmf_row1', 'id_fmf_row1', 'id_mff_row1', 'id_fff_row1'
+        ];
+        if (!allowedFields.includes(fieldName)) {
+            throw new Error("Invalid field name");
+        }
+
+        let val: any = value;
+        if (typeof value === 'string' && value.trim() === '') {
+            val = null;
+        } else if (fieldName.startsWith('id_') && fieldName.endsWith('_row1') && !['id_mmm_row1', 'id_fmm_row1', 'id_mfm_row1', 'id_ffm_row1', 'id_mmf_row1', 'id_fmf_row1', 'id_mff_row1', 'id_fff_row1'].includes(fieldName)) {
+            val = value ? parseInt(value as string) : null;
+        } else if (fieldName.startsWith('id_') && (fieldName.endsWith('_row2') || fieldName.endsWith('_row3'))) {
+            val = value ? parseInt(value as string) : null;
+        }
+
+        const existing = await query("SELECT 1 FROM goats_cert WHERE id_goat = $1", [idGoat]);
+        if (existing.rows.length > 0) {
+            await query(
+                `UPDATE goats_cert SET ${fieldName} = $1 WHERE id_goat = $2`,
+                [val, idGoat]
+            );
+        } else {
+            await query(
+                `INSERT INTO goats_cert (id_goat, ${fieldName}) VALUES ($1, $2)`,
+                [idGoat, val]
+            );
+        }
+
+        revalidatePath(`/goats/${idGoat}`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Update Cert Value Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+export async function saveLactationAction(goatId: number | string, rowId: number | string | null, formData: FormData) {
+    const t = await getT();
+    try {
+        const idGoat = parseInt(goatId as string);
+        const viewer = formData.get('viewer') as string || '';
+        const lactNo = formData.get('lact_no') ? parseInt(formData.get('lact_no') as string) : null;
+        const lactDays = formData.get('lact_days') as string || '';
+        const milk = parseFloat(formData.get('milk') as string) || 0;
+        const fat = formData.get('fat') ? parseFloat(formData.get('fat') as string) : null;
+        const protein = parseFloat(formData.get('protein') as string) || 0;
+        const milkDay = formData.get('milk_day') ? parseFloat(formData.get('milk_day') as string) : null;
+        const haveGraph = parseInt(formData.get('have_graph') as string) || 0;
+
+        if (rowId && parseInt(rowId as string) > 0) {
+            // Update
+            const rid = parseInt(rowId as string);
+            await query(
+                `UPDATE goats_lact SET viewer = $1, lact_no = $2, lact_days = $3, milk = $4, fat = $5, protein = $6, milk_day = $7, have_graph = $8 WHERE id = $9 AND id_goat = $10`,
+                [viewer, lactNo, lactDays, milk, fat, protein, milkDay, haveGraph, rid, idGoat]
+            );
+        } else {
+            // Insert
+            await query(
+                `INSERT INTO goats_lact (id_goat, viewer, lact_no, lact_days, milk, fat, protein, milk_day, have_graph) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                [idGoat, viewer, lactNo, lactDays, milk, fat, protein, milkDay, haveGraph]
+            );
+        }
+
+        revalidatePath(`/goats/${idGoat}`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Save Lactation Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+

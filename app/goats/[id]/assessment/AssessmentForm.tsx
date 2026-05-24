@@ -6,18 +6,32 @@ import { useRouter } from 'next/navigation';
 export default function AssessmentForm({ 
   goatId, 
   initialData, 
-  t 
+  t,
+  lang
 }: { 
   goatId: string, 
   initialData?: any, 
-  t: any 
+  t: any,
+  lang: string
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  const formatDate = (d: any) => {
+    if (!d) return '';
+    try {
+      const dateObj = new Date(d);
+      if (isNaN(dateObj.getTime())) return String(d);
+      return dateObj.toISOString().split('T')[0];
+    } catch {
+      return String(d);
+    }
+  };
+
   const [formData, setFormData] = useState({
-    who_expert: initialData?.Who_expert || initialData?.who_expert || '',
-    date_test: initialData?.date_test ? new Date(initialData.date_test).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-    test_type: initialData?.test_type || 1,
+    who_expert: initialData?.who_expert || initialData?.Who_expert || '',
+    date_test: initialData?.date_test || initialData?.Date_test ? formatDate(initialData.date_test || initialData.Date_test) : '',
+    test_type: initialData?.test_type !== undefined ? Number(initialData.test_type) : 0,
     par_1: initialData?.par_1 || initialData?.Par_1 || '',
     par_2: initialData?.par_2 || initialData?.Par_2 || '',
     par_3: initialData?.par_3 || initialData?.Par_3 || '',
@@ -54,101 +68,85 @@ export default function AssessmentForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-      <div className="bg-[#491907] p-8 text-white relative overflow-hidden">
-         <div className="relative z-10">
-            <h1 className="text-2xl font-black uppercase tracking-tight">{t.goats.expertAssessment}</h1>
-            <p className="text-[#E2F0D9]/60 text-xs font-bold mt-1 uppercase">{t.goatForm.assessment.subtitle}</p>
-         </div>
-         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-      </div>
+    <div className="max-w-xl mx-auto bg-[#FCFAF2] rounded-lg border border-[#491907] p-8 shadow-sm font-sans text-left">
+      <h2 className="text-[#491907] font-extrabold text-2xl mb-6 tracking-tight">
+        {lang === 'ru' ? 'Экспертная оценка' : 'Expert assessment'}
+      </h2>
       
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        <div className="space-y-3">
-           {/* Expert Name */}
-           <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-[#491907]/60 tracking-wider">{t.goatForm.assessment.expertName}</label>
-              <input 
-                type="text" 
-                required
-                value={formData.who_expert}
-                onChange={e => setFormData({...formData, who_expert: e.target.value})}
-                className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2 text-[10px] font-bold focus:ring-1 focus:ring-[#491907]/20 outline-none transition-all"
-                placeholder={t.goatForm.assessment.expertName}
-              />
-           </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Expert Name */}
+        <p>
+          <input 
+            type="text" 
+            value={formData.who_expert}
+            onChange={e => setFormData({...formData, who_expert: e.target.value})}
+            className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+            placeholder={t.goatForm.assessment.expertName}
+          />
+        </p>
 
-           {/* Date & Type */}
-           <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                 <label className="text-[9px] font-black uppercase text-[#491907]/60 tracking-wider">{t.goatForm.assessment.certDate}</label>
-                 <input 
-                   type="date" 
-                   required
-                   value={formData.date_test}
-                   onChange={e => setFormData({...formData, date_test: e.target.value})}
-                   className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2 text-[10px] font-bold focus:ring-1 focus:ring-[#491907]/20 outline-none transition-all"
-                 />
-              </div>
-              <div className="space-y-1">
-                 <label className="text-[9px] font-black uppercase text-[#491907]/60 tracking-wider">{t.goatForm.assessment.certType}</label>
-                 <div className="flex flex-col gap-1">
-                    <select 
-                      value={formData.test_type}
-                      onChange={e => setFormData({...formData, test_type: parseInt(e.target.value)})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2 text-[10px] font-bold focus:ring-1 focus:ring-[#491907]/20 outline-none transition-all appearance-none"
-                    >
-                      <option value={0}>{t.goatForm.assessment.notHeld}</option>
-                      <option value={1}>{t.goatForm.assessment.classical}</option>
-                      <option value={2}>{t.goatForm.assessment.young}</option>
-                    </select>
-                 </div>
-              </div>
-           </div>
+        {/* Date of certification */}
+        <p>
+          <input 
+            type="text" 
+            value={formData.date_test}
+            onChange={e => setFormData({...formData, date_test: e.target.value})}
+            className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+            placeholder={t.goatForm.assessment.certDate}
+          />
+        </p>
 
-           {/* Stats One by One */}
-           <div className="space-y-3">
-              {[
-                { l: t.goatForm.assessment.heightWithers, f: 'par_1', v: formData.par_1 },
-                { l: t.goatForm.assessment.heightSacrum, f: 'par_2', v: formData.par_2 },
-                { l: t.goatForm.assessment.chestCircum, f: 'par_3', v: formData.par_3 },
-                { l: t.goatForm.assessment.bodyLength, f: 'par_4', v: formData.par_4 },
-                { l: t.goatForm.assessment.weight, f: 'weight', v: formData.weight },
-                { l: t.goatForm.assessment.finalScore, f: 'score_total', v: formData.score_total },
-                { l: t.goatForm.assessment.class, f: 'class_val', v: formData.class_val },
-                { l: t.goatForm.assessment.category, f: 'category', v: formData.category },
-              ].map((item) => (
-                <div key={item.f} className="space-y-1">
-                   <label className="text-[9px] font-black uppercase text-[#491907]/60 tracking-wider">{item.l}</label>
-                   <input 
-                     type={item.f === 'class_val' || item.f === 'category' || item.f === 'score_total' ? 'text' : 'number'}
-                     step="0.01"
-                     value={item.v}
-                     onChange={e => setFormData({...formData, [item.f]: e.target.value})}
-                     className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2 text-[10px] font-black outline-none focus:border-[#491907] transition-all"
-                     placeholder={item.l}
-                   />
-                </div>
-              ))}
-           </div>
-        </div>
+        {/* Type of certification Dropdown & Label */}
+        <p className="flex items-center gap-3 flex-wrap">
+          <select 
+            value={formData.test_type}
+            onChange={e => setFormData({...formData, test_type: parseInt(e.target.value)})}
+            className="border border-gray-400 bg-white rounded-[4px] px-3 py-1 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+          >
+            <option value={0}>{t.goatForm.assessment.notHeld}</option>
+            <option value={1}>{t.goatForm.assessment.classical}</option>
+            <option value={2}>{t.goatForm.assessment.young}</option>
+          </select>
+          <span className="text-amber-950 text-xs font-semibold font-sans">
+            {lang === 'ru' 
+              ? 'Тип аттестации (не проведена/классическая углубленная/аттест молодняка)' 
+              : 'Type of certification (not conducted/classical depth/young animals certification)'
+            }
+          </span>
+        </p>
 
-        <div className="pt-4 border-t border-gray-100 flex gap-4">
-           <button 
-             type="button"
-             onClick={() => router.back()}
-             className="flex-1 bg-gray-50 text-gray-400 px-4 py-3 rounded-xl font-black uppercase text-[9px] hover:bg-gray-100 transition-all"
-           >
-             {t.goatForm.assessment.cancel}
-           </button>
-           <button 
-             type="submit"
-             disabled={loading}
-             className="flex-[2] bg-[#491907] text-white px-4 py-3 rounded-xl font-black uppercase text-[9px] hover:bg-black transition-all shadow-md disabled:opacity-50"
-           >
-             {loading ? t.goatForm.assessment.processing : t.goatForm.assessment.save}
-           </button>
-        </div>
+        {/* Stats fields */}
+        {[
+          { f: 'par_1', l: t.goatForm.assessment.heightWithers, v: formData.par_1 },
+          { f: 'par_2', l: t.goatForm.assessment.heightSacrum, v: formData.par_2 },
+          { f: 'par_3', l: t.goatForm.assessment.chestCircum, v: formData.par_3 },
+          { f: 'par_4', l: t.goatForm.assessment.bodyLength, v: formData.par_4 },
+          { f: 'weight', l: t.goatForm.assessment.weight, v: formData.weight },
+          { f: 'score_total', l: t.goatForm.assessment.finalScore, v: formData.score_total },
+          { f: 'class_val', l: t.goatForm.assessment.class, v: formData.class_val },
+          { f: 'category', l: t.goatForm.assessment.category, v: formData.category },
+        ].map((item) => (
+          <p key={item.f}>
+            <input 
+              type="text"
+              value={item.v}
+              onChange={e => setFormData({...formData, [item.f]: e.target.value})}
+              className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+              placeholder={item.l}
+            />
+          </p>
+        ))}
+
+        {/* Submit button */}
+        <p className="pt-2">
+          <button 
+            type="submit"
+            disabled={loading}
+            className="border border-gray-400 bg-gray-200 text-black px-4 py-1.5 rounded-[4px] text-xs font-bold hover:bg-gray-300 active:bg-gray-400 transition-colors font-sans cursor-pointer disabled:opacity-50"
+          >
+            {loading ? t.goatForm.assessment.processing : t.goatForm.assessment.save}
+          </button>
+        </p>
       </form>
     </div>
   );

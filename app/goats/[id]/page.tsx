@@ -12,6 +12,10 @@ import PedigreeNode from "@/components/PedigreeNode";
 import AddPhotoGallery from "@/components/AddPhotoGallery";
 import GalleryItem from "@/components/GalleryItem";
 import GalleryHeader from "@/components/GalleryHeader";
+import ParentBinder from "@/components/ParentBinder";
+import LactationTable from "@/components/LactationTable";
+import CertLactSelect from "@/components/CertLactSelect";
+import CertInput from "@/components/CertInput";
 
 import {
   getGoatData,
@@ -24,6 +28,7 @@ import {
   getExpertAssessment,
   getCertData,
   getAncestorLactations,
+  getDescendantLactations,
 } from "@/lib/goats-data";
 
 export const dynamic = "force-dynamic";
@@ -65,6 +70,7 @@ export default async function GoatDetailPage({
     expertTests,
     certData,
     ancestorLacts,
+    descendantLacts,
   ] = await Promise.all([
     getOffspringDetailed(id),
     getDescendantsTree(id),
@@ -75,6 +81,7 @@ export default async function GoatDetailPage({
     getExpertAssessment(id),
     getCertData(id),
     getAncestorLactations(id),
+    getDescendantLactations(id),
   ]);
 
   return (
@@ -130,7 +137,7 @@ export default async function GoatDetailPage({
                   {(goat.is_abg ? "R" : "X") + goat.id}
                 </span>
               </div>
-              {goat.f_id && (
+              {goat.f_id ? (
                 <div className="flex flex-col gap-0.5">
                   <span className="text-gray-400 font-bold text-sm tracking-widest">
                     {t.goats.fatherData}
@@ -144,8 +151,16 @@ export default async function GoatDetailPage({
                     {goat.f_name} (ID: {goat.f_id})
                   </a>
                 </div>
+              ) : (
+                <ParentBinder
+                  goatId={id}
+                  bindAs="f"
+                  label={t.goats.fatherData}
+                  lang={lang}
+                  t={t}
+                />
               )}
-              {goat.m_id && (
+              {goat.m_id ? (
                 <div className="flex flex-col gap-0.5">
                   <span className="text-gray-400 font-bold text-sm tracking-widest">
                     {t.goats.motherData}
@@ -159,6 +174,14 @@ export default async function GoatDetailPage({
                     {goat.m_name} (ID: {goat.m_id})
                   </a>
                 </div>
+              ) : (
+                <ParentBinder
+                  goatId={id}
+                  bindAs="m"
+                  label={t.goats.motherData}
+                  lang={lang}
+                  t={t}
+                />
               )}
             </div>
           </div>
@@ -269,9 +292,8 @@ export default async function GoatDetailPage({
                   }).map((_, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className={`divide-x-2 divide-[#4D2C1A] border-b border-[#4D2C1A] hover:bg-gray-50 transition-colors h-7 ${
-                        rowIndex % 2 === 0 ? "bg-[#E2F0D9]" : "bg-white"
-                      }`}
+                      className={`divide-x-2 divide-[#4D2C1A] border-b border-[#4D2C1A] hover:bg-gray-50 transition-colors h-7 ${rowIndex % 2 === 0 ? "bg-[#E2F0D9]" : "bg-white"
+                        }`}
                     >
                       {[1, 2, 3, 4].map((level) => (
                         <React.Fragment key={level}>
@@ -338,6 +360,29 @@ export default async function GoatDetailPage({
           </div>
         </section>
 
+        {/* LACTATION DATA (ANCESTOR PRODUCTIVITY) */}
+        <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-1.5">
+              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+              {t.goats.lactDataTitle}
+              <Link href={`/goats/${id}/lact`} className="text-blue-600 hover:text-blue-800 underline lowercase font-normal text-[11px] ml-1">
+                {t.goats.add}
+              </Link>
+            </h2>
+          </div>
+          <div className="p-0">
+            <LactationTable
+              ancestorLacts={ancestorLacts}
+              descendantLacts={descendantLacts}
+              goatId={id}
+              currentSelectedId={goat.id_lact_show}
+              lang={lang}
+              t={t}
+            />
+          </div>
+        </section>
+
         {/* OWN MILK PRODUCTIVITY */}
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -377,9 +422,8 @@ export default async function GoatDetailPage({
                 {ownMilk.map((m: any, idx: number) => (
                   <tr
                     key={idx}
-                    className={`divide-x-2 divide-[#4D2C1A] hover:bg-gray-50 transition-colors h-10 ${
-                      idx % 2 === 0 ? "bg-[#E2F0D9]" : "bg-white"
-                    }`}
+                    className={`divide-x-2 divide-[#4D2C1A] hover:bg-gray-50 transition-colors h-10 ${idx % 2 === 0 ? "bg-[#E2F0D9]" : "bg-white"
+                      }`}
                   >
                     <td className="p-3 font-bold">{idx + 1}</td>
                     <td className="p-3">{m.lact_no}</td>
@@ -514,8 +558,8 @@ export default async function GoatDetailPage({
                         <td className="p-3 text-gray-400">
                           {test.date_test || test.Date_test
                             ? new Date(
-                                test.date_test || test.Date_test,
-                              ).toLocaleDateString()
+                              test.date_test || test.Date_test,
+                            ).toLocaleDateString()
                             : "-"}
                         </td>
                         <td className="p-3 opacity-60">
@@ -551,79 +595,78 @@ export default async function GoatDetailPage({
           </div>
         </section>
 
-        {/* CERT DATA SELECTOR (BLUE OVALS AREA) */}
+        {/* CERT DATA SELECTOR – mirrors PHP goat.lact.php build() exactly */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
-              {t.goats.certLactDataTitle} (Official Selectors)
+              {t.goats.certLactDataTitle}
             </h2>
-            <button className="bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-black uppercase hover:bg-gray-50 transition-all shadow-sm">
-              {t.goats.refresh}
-            </button>
+            <form action={`/api/goats/${goat.id}/cert`} method="POST">
+              <button
+                type="submit"
+                className="bg-white border-2 border-[#491907] text-[#491907] px-4 py-1.5 rounded text-[11px] font-black uppercase hover:bg-[#491907] hover:text-white transition-all shadow-sm"
+              >
+                {lang === 'ru' ? 'Обновить' : 'Update'}
+              </button>
+            </form>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse font-black text-center uppercase whitespace-nowrap">
-              <thead className="bg-[#491907] text-white">
-                <tr className="divide-x divide-white/10">
-                  <th className="p-3 w-16">{t.goats.lactViewer}</th>
-                  <th className="p-3 w-[40%] text-start uppercase">
-                    {t.goats.certChoice}
-                  </th>
-                  <th className="p-3">{t.goats.lactNo}</th>
-                  <th className="p-3">{t.goats.lactDays}</th>
-                  <th className="p-3">{t.goats.lactMilk}</th>
-                  <th className="p-3">{t.goats.lactFat}</th>
-                  <th className="p-3">{t.goats.lactProtein}</th>
+            <table className="w-full text-sm border-collapse font-bold text-center whitespace-nowrap text-black">
+              <thead>
+                <tr className="bg-[#23DC69] border-b-2 border-[#4D2C1A] divide-x-2 divide-[#4D2C1A] text-black">
+                  <th className="p-2 px-3 text-center font-black text-xs uppercase w-16">{t.goats.lactViewer}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase text-left w-[320px]">{t.goats.certChoice}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactNo}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactDays}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactMilk}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactFat}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactProtein}</th>
+                  <th className="p-2 px-3 font-black text-xs uppercase">{t.goats.lactMilkDay}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {[
-                  { label: "M", p: "m", path: "MEM", color: "bg-pink-100/10" },
-                  { label: "F", p: "f", path: "MEF", color: "bg-blue-100/10" },
-                  {
-                    label: "MM",
-                    p: "mm",
-                    path: "MEMM",
-                    color: "bg-pink-50/20",
-                  },
-                  {
-                    label: "FM",
-                    p: "fm",
-                    path: "MEMF",
-                    color: "bg-blue-50/20",
-                  },
-                  {
-                    label: "MF",
-                    p: "mf",
-                    path: "MEFM",
-                    color: "bg-pink-50/20",
-                  },
-                  {
-                    label: "FF",
-                    p: "ff",
-                    path: "MEFF",
-                    color: "bg-blue-50/20",
-                  },
-                ].map((row, idx) => (
-                  <CertRows
-                    key={idx}
-                    label={row.label}
-                    count={3}
-                    bgColor={row.color}
-                    certData={certData}
-                    ancestorLacts={ancestorLacts}
-                    pathPrefix={row.p}
-                    pathKey={row.path}
-                    t={t}
-                  />
-                ))}
+              <tbody>
+                {/* П – 5 rows – Descendants of current goat (PHP: retChild($ID)) – #F6B8EB */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'П' : 'P'} count={5} bg="#F6B8EB"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="i" sourceType="descendants" t={t} lang={lang} />
+
+                {/* М – 3 rows – Mother (PHP: idof($ID,'M') + retParnt + retChild) – #F6DAB8 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'М' : 'M'} count={3} bg="#F6DAB8"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="m" pathKey="MEM" sourceType="ancestor" t={t} lang={lang} />
+
+                {/* О – 3 rows – Father (PHP: idof($ID,'F') + retParnt + retChild) – #E89F98 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'О' : 'ABOUT'} count={3} bg="#E89F98"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="f" pathKey="MEF" sourceType="ancestor" t={t} lang={lang} />
+
+                {/* ММ – 3 rows – Mother's Mother – #F6ECB8 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'ММ' : 'MM'} count={3} bg="#F6ECB8"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="mm" pathKey="MEMM" sourceType="ancestor" t={t} lang={lang} />
+
+                {/* ОМ – 3 rows – Mother's Father (PHP: idof($ID,'MF')) – #F6BDB8 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'ОМ' : 'OM'} count={3} bg="#F6BDB8"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="fm" pathKey="MEMF" sourceType="ancestor" t={t} lang={lang} />
+
+                {/* МО – 3 rows – Father's Mother (PHP: idof($ID,'FM')) – #F6ECB8 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'МО' : 'MO'} count={3} bg="#F6ECB8"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="mf" pathKey="MEFM" sourceType="ancestor" t={t} lang={lang} />
+
+                {/* ОО – 3 rows – Father's Father (PHP: idof($ID,'FF')) – #F6BDB8 */}
+                <CertRows goatId={goat.id} label={lang === 'ru' ? 'ОО' : 'OO'} count={3} bg="#F6BDB8"
+                  certData={certData} ancestorLacts={ancestorLacts} descendantLacts={descendantLacts}
+                  pathPrefix="ff" pathKey="MEFF" sourceType="ancestor" t={t} lang={lang} />
               </tbody>
             </table>
           </div>
         </section>
 
         {/* 3RD GEN PRODUCTIVITY (COMPACT) */}
+
         <section className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gray-900 px-6 py-4 border-b border-gray-100 flex justify-between items-center group">
             <h2 className="text-white text-sm font-black uppercase tracking-widest flex items-center gap-2">
@@ -676,8 +719,9 @@ export default async function GoatDetailPage({
                         {node?.name || "???"}
                       </span>
                     </div>
-                    <input
-                      type="text"
+                    <CertInput
+                      goatId={goat.id}
+                      fieldName={`id_${item.p}_row1`}
                       defaultValue={certData[`id_${item.p}_row1`] || displayVal}
                       className={`w-full text-[11px] font-black text-center p-2 rounded-md border outline-none ${displayVal ? "bg-emerald-50/50 border-emerald-100 text-emerald-800" : "bg-gray-50 border-gray-100 text-gray-400"}`}
                       placeholder="---"
@@ -690,10 +734,10 @@ export default async function GoatDetailPage({
         </section>
 
         {/* MOVEMENT DATA SECTION */}
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100">
-            <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
+        <section className="rounded-2xl shadow-sm border border-[#491907]/20 overflow-hidden" style={{ backgroundColor: '#F6DBE4' }}>
+          <div className="px-6 py-4 border-b border-[#491907]/10" style={{ backgroundColor: '#602701' }}>
+            <h2 className="text-white text-sm  uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1 h-3 bg-white rounded-full"></span>
               {t.goats.animalMovement}
             </h2>
           </div>
@@ -726,66 +770,130 @@ export default async function GoatDetailPage({
 }
 
 function CertRows({
+  goatId,
   label,
   count,
-  bgColor,
+  bg,
   certData,
   ancestorLacts,
+  descendantLacts = [],
   pathPrefix,
   pathKey,
+  sourceType, // 'ancestor' | 'descendants'
   t,
+  lang,
 }: any) {
-  const rows = [];
-  const node = ancestorLacts[pathKey] || { name: "?", lactations: [] };
+  // Build the pool of lactation records for this slot
+  let lactations: any[] = [];
 
+  if (sourceType === 'descendants') {
+    // П rows: use descendant lactations from all descendants
+    descendantLacts.forEach((d: any) => {
+      (d.lactations || []).forEach((l: any) => {
+        lactations.push({ ...l, _ownerName: d.name });
+      });
+    });
+    lactations.sort((a: any, b: any) => Number(a.id) - Number(b.id));
+  } else {
+    // ancestor rows: use the specific ancestor node from ancestorLacts
+    const node = ancestorLacts[pathKey] || { name: '', lactations: [] };
+    lactations = (node.lactations || []).map((l: any) => ({
+      ...l,
+      _ownerName: node.name,
+    }));
+  }
+
+  const rows = [];
   for (let i = 1; i <= count; i++) {
     const fieldName = `id_${pathPrefix}_row${i}`;
-    const selectedId = certData[fieldName];
-    const selectedLact = node.lactations.find((l: any) => l.id === selectedId);
+    const savedId = certData?.[fieldName];
+
+    // Build dropdown options exactly like old PHP: "Name/lact_no/lact_days/milk/fat/protein/milk_day"
+    const options: { id: number; label: string }[] = lactations.map((l: any) => {
+      const parts = [
+        l._ownerName || '',
+        l.lact_no ?? '',
+        l.lact_days ?? '',
+        l.milk ?? '',
+        l.fat ?? '',
+        l.protein ?? '',
+        l.milk_day ?? '',
+      ].join('/');
+      return { id: Number(l.id), label: parts };
+    });
+
+    // Determine if this row has a saved value with a pre-selected option
+    const hasValue = options.some(o => o.id === Number(savedId));
+
+    // Get the selected lactation details to display in the separate fields
+    const selectedLact = hasValue ? lactations.find((l: any) => Number(l.id) === Number(savedId)) : null;
+
+    let displayNo = '-';
+    let displayDays = '-';
+    let displayMilk = '-';
+    let displayFat = '-';
+    let displayProtein = '-';
+    let displayMilkDay = '-';
+
+    if (selectedLact) {
+      displayNo = selectedLact.lact_no !== null && selectedLact.lact_no !== undefined ? String(selectedLact.lact_no) : '-';
+      displayDays = selectedLact.lact_days !== null && selectedLact.lact_days !== undefined ? String(selectedLact.lact_days) : '-';
+      displayMilk = selectedLact.milk !== null && selectedLact.milk !== undefined ? String(selectedLact.milk) : '-';
+      displayFat = selectedLact.fat !== null && selectedLact.fat !== undefined ? String(selectedLact.fat) : '-';
+      displayProtein = selectedLact.protein !== null && selectedLact.protein !== undefined ? String(selectedLact.protein) : '-';
+
+      const rawMDay = selectedLact.milk_day ?? selectedLact.avg_yield ?? '';
+      if (rawMDay !== null && rawMDay !== undefined && rawMDay !== '') {
+        const num = Number(rawMDay);
+        if (!isNaN(num) && isFinite(num)) {
+          displayMilkDay = String(rawMDay);
+        }
+      }
+    }
 
     rows.push(
       <tr
-        key={i}
-        className={`${bgColor} divide-x divide-gray-100 border-b border-gray-100 last:border-0 hover:brightness-95 transition-all h-10`}
+        key={`${pathPrefix}-${i}`}
+        style={{ backgroundColor: bg }}
+        className="border-b border-white/40 divide-x-2 divide-[#4D2C1A] h-9 text-black text-center font-bold"
       >
-        <td className="p-1 px-3 font-black text-[#491907] w-12 text-center text-[10px]">
+        {/* WHO column – label repeats (no numeric suffix), matching old PHP */}
+        <td
+          className="p-1 px-3 text-center font-black text-xs w-14"
+          style={{ color: '#333' }}
+        >
           {label}
-          {i}
         </td>
-        <td className="p-1.5 px-4 text-start min-w-[200px]">
-          <select
-            className="w-full text-[11px] bg-white border border-gray-200 rounded-md p-1 outline-none font-bold shadow-sm focus:ring-1 focus:ring-[#491907]/20 transition-all"
-            defaultValue={selectedId || ""}
-          >
-            <option value="">-- {t.goats.select} --</option>
-            {node.lactations.map((l: any) => (
-              <option key={l.id} value={l.id}>
-                L{l.lact_no} • {l.lact_days}d • {l.milk}kg • {l.fat}% •{" "}
-                {l.protein}%
-              </option>
-            ))}
-          </select>
+        {/* CHOICE column – dropdown */}
+        <td className="p-1 px-2 text-left w-[320px]">
+          <CertLactSelect
+            goatId={goatId}
+            fieldName={fieldName}
+            selectedId={hasValue ? Number(savedId) : 0}
+            lactations={lactations}
+            options={options}
+            selectText={lang === 'ru' ? '-- выбрать --' : '-- select --'}
+          />
         </td>
-        <td className="p-1.5 font-bold text-gray-700 text-[11px]">
-          {selectedLact?.lact_no || "-"}
-        </td>
-        <td className="p-1.5 font-bold text-gray-700 text-[11px]">
-          {selectedLact?.lact_days || "-"}
-        </td>
-        <td className="p-1.5 font-black text-emerald-600 text-[11px]">
-          {selectedLact?.milk || "-"}
-        </td>
-        <td className="p-1.5 font-bold text-gray-700 text-[11px]">
-          {selectedLact?.fat || "-"}
-        </td>
-        <td className="p-1.5 font-bold text-gray-700 text-[11px]">
-          {selectedLact?.protein || "-"}
-        </td>
+        {/* Lactation number */}
+        <td className="p-1 px-3 text-xs">{displayNo}</td>
+        {/* Days of lactation */}
+        <td className="p-1 px-3 text-xs">{displayDays}</td>
+        {/* Milk yield per lactation in kg */}
+        <td className="p-1 px-3 text-xs">{displayMilk}</td>
+        {/* Fat % */}
+        <td className="p-1 px-3 text-xs">{displayFat}</td>
+        {/* Protein % */}
+        <td className="p-1 px-3 text-xs">{displayProtein}</td>
+        {/* Average daily milk yield (kg) */}
+        <td className="p-1 px-3 text-xs">{displayMilkDay}</td>
       </tr>,
     );
   }
   return <>{rows}</>;
 }
+
+
 
 function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
   if (!ancestry) return null;

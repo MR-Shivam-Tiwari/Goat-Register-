@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getTranslation, Locale } from "@/lib/translations";
 import { addGoatAction, updateGoatAction } from "@/lib/actions";
@@ -19,6 +19,10 @@ export default function GoatForm({
   initialData?: any;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const bindTo = searchParams.get("bind_to");
+  const bindAs = searchParams.get("bind_as");
+  const querySex = searchParams.get("sex");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
@@ -125,7 +129,12 @@ export default function GoatForm({
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
-          router.push(isEdit ? `/goats/${initialData.id}` : "/goats?success=1");
+          const res = result as any;
+          if (res.bindTo) {
+            router.push(`/goats/${res.bindTo}`);
+          } else {
+            router.push(isEdit ? `/goats/${initialData.id}` : "/goats?success=1");
+          }
         }, 1500);
       } else {
         setError(result.error || t.errors.somethingWrong);
@@ -191,6 +200,8 @@ export default function GoatForm({
       </div>
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
+        {bindTo && <input type="hidden" name="bind_to" value={bindTo} />}
+        {bindAs && <input type="hidden" name="bind_as" value={bindAs} />}
         <section className="space-y-4">
           <h3 className="text-xs font-black uppercase text-gray-400 border-l-4 border-[#491907] pl-3 py-1">
             {t.goats.basicInformation}
@@ -295,7 +306,7 @@ export default function GoatForm({
               </label>
               <select
                 name="sex"
-                defaultValue={initialData?.sex === 1 ? "male" : "female"}
+                defaultValue={querySex || (initialData?.sex === 1 ? "male" : "female")}
                 className={`w-full border-2 rounded-sm px-3 py-2 font-bold text-gray-900 focus:border-[#491907] outline-none cursor-pointer bg-[#FDFBF7]/40 h-11 text-sm shadow-sm ${fieldErrors.sex ? 'border-red-500' : 'border-gray-200'}`}
               >
                 <option value="female">{t.goats.female}</option>

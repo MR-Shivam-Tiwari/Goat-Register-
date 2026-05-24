@@ -36,7 +36,7 @@ export default function InviteSection({ goatId, t }: { goatId: string, t: any })
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-100 mt-8">
+    <div className="grid grid-cols-1   md:grid-cols-2 gap-8 pt-8 border-t border-[#491907]/10 mt-8">
       <div className="flex gap-4">
         <div className="flex-1">
           <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
@@ -80,15 +80,15 @@ export default function InviteSection({ goatId, t }: { goatId: string, t: any })
               className="w-full h-[42px] bg-gray-50/50 border border-gray-100 rounded-lg px-4 text-[10px] font-bold text-[#491907]/60 outline-none pr-10 overflow-hidden"
             />
             {link && (
-              <button 
+              <button
                 onClick={copyToClipboard}
                 title="Copy link"
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white rounded-md transition-colors text-gray-400 hover:text-[#491907]"
               >
                 {copied ? (
-                   <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                  <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                 ) : (
-                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                 )}
               </button>
             )}
