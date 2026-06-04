@@ -42,12 +42,28 @@ function extractPrefix(farmName: string, goats: any[]): string {
     counts[w] = (counts[w] || 0) + 1;
   });
 
+  // Find if there is a prefix that is similar to the farm name
+  const findSimilar = Object.entries(counts).find(([prefix]) => {
+    const pLower = prefix.toLowerCase();
+    const fLower = farmName.toLowerCase();
+    const fWordLower = farmFirstWord.toLowerCase();
+    return (
+      fLower.includes(pLower) || 
+      pLower.includes(fWordLower) || 
+      (pLower.substring(0, 3) === fWordLower.substring(0, 3))
+    );
+  });
+
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   const [topPrefix, topCount] = sorted[0];
 
-  // If the top prefix has a strong majority (e.g., more than 50% of all goats OR topCount >= 3)
-  // then we can trust it. Otherwise, we fall back to the first word of the farm's own name.
-  if (topCount >= 3 || (topCount / words.length) >= 0.5) {
+  // If we have a prefix that is similar to the farm name, and it has at least 2 goats, use it!
+  if (findSimilar && findSimilar[1] >= 2) {
+    return findSimilar[0];
+  }
+
+  // Otherwise, only trust topPrefix if it has a clear majority (topCount >= 3)
+  if (topCount >= 3) {
     return topPrefix;
   }
 
@@ -208,7 +224,6 @@ async function getDisplacedGoats(id: string, prefix: string) {
         ($2 != '' AND LOWER(Di.manuf) LIKE LOWER($2) || '%')
       )
       AND A.id_farm != $1::int
-      AND A.id_farm != 0
       AND A.is_reg = 1
     ORDER BY A.id, A.name ASC
   `, [id, prefix]);
