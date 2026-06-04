@@ -244,8 +244,8 @@ export default async function FarmDetailPage({
   const displayName = id === '0' && farm.name === 'Without Farm' ? (t.goats.withoutFarm || 'WITHOUT FARM') : farm.name;
 
   return (
-    <div className="min-h-screen  max-w-screen bg-[#FDFDFD] py-8 px-4 mx-24 md:px-6 lg:px-8 tracking-tight">
-      <div className="w-full max-w-none mx-auto space-y-4">
+    <div className="min-h-screen w-full bg-[#FDFDFD] py-8 px-4 md:px-8 tracking-tight">
+      <div className="w-full space-y-4">
         <Breadcrumbs
           items={[
             { label: t.farms.breadcrumbs, href: "/farms" },
@@ -269,9 +269,9 @@ export default async function FarmDetailPage({
 
         {/* MAIN DISPLAY SECTION */}
         {farm && (
-          <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
+          <section className="bg-[#FAF9F6] border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row">
             {/* IMAGE COLUMN (Left) */}
-            <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-r border-gray-200 relative group min-h-[500px]">
+            <div className="lg:w-[500px] shrink-0 bg-gray-50 flex items-center justify-center p-1 border-b lg:border-b-0 lg:border-r border-gray-200 relative group h-[280px] sm:h-[360px] lg:min-h-[500px]">
               <SmartFarmImage
                 src={(farm.displayPic2 || farm.displayAva) ?? null}
                 alt={farm.name}
@@ -282,7 +282,7 @@ export default async function FarmDetailPage({
             </div>
 
             {/* DESCRIPTION COLUMN (Right) */}
-            <div className="flex-1 p-12 flex flex-col items-center justify-center text-center">
+            <div className="flex-1 p-5 sm:p-8 lg:p-12 flex flex-col items-center justify-center text-center">
               <div className="max-w-2xl w-full">
                 <div
                   className="text-[#491907] leading-loose font-medium prose prose-slate max-w-none prose-p:my-4 prose-strong:text-[#491907] text-[15px]"

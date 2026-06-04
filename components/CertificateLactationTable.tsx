@@ -37,7 +37,8 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
         <span className="font-sans tracking-wide">{cl1.tribalValue || 'BREEDING VALUE AND OWN PRODUCTIVITY OF THE ANIMAL'}</span>
       </div>
 
-      <table className="productive-table w-full border-[1.5px] border-black text-center border-collapse">
+      <div className="overflow-x-auto w-full">
+      <table className="productive-table w-full min-w-[480px] border-[1.5px] border-black text-center border-collapse">
         <thead>
           <tr className="bg-white text-black text-[9px] font-black uppercase h-7 divide-x divide-black border-b border-black">
             <th className="w-[5%] border-black">V</th>
@@ -140,6 +141,7 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

@@ -395,7 +395,7 @@ export default async function GoatsListPage({
             )}
           </div>
           {showTable && reg !== "rfb" && (
-            <div className="flex flex-wrap items-end w-full gap-4">
+            <div className="grid grid-cols-2 md:flex md:flex-wrap items-end w-full gap-3">
               <SearchFilter 
                 label={t.goats.nickname} 
                 placeholder={t.goats.searchLabel} 
@@ -441,7 +441,7 @@ export default async function GoatsListPage({
                 ]}
               />
               
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 col-span-2 md:col-span-1">
                 <span className="text-[9px] font-black text-transparent uppercase tracking-widest px-1 select-none">
                   RESET
                 </span>

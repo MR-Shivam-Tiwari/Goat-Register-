@@ -64,3 +64,36 @@
     100% { transform: scaleX(1); opacity: 0.5; }
   }
 }
+
+/* ── Responsive sticky column ── */
+/* Mobile: NOT sticky — column scrolls with the table */
+.col-sticky-md {
+  position: static !important;
+  left: auto !important;
+  z-index: auto !important;
+}
+
+/* Desktop (768px+): sticky to the left of the scroll container */
+@media (min-width: 768px) {
+  .col-sticky-md {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 40 !important;
+  }
+}
+
+/* Custom thin scrollbar for wide data tables */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #CFA979;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #491907;
+}

@@ -39,11 +39,15 @@ export default function ClassicGoatTable({
           className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setPreviewImage(null)}
         >
-          <div className="bg-white p-2 rounded-lg shadow-2xl max-w-[90vw] max-h-[90vh]">
+          <div 
+            className="bg-white p-2 rounded-lg shadow-2xl max-w-[90vw] max-h-[90vh]"
+            style={{ backgroundColor: "#ffffff", opacity: 1 }}
+          >
             <img
               src={previewImage}
               alt="Preview"
               className="max-w-full max-h-[80vh] object-contain rounded"
+              style={{ opacity: 1, display: "block" }}
             />
             <button className="w-full mt-4 py-2 bg-primary text-white font-bold uppercase text-xs rounded">
               Close
@@ -106,7 +110,7 @@ export default function ClassicGoatTable({
             </tr>
             {/* BOTTOM HEADER - FIELDS (MINT GREEN / MATCHING TONE) */}
             <tr className="text-[12px] font-bold uppercase tracking-tight text-gray-900 border-b border-black bg-[#B5F4BB]">
-              <th className="p-0 border-r text-center text-nowrap border-black sticky left-0 bg-[#B5F4BB] z-40 min-w-[300px]">
+              <th className="p-0 border-r text-center text-nowrap border-black col-sticky-md bg-[#B5F4BB] min-w-[200px] md:min-w-[300px]">
                 <div className="flex items-center justify-center h-full px-2">
                   {t.goats.nickname}
                 </div>
@@ -331,7 +335,7 @@ export default function ClassicGoatTable({
                 >
                   <td
                     style={{ backgroundColor: rowColor }}
-                    className="p-0 sticky left-0 z-20 whitespace-nowrap border-r border-black"
+                    className="p-0 col-sticky-md whitespace-nowrap border-r border-black"
                   >
                     <div className="flex items-center gap-1.5 px-2 h-full">
                       <button
