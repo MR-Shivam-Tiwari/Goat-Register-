@@ -733,6 +733,53 @@ export async function selectOfficialLactationAction(goatId: number | string, lac
     }
 }
 
+export async function copyMilkToLactationAction(goatId: number | string, milkRecordId: number | string) {
+    const t = await getT();
+    try {
+        const idGoat = parseInt(goatId as string);
+        const idMilk = parseInt(milkRecordId as string);
+        
+        // 1. Get animal name
+        const animalRes = await query(`SELECT name FROM animals WHERE id = $1`, [idGoat]);
+        if (animalRes.rows.length === 0) {
+            return { error: "Animal not found" };
+        }
+        const name = animalRes.rows[0].name;
+
+        // 2. Get milk record details
+        const milkRes = await query(`SELECT * FROM goats_milk WHERE id = $1 AND id_goat = $2`, [idMilk, idGoat]);
+        if (milkRes.rows.length === 0) {
+            return { error: "Milk record not found" };
+        }
+        const m = milkRes.rows[0];
+
+        // 3. Insert into goats_lact
+        await query(
+            `INSERT INTO goats_lact (id_goat, viewer, lact_no, lact_days, milk, fat, protein, milk_day, have_graph)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [
+                idGoat,
+                name,
+                m.par_0, // lact_no
+                m.par_1 ? String(m.par_1) : '0', // lact_days
+                m.par_2 || 0, // milk
+                m.par_3 || 0, // fat
+                m.par_4 || 0, // protein
+                m.par_7 || null, // milk_day
+                m.have_graph || 0
+            ]
+        );
+
+        revalidatePath(`/goats/${goatId}`);
+        revalidatePath(`/goats`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Copy Milk to Lactation Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
+
 export async function updateCertValueAction(goatId: number | string, fieldName: string, value: string | number | null) {
     const t = await getT();
     try {

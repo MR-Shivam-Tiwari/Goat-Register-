@@ -16,13 +16,24 @@ interface CertificateLactationTableProps {
 }
 
 export default function CertificateLactationTable({ lactations, cl1 }: CertificateLactationTableProps) {
-  // Only real rows (rows that actually have data from DB)
-  const dataRows = lactations.filter(l => l && (l.lact_no != null || l.milk != null));
+  // Always display exactly 5 rows. Pad the array with empty objects if it has fewer than 5 rows.
+  const displayRows = [...lactations];
+  while (displayRows.length < 5) {
+    displayRows.push({
+      lact_no: null,
+      lact_days: null,
+      milk: null,
+      fat: null,
+      protein: null,
+    });
+  }
 
-  // Default: all real data rows are checked
+  // Default: all rows are checked/enabled for print
   const [selected, setSelected] = useState<Record<number, boolean>>(() => {
     const initial: Record<number, boolean> = {};
-    dataRows.forEach((_, i) => { initial[i] = true; });
+    displayRows.forEach((_, i) => {
+      initial[i] = true;
+    });
     return initial;
   });
 
@@ -60,7 +71,7 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
           </tr>
         </thead>
         <tbody className="divide-y divide-black font-bold">
-          {dataRows.map((l, i) => {
+          {displayRows.map((l, i) => {
             const isChecked = selected[i] ?? true;
             return (
               <tr
