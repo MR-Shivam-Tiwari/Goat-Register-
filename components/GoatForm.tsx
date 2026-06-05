@@ -669,7 +669,7 @@ export default function GoatForm({
             {isEdit && initialData.ava && !selectedFile && !removeExistingPhoto && (
               <div className="flex items-center gap-4 border border-gray-200 p-2 bg-white">
                 <img
-                  src={initialData.ava.startsWith('http') || initialData.ava.startsWith('/') ? initialData.ava : `/uploads/${initialData.ava}`}
+                  src={initialData.ava.startsWith('http') || initialData.ava.startsWith('/') ? initialData.ava : `/api/uploads/${initialData.ava}`}
                   className="w-16 h-12 object-cover"
                 />
                 <span className="text-[10px] text-gray-400 font-bold uppercase">

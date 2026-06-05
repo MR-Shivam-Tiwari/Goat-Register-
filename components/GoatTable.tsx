@@ -308,7 +308,7 @@ export default function GoatTable({
                           src={
                             g.ava.startsWith("http") || g.ava.startsWith("/")
                               ? g.ava
-                              : `/uploads/${g.ava}`
+                              : `/api/uploads/${g.ava}`
                           }
                           alt=""
                           className="w-16 h-12 object-cover rounded shadow-sm border border-white"

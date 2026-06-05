@@ -93,7 +93,7 @@ export default function GoatListTable({
                 else rowBg = "bg-[#E3F2FD]/60";
 
                 const photoSrc = goat.main_photo
-                  ? `/uploads/${goat.main_photo}`
+                  ? `/api/uploads/${goat.main_photo}`
                   : null;
 
                 return (

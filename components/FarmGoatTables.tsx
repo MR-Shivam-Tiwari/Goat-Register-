@@ -68,10 +68,10 @@ export default function FarmGoatTables({
                                     <td className="p-2 md:p-3.5 md:px-4 border-r border-black text-center">
                                         <div 
                                             className="w-10 h-10 md:w-14 md:h-14 mx-auto bg-gray-50 flex items-center justify-center overflow-hidden cursor-zoom-in border border-gray-200 rounded-sm shadow-sm"
-                                            onClick={() => goat.main_photo && setPreviewImage(`/uploads/${goat.main_photo}`)}
+                                            onClick={() => goat.main_photo && setPreviewImage(`/api/uploads/${goat.main_photo}`)}
                                         >
                                             {goat.main_photo ? (
-                                                <img src={`/uploads/${goat.main_photo}`} alt="" className="w-full h-full object-cover" />
+                                                <img src={`/api/uploads/${goat.main_photo}`} alt="" className="w-full h-full object-cover" />
                                             ) : (
                                                 <span className="text-[9px] text-gray-300 font-bold uppercase">NO IMG</span>
                                             )}

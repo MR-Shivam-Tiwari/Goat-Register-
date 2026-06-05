@@ -104,7 +104,7 @@ export default async function GoatDetailPage({
                     src={
                       goat.ava.startsWith("http") || goat.ava.startsWith("/")
                         ? goat.ava
-                        : `/uploads/${goat.ava}`
+                        : `/api/uploads/${goat.ava}`
                     }
                     className="w-full h-full object-cover"
                     alt={goat.name}

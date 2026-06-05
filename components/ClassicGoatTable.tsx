@@ -355,7 +355,7 @@ export default function ClassicGoatTable({
                           src={
                             g.ava.startsWith("http") || g.ava.startsWith("/")
                               ? g.ava
-                              : `/uploads/${g.ava}`
+                              : `/api/uploads/${g.ava}`
                           }
                           alt=""
                           className="w-7 h-6 object-cover border border-gray-300 cursor-zoom-in"
@@ -364,7 +364,7 @@ export default function ClassicGoatTable({
                             setPreviewImage(
                               g.ava.startsWith("http") || g.ava.startsWith("/")
                                 ? g.ava
-                                : `/uploads/${g.ava}`,
+                                : `/api/uploads/${g.ava}`,
                             );
                           }}
                         />

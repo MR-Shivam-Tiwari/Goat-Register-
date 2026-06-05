@@ -42,7 +42,7 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
         <div className="w-36 h-46 bg-[#B5F4BB] border-r border-b border-[#4D2C1A] last:border-r-0 p-2 group relative overflow-hidden flex flex-col items-center justify-center">
             <div className="w-full h-full relative overflow-hidden border border-[#491907]/20">
                 <img
-                    src={file.startsWith('http') || file.startsWith('/') ? file : `/uploads/${file}`}
+                    src={file.startsWith('http') || file.startsWith('/') ? file : `/api/uploads/${file}`}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
                     alt="Gallery item"
                 />
@@ -79,7 +79,7 @@ export default function GalleryItem({ file, goatId, t }: { file: string, goatId:
                     </button>
                     <div className="max-w-5xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl border border-white/10 ring-4 ring-black/50 animate-in zoom-in-95 duration-500">
                         <img 
-                            src={file.startsWith('http') || file.startsWith('/') ? file : `/uploads/${file}`} 
+                            src={file.startsWith('http') || file.startsWith('/') ? file : `/api/uploads/${file}`} 
                             className="w-full h-auto max-h-[85vh] object-contain select-none" 
                             alt="Preview" 
                         />
