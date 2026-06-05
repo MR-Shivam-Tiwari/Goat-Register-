@@ -31,9 +31,9 @@ export default async function ManagePage() {
     const { farms, goats } = await getData();
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-12 lg:px-24">
-            <div className="max-w-6xl mx-auto space-y-8">
-                <header className="flex justify-between items-end border-b-2 border-amber-900/10 pb-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/20 py-12 px-4 md:px-8 lg:px-12">
+            <div className="max-w-7xl mx-auto space-y-8">
+                <header className="flex justify-between items-end border-b border-amber-900/10 pb-6">
                     <div>
                         <h1 className="text-4xl font-black text-primary tracking-tighter uppercase">Registry Manager</h1>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Administrative Control Center</p>

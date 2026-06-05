@@ -426,6 +426,54 @@ export default async function GuestGoatPage({
 
 function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: number, t: any }) {
   if (!ancestry) return null;
+
+  // Walk tree to find repeated ancestors by name (Inbreeding detection)
+  const nameCounts = new Map<string, number>();
+  const nameColors = new Map<string, string>();
+
+  function countNames(node: any) {
+    if (!node || !node.name) return;
+    const key = node.name.trim().toLowerCase();
+    nameCounts.set(key, (nameCounts.get(key) || 0) + 1);
+    countNames(node.father);
+    countNames(node.mother);
+  }
+
+  countNames(ancestry.father);
+  countNames(ancestry.mother);
+
+  // Very light, soft pastel colors (not dark at all)
+  const repeatPalette = [
+    "#E0F2FE", // very soft blue
+    "#FEF08A", // very soft yellow
+    "#DCFCE7", // very soft green
+    "#FCE7F3", // very soft pink
+    "#F3E8FF", // very soft purple
+    "#FFEDD5", // very soft orange
+    "#CCFBF1", // very soft teal
+    "#FEF3C7", // very soft amber
+    "#E2F0D9", // very soft light green
+  ];
+  let pIdx = 0;
+
+  nameCounts.forEach((count, key) => {
+    if (count > 1) {
+      nameColors.set(key, repeatPalette[pIdx % repeatPalette.length]);
+      pIdx++;
+    }
+  });
+
+  function getNodeColor(node: any, defaultSex: number) {
+    if (!node || !node.name) {
+      return defaultSex === 1 ? "#E2F0D9" : "#FDE2E8";
+    }
+    const key = node.name.trim().toLowerCase();
+    if (nameColors.has(key)) {
+      return nameColors.get(key)!;
+    }
+    return node.sex === 1 ? "#E2F0D9" : "#FDE2E8";
+  }
+
   return (
     <div className="flex flex-col w-full text-[9px] uppercase font-black bg-white">
       <div className="bg-[#491907] flex h-8 items-center border-b border-white/10 px-4">
@@ -436,8 +484,8 @@ function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: numbe
       <div className="flex divide-x divide-gray-400">
         {/* Tier 1 */}
         <div className="flex-1 flex-col flex">
-          <PedigreeNode node={ancestry.father} prefix="O:" color="bg-[#C5E0B4]" border isGuest t={t} />
-          <PedigreeNode node={ancestry.mother} prefix="M:" color="bg-[#F8CBAD]" isGuest t={t} />
+          <PedigreeNode node={ancestry.father} prefix="O:" color={getNodeColor(ancestry.father, 1)} border isGuest t={t} />
+          <PedigreeNode node={ancestry.mother} prefix="M:" color={getNodeColor(ancestry.mother, 2)} isGuest t={t} />
         </div>
 
         {/* Tier 2 */}
@@ -445,8 +493,8 @@ function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: numbe
           <div className="flex-1 flex flex-col">
             {[ancestry.father, ancestry.mother].map((p, i) => (
               <div key={i} className="flex-1 flex flex-col border-b last:border-0 border-gray-400">
-                <PedigreeNode node={p?.father} prefix="O:" color="bg-[#E2F0D9]" border isGuest t={t} />
-                <PedigreeNode node={p?.mother} prefix="M:" color="bg-[#F6B8EB]/50" isGuest t={t} />
+                <PedigreeNode node={p?.father} prefix="O:" color={getNodeColor(p?.father, 1)} border isGuest t={t} />
+                <PedigreeNode node={p?.mother} prefix="M:" color={getNodeColor(p?.mother, 2)} isGuest t={t} />
               </div>
             ))}
           </div>
@@ -458,8 +506,8 @@ function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: numbe
             {[ancestry.father, ancestry.mother].map((p, i) =>
               [p?.father, p?.mother].map((gp, j) => (
                 <div key={`${i}-${j}`} className="flex-1 flex flex-col border-b last:border-0 border-gray-400">
-                  <PedigreeNode node={gp?.father} prefix="O:" color="bg-[#E2F0D9]/40" border isGuest t={t} />
-                  <PedigreeNode node={gp?.mother} prefix="M:" color="bg-[#F6B8EB]/30" isGuest t={t} />
+                  <PedigreeNode node={gp?.father} prefix="O:" color={getNodeColor(gp?.father, 1)} border isGuest t={t} />
+                  <PedigreeNode node={gp?.mother} prefix="M:" color={getNodeColor(gp?.mother, 2)} isGuest t={t} />
                 </div>
               ))
             )}
@@ -473,8 +521,8 @@ function PedigreeChart({ ancestry, maxGens, t }: { ancestry: any, maxGens: numbe
               [p?.father, p?.mother].map((gp, j) =>
                 [gp?.father, gp?.mother].map((ggp, k) => (
                   <div key={`${i}-${j}-${k}`} className="flex-1 flex flex-col border-b last:border-0 border-gray-300">
-                    <PedigreeNode node={ggp?.father} prefix="O:" color="bg-gray-100" border isGuest t={t} />
-                    <PedigreeNode node={ggp?.mother} prefix="M:" color="bg-gray-50" isGuest t={t} />
+                    <PedigreeNode node={ggp?.father} prefix="O:" color={getNodeColor(ggp?.father, 1)} border isGuest t={t} />
+                    <PedigreeNode node={ggp?.mother} prefix="M:" color={getNodeColor(ggp?.mother, 2)} isGuest t={t} />
                   </div>
                 ))
               )

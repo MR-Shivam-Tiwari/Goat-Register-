@@ -17,10 +17,15 @@ export default function PedigreeNode({
   isGuest = false,
   t,
 }: PedigreeNodeProps) {
+  const isHex = color && color.startsWith('#');
+  const style = isHex ? { backgroundColor: color } : undefined;
+  const colorClass = isHex ? '' : color;
+
   if (!node) {
     return (
       <div
-        className={`flex-1 ${color} flex items-center justify-center p-2 text-[10px] font-black opacity-20 uppercase tracking-widest`}
+        style={style}
+        className={`flex-1 flex items-center justify-center p-2 text-[10px] font-black opacity-20 uppercase tracking-widest ${colorClass}`}
       >
         {t.catalog.empty}
       </div>
@@ -29,13 +34,14 @@ export default function PedigreeNode({
 
   return (
     <div
-      className={`flex-1 min-h-[32px] p-1.5 flex items-center gap-1 leading-tight ${color} ${border ? "border-b border-gray-400" : ""}`}
+      style={style}
+      className={`flex-1 min-h-[32px] p-1.5 flex items-center gap-1 leading-tight ${colorClass} ${border ? "border-b border-gray-400" : ""}`}
     >
       <span
         className={
           prefix === "F:" || prefix === "О:" || prefix === "O:"
-            ? "text-blue-600"
-            : "text-pink-600"
+            ? "text-blue-600 font-extrabold"
+            : "text-pink-600 font-extrabold"
         }
       >
         {prefix}

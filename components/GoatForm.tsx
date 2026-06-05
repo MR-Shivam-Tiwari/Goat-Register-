@@ -642,22 +642,24 @@ export default function GoatForm({
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 bg-white border-2 border-[#491907] p-2 pr-4 rounded-sm">
-                <div className="bg-[#491907] text-white p-2">
-                  <Upload size={16} />
-                </div>
-                <div className="flex flex-col">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white border border-gray-200 p-3 rounded-md shadow-sm w-full">
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  className="w-24 h-16 object-cover rounded-md border border-gray-200 shadow-sm"
+                  alt="Preview"
+                />
+                <div className="flex flex-col flex-1">
                   <span className="text-[9px] font-black uppercase text-gray-400">
                     {t.common.fileSelected}
                   </span>
-                  <span className="text-sm font-bold text-gray-800 truncate max-w-[200px]">
+                  <span className="text-sm font-bold text-gray-800 truncate max-w-[250px]">
                     {selectedFile.name}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={removeFile}
-                  className="ml-4 text-red-600 hover:text-red-800 font-black text-xs uppercase underline tracking-tighter"
+                  className="text-red-600 hover:text-red-800 font-black text-xs uppercase underline tracking-tighter sm:ml-4"
                 >
                   {t.common.remove}
                 </button>
