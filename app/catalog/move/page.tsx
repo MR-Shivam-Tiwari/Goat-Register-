@@ -12,13 +12,23 @@ async function getBreedData(alias: string) {
   return result.rows[0];
 }
 
-async function getTransferredGoats(breed_id?: number) {
+async function getTransferredGoats(breed_id?: number, search?: string) {
   let whereClause = "";
   const params: any[] = [];
   
   if (breed_id && breed_id !== 0) {
     whereClause = "WHERE Di.id_breed = $1";
     params.push(breed_id);
+  }
+
+  if (search && search.trim() !== "") {
+    const searchParamIndex = params.length + 1;
+    if (whereClause === "") {
+      whereClause = `WHERE A.name ILIKE $${searchParamIndex}`;
+    } else {
+      whereClause += ` AND A.name ILIKE $${searchParamIndex}`;
+    }
+    params.push(`%${search.trim()}%`);
   }
 
   const sql = `
@@ -54,11 +64,15 @@ function formatDate(dateStr: any) {
 
 export default async function TransferredGoatsPage({
   params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
   params: Promise<{ alias?: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
   const alias = params.alias;
+  const searchQuery = searchParams.q || "";
 
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
@@ -75,7 +89,7 @@ export default async function TransferredGoatsPage({
     breed = await getBreedData(alias);
   }
 
-  const goats = await getTransferredGoats(breed?.id);
+  const goats = await getTransferredGoats(breed?.id, searchQuery);
 
   const breadcrumbItems = [
     { label: t.catalog.breadcrumbs, href: "/catalog/goats" },
@@ -92,13 +106,38 @@ export default async function TransferredGoatsPage({
       <div className="max-w-[1500px] mx-auto flex flex-col h-[calc(100vh-100px)] space-y-4">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <header className="flex items-center justify-between py-2 border-b border-[#491907]/10">
+        <header className="flex flex-col md:flex-row md:items-center justify-between py-3 border-b border-[#491907]/10 gap-4">
             <h2 className="text-[22px] font-light text-[#491907] uppercase tracking-tight leading-none">
               <span className="opacity-40">{breed ? `${breed.name} / ` : ""}</span>
               {t.catalog.transferredAnimalsList}
             </h2>
-            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                {goats.length} RECORDS FOUND
+            <div className="flex items-center gap-4">
+              <form method="GET" className="flex items-center gap-2">
+                <input
+                  type="text"
+                  name="q"
+                  placeholder={lang === "en" ? "Search by nickname..." : lang === "uk" ? "Пошук за кличкою..." : "Поиск по кличке..."}
+                  defaultValue={searchQuery}
+                  className="px-3 py-1.5 border border-[#491907]/20 rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#491907]/50 bg-white text-black w-60"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#491907] text-white rounded text-xs font-bold uppercase hover:bg-black transition-all"
+                >
+                  {lang === "en" ? "Search" : lang === "uk" ? "Пошук" : "Поиск"}
+                </button>
+                {searchQuery && (
+                  <a
+                    href={breed ? `/catalog/goats/${alias}/move` : "/catalog/move"}
+                    className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 transition-all font-semibold"
+                  >
+                    ✕
+                  </a>
+                )}
+              </form>
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap">
+                  {goats.length} RECORDS FOUND
+              </div>
             </div>
         </header>
 

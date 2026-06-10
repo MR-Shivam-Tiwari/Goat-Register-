@@ -608,12 +608,12 @@ export default async function GoatDetailPage({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {[
                 { l: "MMM", p: "mmm", path: "MEMMM" },
-                { l: "BMM", p: "fmm", path: "MEMFM" },
-                { l: "MBM", p: "mfm", path: "MEFMM" },
-                { l: "BBM", p: "ffm", path: "MEFFM" },
-                { l: "MMB", p: "mmf", path: "MEMMF" },
-                { l: "BMB", p: "fmf", path: "MEMFF" },
-                { l: "MBB", p: "mff", path: "MEFMF" },
+                { l: "BMM", p: "fmm", path: "MEMMF" },
+                { l: "MBM", p: "mfm", path: "MEMFM" },
+                { l: "BBM", p: "ffm", path: "MEMFF" },
+                { l: "MMB", p: "mmf", path: "MEFMM" },
+                { l: "BMB", p: "fmf", path: "MEFMF" },
+                { l: "MBB", p: "mff", path: "MEFFM" },
                 { l: "BBB", p: "fff", path: "MEFFF" },
               ].map((item, i) => {
                 const node = ancestorLacts[item.path];

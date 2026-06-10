@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import PrintButton from "@/components/PrintButton";
 import { getSessionUser } from "@/lib/access-control";
 import CertificateLactationTable from "@/components/CertificateLactationTable";
+import { getAncestorLactations as fetchAncestorLacts } from "@/lib/goats-data";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ async function getGoatCertData(id: string) {
       ) T ON A.id = T.id_goat
       WHERE A.id = $1
     `,
-    [id]
+    [id],
   );
   return result.rows[0];
 }
@@ -47,11 +48,10 @@ async function getLactations(id: string) {
     FROM goats_lact 
     WHERE id_goat = $1 
     ORDER BY id ASC LIMIT 5`,
-    [id]
+    [id],
   );
   return res.rows;
 }
-
 
 async function getCertSelections(id: string) {
   const res = await query("SELECT * FROM goats_cert WHERE id_goat = $1", [id]);
@@ -59,41 +59,49 @@ async function getCertSelections(id: string) {
 }
 
 async function getAncestorLactations(ids: any[]) {
-    if (ids.length === 0) return [];
-    const validIds = ids.filter(id => id && !isNaN(Number(id))).map(id => Number(id));
-    if (validIds.length === 0) return [];
-    
-    const res = await query(
-      `SELECT gl.*, a.name as offspring_name 
+  if (ids.length === 0) return [];
+  const validIds = ids
+    .filter((id) => id && !isNaN(Number(id)))
+    .map((id) => Number(id));
+  if (validIds.length === 0) return [];
+
+  const res = await query(
+    `SELECT gl.*, a.name as offspring_name 
        FROM goats_lact gl 
        JOIN animals a ON gl.id_goat = a.id 
-       WHERE gl.id IN (SELECT unnest($1::int[]))`, 
-      [validIds]
-    );
-    return res.rows;
+       WHERE gl.id IN (SELECT unnest($1::int[]))`,
+    [validIds],
+  );
+  return res.rows;
 }
 
 async function getOffspringLactations(buckId: number) {
-    // Find best lactations of daughters for this buck
-    const res = await query(`
-        SELECT gl.*, a.name as offspring_name
+  // Get best lactation per daughter, then pick top 3 by milk yield
+  const res = await query(
+    `SELECT * FROM (
+        SELECT DISTINCT ON (a.id) gl.*, a.name as offspring_name
         FROM goats_lact gl
         JOIN animals a ON gl.id_goat = a.id
         WHERE a.id_father = $1
-        ORDER BY gl.milk DESC
-        LIMIT 3
-    `, [buckId]);
-    return res.rows;
+        ORDER BY a.id, gl.milk DESC
+     ) best_per_daughter
+     ORDER BY milk DESC
+     LIMIT 3`,
+    [buckId],
+  );
+  return res.rows;
 }
 
 async function getAncestorDetails(ids: number[]) {
   if (ids.length === 0) return [];
-  const res = await query(`
+  const res = await query(
+    `
     SELECT 
       A.id, A.name, A.sex, A.id_mother, A.id_father,
       Di.date_born, Di.born_weight, Di.born_qty, Di.score as goat_score,
       Di.horns_type, Di.code_ua, Di.code_abg, Di.code_chip, Di.manuf, Di.owner,
-      B.name as breed_name,
+      Di.blood_percent,
+      B.name as breed_name, B.alias as breed_alias,
       S.name as studbook_name, S.alias as studbook_alias,
       T.score_total as test_score, T.class as test_class
     FROM animals A
@@ -104,14 +112,16 @@ async function getAncestorDetails(ids: number[]) {
        SELECT * FROM goats_test WHERE id_goat = A.id ORDER BY date_test DESC LIMIT 1
     ) T ON TRUE
     WHERE A.id IN (SELECT unnest($1::int[]))
-  `, [ids]);
+  `,
+    [ids],
+  );
   return res.rows;
 }
 
-export default async function CertificatePage({ 
-  params 
-}: { 
-  params: Promise<{ id: string, type: string }> 
+export default async function CertificatePage({
+  params,
+}: {
+  params: Promise<{ id: string; type: string }>;
 }) {
   const { id, type } = await params;
   const user = await getSessionUser();
@@ -119,13 +129,10 @@ export default async function CertificatePage({
   if (!goat) notFound();
 
   // ACCESS CONTROL: Allow Admin (role >= 10) or Owner (by id_user)
-  const isOwner = user && (
-    user.role >= 10 || 
-    user.id === goat.id_user
-  );
+  const isOwner = user && (user.role >= 10 || user.id === goat.id_user);
 
   if (!isOwner) {
-    redirect('/goats');
+    redirect("/goats");
   }
 
   const cookieStore = await cookies();
@@ -136,12 +143,11 @@ export default async function CertificatePage({
     if (!dateStr) return "";
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return "";
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
     const year = d.getFullYear();
     return `${day}.${month}.${year}`;
   };
-
 
   const getHornType = (type: number) => {
     const horns = {
@@ -155,11 +161,56 @@ export default async function CertificatePage({
 
   const getSymbol = (key: string) => {
     const symbols = {
-      ru: { m: 'М', f: 'О', mm: 'ММ', fm: 'ОМ', mf: 'МО', ff: 'ОО', mmm: 'МММ', fmm: 'ОММ', mfm: 'МОМ', ffm: 'ООМ', mmf: 'ММО', fmf: 'ОМО', mff: 'МОО', fff: 'ООО' },
-      en: { m: 'M', f: 'F', mm: 'MM', fm: 'OM', mf: 'FM', ff: 'FF', mmm: 'MMM', fmm: 'FMM', mfm: 'MFM', ffm: 'FFM', mmf: 'MMF', fmf: 'FMF', mff: 'MFF', fff: 'FFF' },
-      uk: { m: 'М', f: 'Б', mm: 'ММ', fm: 'БМ', mf: 'МО', ff: 'ББ', mmm: 'МММ', fmm: 'БММ', mfm: 'МБМ', ffm: 'ББМ', mmf: 'ММБ', fmf: 'БМБ', mff: 'МББ', fff: 'БББ' },
+      ru: {
+        m: "М",
+        f: "Б",
+        mm: "ММ",
+        fm: "МБ",
+        mf: "БМ",
+        ff: "ББ",
+        mmm: "МММ",
+        fmm: "БММ",
+        mfm: "МБМ",
+        ffm: "ББМ",
+        mmf: "ММБ",
+        fmf: "БМБ",
+        mff: "МББ",
+        fff: "БББ",
+      },
+      en: {
+        m: "M",
+        f: "F",
+        mm: "MM",
+        fm: "FM",
+        mf: "MF",
+        ff: "FF",
+        mmm: "MMM",
+        fmm: "FMM",
+        mfm: "MFM",
+        ffm: "FFM",
+        mmf: "MMF",
+        fmf: "FMF",
+        mff: "MFF",
+        fff: "FFF",
+      },
+      uk: {
+        m: "М",
+        f: "Б",
+        mm: "ММ",
+        fm: "МБ",
+        mf: "БМ",
+        ff: "ББ",
+        mmm: "МММ",
+        fmm: "БММ",
+        mfm: "МБМ",
+        ffm: "ББМ",
+        mmf: "ММБ",
+        fmf: "БМБ",
+        mff: "МББ",
+        fff: "БББ",
+      },
     };
-    const set = symbols[locale] || symbols['ru'];
+    const set = symbols[locale] || symbols["ru"];
     return (set as any)[key] || key.toUpperCase();
   };
 
@@ -318,17 +369,17 @@ export default async function CertificatePage({
       pickLactations: "ОБЕРІТЬ ЛАКТАЦІЇ ДЛЯ ДРУКУ ➔",
       certPreviewMode: "Режим попереднього перегляду сертифіката",
       backToProfile: "← Назад до профілю",
-    }
+    },
   };
 
   const getStdb = (alias: string) => {
-    if (alias === 'ex') return 'RExB';
-    if (alias === 'tg') return 'RHB';
-    if (alias === 'ft') return 'RFB';
-    return 'RHB'; 
+    if (alias === "ex") return "RExB";
+    if (alias === "tg") return "RHB";
+    if (alias === "ft") return "RFB";
+    return "RHB";
   };
 
-  const cl1 = cert1Labels[locale] || cert1Labels['ru'];
+  const cl1 = cert1Labels[locale] || cert1Labels["ru"];
 
   if (type === "1") {
     const lactations = await getLactations(id);
@@ -336,7 +387,9 @@ export default async function CertificatePage({
 
     return (
       <div className="min-h-screen bg-gray-100 p-4 pb-20 font-sans text-black print:p-0 print:bg-white">
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
             /* Hide global UI on this page */
             header, nav, footer, .global-nav, .global-footer { display: none !important; }
             body { background: #f3f4f6 !important; }
@@ -346,7 +399,7 @@ export default async function CertificatePage({
                  Blank already has: UKRAINE header, Association Of Breeding Goats,
                  goat watermark, decorative border, holographic sticker (~6-7cm top).
                  Our content fills the remaining ~22cm below that area. */
-              @page { size: A4 portrait; margin-top: 6.8cm; margin-left: 0.8cm; margin-right: 0.8cm; margin-bottom: 0.5cm; }
+              @page { size: A4 portrait; margin-top: 7.3cm; margin-left: 0.8cm; margin-right: 0.8cm; margin-bottom: 1.0cm; }
               body { 
                 background: transparent !important; 
                 margin: 0 !important; 
@@ -398,98 +451,239 @@ export default async function CertificatePage({
             .productive-table th { background: transparent; color: #000; font-weight: bold; padding: 1px; }
             .productive-table input { width: 100%; height: 100%; border: none; outline: none; text-align: center; background: transparent; font-size: 10.5px; font-weight: bold; }
             .print-only { display: none; }
-        `}} />
-        
+        `,
+          }}
+        />
+
         <div className="print-hidden no-print mb-4 max-w-[950px] mx-auto flex justify-between items-center bg-[#FDFDFD] border border-gray-200 rounded-lg p-3 shadow-sm text-black">
-           <Link href={`/goats/${id}`} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-black border border-gray-300 rounded font-black text-xs uppercase transition-all flex items-center gap-2">
-             {cl1.backToProfile}
-           </Link>
-           <div className="text-xs font-bold text-gray-500">
-             {cl1.certPreviewMode}
-           </div>
-           <PrintButton label={cl1.printLabel} className="bg-[#522513] text-white px-6 py-2 rounded font-black text-xs uppercase hover:bg-[#3b1a0d] transition-all shadow-md" />
+          <Link
+            href={`/goats/${id}`}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-black border border-gray-300 rounded font-black text-xs uppercase transition-all flex items-center gap-2"
+          >
+            {cl1.backToProfile}
+          </Link>
+          <div className="text-xs font-bold text-gray-500">
+            {cl1.certPreviewMode}
+          </div>
+          <PrintButton
+            label={cl1.printLabel}
+            className="bg-[#522513] text-white px-6 py-2 rounded font-black text-xs uppercase hover:bg-[#3b1a0d] transition-all shadow-md"
+          />
         </div>
 
         <div className="w-full max-w-[950px] mx-auto bg-white p-4 shadow-md relative printable-area border-2 border-black overflow-hidden rounded-sm print:shadow-none print:border-none print:p-0 print:bg-transparent">
-          
           <main className="space-y-2 print:space-y-1">
             {/* Certificate header — 3 lines printed on blank (unique per animal) */}
             <div className="flex flex-col gap-0.5 mx-auto w-full text-center mb-2">
-               <input 
-                  className="w-full text-center font-black uppercase text-[15px] bg-transparent border-b border-black/20 pb-0.5 outline-none text-black focus:border-black/60 print:border-none print:pb-0 print:text-[14px]" 
-                  defaultValue={
-                     locale === 'en'
-                        ? (stdb === 'RHB' ? 'BREEDING CERTIFICATE' : 'CERTIFICATE OF CONFORMITY')
-                        : (stdb === 'RHB' 
-                           ? (locale === 'uk' ? 'ПЛЕМІННЕ СВІДОЦТВО' : 'ПЛЕМЕННОЕ СВИДЕТЕЛЬСТВО') 
-                           : (locale === 'uk' ? 'СЕРТИФІКАТ ВІДПОВІДНОСТІ' : 'СЕРТИФИКАТ СООТВЕТСТВИЯ'))
-                  } 
-               />
-               <input 
-                  className="w-full text-center font-black uppercase text-[15px] bg-transparent border-b border-black/20 pb-0.5 outline-none text-black focus:border-black/60 print:border-none print:pb-0 print:text-[14px]" 
-                  defaultValue={`${stdb} R${10000 + Number(goat.id)}`} 
-               />
-               <input 
-                  className="w-full text-center font-bold uppercase text-[11px] bg-transparent outline-none text-black/60 focus:text-black print:text-black print:text-[10px]" 
-                  defaultValue={locale === 'en' ? 'OFFICIAL REGISTRATION DOCUMENT' : (locale === 'uk' ? 'ОФІЦІЙНИЙ РЕЄСТРАЦІЙНИЙ ДОКУМЕНТ' : 'ОФИЦИАЛЬНЫЙ РЕГИСТРАЦИОННЫЙ ДОКУМЕНТ')} 
-               />
+              <input
+                className="w-full text-center font-black uppercase text-[15px] bg-transparent border-b border-black/20 pb-0.5 outline-none text-black focus:border-black/60 print:border-none print:pb-0 print:text-[14px]"
+                defaultValue={
+                  locale === "en"
+                    ? stdb === "RHB"
+                      ? "BREEDING CERTIFICATE"
+                      : "CERTIFICATE OF CONFORMITY"
+                    : stdb === "RHB"
+                      ? locale === "uk"
+                        ? "ПЛЕМІННЕ СВІДОЦТВО"
+                        : "ПЛЕМЕННОЕ СВИДЕТЕЛЬСТВО"
+                      : locale === "uk"
+                        ? "СЕРТИФІКАТ ВІДПОВІДНОСТІ"
+                        : "СЕРТИФИКАТ СООТВЕТСТВИЯ"
+                }
+              />
+              <input
+                className="w-full text-center font-black uppercase text-[15px] bg-transparent border-b border-black/20 pb-0.5 outline-none text-black focus:border-black/60 print:border-none print:pb-0 print:text-[14px]"
+                defaultValue={`${stdb} R${10000 + Number(goat.id)}`}
+              />
+              <input
+                className="w-full text-center font-bold uppercase text-[11px] bg-transparent outline-none text-black/60 focus:text-black print:text-black print:text-[10px]"
+                defaultValue={
+                  locale === "en"
+                    ? "OFFICIAL REGISTRATION DOCUMENT"
+                    : locale === "uk"
+                      ? "ОФІЦІЙНИЙ РЕЄСТРАЦІЙНИЙ ДОКУМЕНТ"
+                      : "ОФИЦИАЛЬНЫЙ РЕГИСТРАЦИОННЫЙ ДОКУМЕНТ"
+                }
+              />
             </div>
 
             <table className="grid-table border-[1.5px] border-black">
               <tbody>
                 <tr>
                   <td className="grid-label">{cl1.nickname}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black text-[12px]" defaultValue={goat.name} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black text-[12px]"
+                      defaultValue={goat.name}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.breed}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black text-[11px]" defaultValue={goat.breed_name || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black text-[11px]"
+                      defaultValue={goat.breed_name || ""}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.horns}</td>
-                  <td><input className="w-full font-bold bg-transparent uppercase text-[10px] border-none outline-none text-black" defaultValue={getHornType(goat.horns_type)} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent uppercase text-[10px] border-none outline-none text-black"
+                      defaultValue={getHornType(goat.horns_type)}
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.birthDate}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={formatDate(goat.date_born)} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={formatDate(goat.date_born)}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.purity}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.blood_percent != null ? String(goat.blood_percent) : ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.blood_percent != null
+                          ? String(goat.blood_percent)
+                          : ""
+                      }
+                    />
+                  </td>
                   <td className="grid-label">{cl1.scoreBorn}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.goat_score != null ? String(goat.goat_score) : ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.goat_score != null ? String(goat.goat_score) : ""
+                      }
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.sex}</td>
-                  <td><input className="w-full font-bold bg-transparent uppercase text-[11px] border-none outline-none text-black" defaultValue={goat.sex === 1 ? cl1.male : cl1.female} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent uppercase text-[11px] border-none outline-none text-black"
+                      defaultValue={goat.sex === 1 ? cl1.male : cl1.female}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.bloodPercent}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.blood_percent !== null && goat.blood_percent !== undefined ? String(goat.blood_percent) : ''} /></td>
-                  <td className="grid-label">{locale === 'en' ? 'Teats Qty:' : 'Кіл-ть сосків:'}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black" defaultValue="" /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.blood_percent !== null &&
+                        goat.blood_percent !== undefined
+                          ? String(goat.blood_percent)
+                          : ""
+                      }
+                    />
+                  </td>
+                  <td className="grid-label">
+                    {locale === "en" ? "Teats Qty:" : "Кіл-ть сосків:"}
+                  </td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black"
+                      defaultValue=""
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.idAbg}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black" defaultValue={goat.code_abg || `ABG UA ${goat.id.toString().padStart(6,'0')}`} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.code_abg ||
+                        `ABG UA ${goat.id.toString().padStart(6, "0")}`
+                      }
+                    />
+                  </td>
                   <td className="grid-label">{cl1.qtyBorn}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.born_qty != null ? String(goat.born_qty) : ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.born_qty != null ? String(goat.born_qty) : ""
+                      }
+                    />
+                  </td>
                   <td className="grid-label">{cl1.expertAssessment}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none font-bold text-red-600" defaultValue={goat.test_score || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none font-bold text-red-600"
+                      defaultValue={goat.test_score || ""}
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.idUa}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.code_ua || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={goat.code_ua || ""}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.weightBorn}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.born_weight != null ? String(goat.born_weight) : ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={
+                        goat.born_weight != null ? String(goat.born_weight) : ""
+                      }
+                    />
+                  </td>
                   <td className="grid-label">{cl1.class}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black" defaultValue={goat.test_class || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black"
+                      defaultValue={goat.test_class || ""}
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.chip}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black" defaultValue={goat.code_chip || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black"
+                      defaultValue={goat.code_chip || ""}
+                    />
+                  </td>
                   <td className="grid-label">{cl1.liveWeight}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue="" /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue=""
+                    />
+                  </td>
                   <td className="grid-label">{cl1.studbook}</td>
-                  <td><input className="w-full font-bold bg-transparent border-none outline-none text-black" defaultValue={`${stdb} R${10000 + Number(goat.id)}`} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent border-none outline-none text-black"
+                      defaultValue={`${stdb} R${10000 + Number(goat.id)}`}
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td className="grid-label">{cl1.breeder}</td>
-                  <td><input className="w-full font-bold bg-transparent text-[10px] border-none outline-none text-black" defaultValue={goat.breeder_manual || goat.user_farm_name || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full font-bold bg-transparent text-[10px] border-none outline-none text-black"
+                      defaultValue={
+                        goat.breeder_manual || goat.user_farm_name || ""
+                      }
+                    />
+                  </td>
                   <td className="grid-label">{cl1.color}</td>
-                  <td><input className="w-full bg-transparent border-none outline-none text-black" defaultValue={goat.special || ''} /></td>
+                  <td>
+                    <input
+                      className="w-full bg-transparent border-none outline-none text-black"
+                      defaultValue={goat.special || ""}
+                    />
+                  </td>
                   <td colSpan={2}></td>
                 </tr>
               </tbody>
@@ -502,7 +696,6 @@ export default async function CertificatePage({
 
             {/* ── BOTTOM SECTION matching physical certificate ── */}
             <div className="cert-bottom-section mt-5 border border-dashed border-gray-200 rounded-sm p-4 print:border-none print:p-0 print:mt-8 text-black">
-
               {/* Row 1: Issued to whom */}
               <div className="flex items-start px-2 py-1.5 gap-4 border-b border-dashed border-black/5 print:border-none print:px-0 print:py-1">
                 <input
@@ -511,7 +704,7 @@ export default async function CertificatePage({
                 />
                 <input
                   className="flex-1 bg-transparent border-none outline-none text-[11px] font-semibold text-black"
-                  defaultValue={`${goat.user_farm_name || goat.breeder_manual || ''}${goat.user_phone ? ', ' + goat.user_phone : ''}${goat.user_email ? ', ' + goat.user_email : ''}`}
+                  defaultValue={`${goat.user_farm_name || goat.breeder_manual || ""}${goat.user_phone ? ", " + goat.user_phone : ""}${goat.user_email ? ", " + goat.user_email : ""}`}
                 />
               </div>
 
@@ -523,7 +716,7 @@ export default async function CertificatePage({
                 />
                 <input
                   className="flex-1 bg-transparent border-none outline-none text-[11px] font-semibold text-black"
-                  defaultValue={`${goat.breeder_manual || goat.user_farm_name || ''}${goat.user_phone ? ', ' + goat.user_phone : ''}`}
+                  defaultValue={`${goat.breeder_manual || goat.user_farm_name || ""}${goat.user_phone ? ", " + goat.user_phone : ""}`}
                 />
               </div>
 
@@ -537,26 +730,26 @@ export default async function CertificatePage({
 
               {/* Row 4: Bottom strip: date/org left | name center-right | empty sticker space far-right */}
               <div className="flex justify-between items-start relative min-h-[90px] mt-4 px-2 py-2 print:px-0 print:py-0 print:mt-6 bg-transparent text-black">
-
                 {/* Left Column: 3 lines stacked vertically */}
                 <div className="flex flex-col gap-2.5 flex-1 min-w-0 pr-[40px] print:pr-[40px]">
-                  
                   {/* Line 1: Date Value */}
                   <input
                     className="bg-transparent border-none outline-none text-[12px] font-bold text-black w-full"
                     defaultValue={formatDate(new Date())}
                   />
-                  
+
                   {/* Line 2: Head of GS / Title */}
                   <input
                     className="bg-transparent border-none outline-none text-[11px] font-bold text-black w-full leading-tight"
                     defaultValue={
-                      locale === 'en' 
-                        ? 'Head of GS "Association of Breeding Goats"' 
-                        : (locale === 'uk' ? 'Голова ГС "Асоціація Племінних Кіз"' : 'Председатель ГС "Асоціація Племінних Кіз"')
+                      locale === "en"
+                        ? 'Head of GS "Association of Breeding Goats"'
+                        : locale === "uk"
+                          ? 'Голова ГС "Асоціація Племінних Кіз"'
+                          : 'Председатель ГС "Асоціація Племінних Кіз"'
                     }
                   />
-                  
+
                   {/* Line 3: Date Label */}
                   <input
                     className="bg-transparent border-none outline-none text-[10.5px] text-black/60 font-bold w-full"
@@ -568,16 +761,20 @@ export default async function CertificatePage({
                 <div className="flex items-center justify-center self-center shrink-0 pr-12 print:pr-12">
                   <input
                     className="bg-transparent border-none outline-none text-[12.5px] font-bold text-black text-center w-48"
-                    defaultValue={locale === 'en' ? 'Alekseeva M.V.' : 'Алексєєва М.В.'}
+                    defaultValue={
+                      locale === "en" ? "Alekseeva M.V." : "Алексєєва М.В."
+                    }
                   />
                 </div>
 
                 {/* Far Right Column: Empty space for holographic sticker (blank space) */}
                 <div className="w-[120px] print:w-[120px] h-10 shrink-0 self-center flex items-center justify-center">
                   {/* Faint dashed boundary only on screen as a guide where the sticker goes */}
-                  <div className="no-print w-10 h-10 rounded-full border border-dashed border-gray-300 opacity-40 shrink-0" title="Physical holographic sticker will be placed here after printing"></div>
+                  <div
+                    className="no-print w-10 h-10 rounded-full border border-dashed border-gray-300 opacity-40 shrink-0"
+                    title="Physical holographic sticker will be placed here after printing"
+                  ></div>
                 </div>
-
               </div>
             </div>
           </main>
@@ -588,9 +785,26 @@ export default async function CertificatePage({
 
   if (type === "2") {
     const selections = await getCertSelections(id);
-    const prefixes = ['m','f','mm','fm','mf','ff','mmm','fmm','mfm','ffm','mmf','fmf','mff','fff'];
-    
-    const treeRes = await query(`
+    const ancestorLacts = await fetchAncestorLacts(id);
+    const prefixes = [
+      "m",
+      "f",
+      "mm",
+      "fm",
+      "mf",
+      "ff",
+      "mmm",
+      "fmm",
+      "mfm",
+      "ffm",
+      "mmf",
+      "fmf",
+      "mff",
+      "fff",
+    ];
+
+    const treeRes = await query(
+      `
         WITH RECURSIVE ancestry AS (
           SELECT id, name, id_mother, id_father, 0 as level, '' as path FROM animals WHERE id = $1
           UNION ALL
@@ -604,36 +818,40 @@ export default async function CertificatePage({
           WHERE anc.level < 4
         )
         SELECT id, path FROM ancestry WHERE path != ''
-    `, [id]);
+      `,
+      [id],
+    );
 
     const pathIdMap: any = {};
-    treeRes.rows.forEach((r: any) => pathIdMap[r.path] = r.id);
-    const allAncestorIds = treeRes.rows.map(r => r.id);
+    treeRes.rows.forEach((r: any) => (pathIdMap[r.path] = r.id));
+    const allAncestorIds = treeRes.rows.map((r) => r.id);
 
     const ancestorDetails = await getAncestorDetails(allAncestorIds);
     const detailsMap: any = {};
     ancestorDetails.forEach((d: any) => {
-        const path = Object.keys(pathIdMap).find(p => pathIdMap[p] === d.id);
-        if (path) detailsMap[path] = d;
+      const path = Object.keys(pathIdMap).find((p) => pathIdMap[p] === d.id);
+      if (path) detailsMap[path] = d;
     });
 
     const allSelectedLactIds: number[] = [];
-    prefixes.forEach(p => {
-        const lid = selections[`id_${p}_row1`]; // Row 1 is usually the main selection
-        if(lid && !isNaN(Number(lid))) allSelectedLactIds.push(Number(lid));
+    prefixes.forEach((p) => {
+      [1, 2, 3].forEach((j) => {
+        const lid = selections[`id_${p}_row${j}`];
+        if (lid && !isNaN(Number(lid))) allSelectedLactIds.push(Number(lid));
+      });
     });
 
     const lacts = await getAncestorLactations(allSelectedLactIds);
     const lactMap: any = {};
-    lacts.forEach((l: any) => lactMap[l.id] = l);
+    lacts.forEach((l: any) => (lactMap[l.id] = l));
 
     const cert2Labels: any = {
       ru: {
-        average: "Среднее:",
-        days: "Дней",
+        average: "Средние показатели",
+        days: "Дней лактации",
         milk: "Надой",
-        fat: "Жир",
-        protein: "Белок",
+        fat: "Молочный жир",
+        protein: "Молочный белок",
         kg: "кг",
         class: "Класс",
         offspring: "Потомки",
@@ -645,16 +863,19 @@ export default async function CertificatePage({
         score: "Балл:",
         owner: "Влад:",
         recordedCorrectly: "Recorded Correctly / ПОДТВЕРЖДЕНО:",
-        certStatement: "Этот сертификат является официальным документом, подтверждающим племенную ценность животного.",
+        certStatement:
+          "Этот сертификат является официальным документом, подтверждающим племенную ценность животного.",
         headOfGs: "HEAD OF GS: Alekseeva M.V. / _______________",
         date: "DATE:",
+        ancestors: "Пращуры",
+        descendants: "Потомки",
       },
       en: {
-        average: "Average:",
-        days: "Days",
-        milk: "Milk",
-        fat: "Fat",
-        protein: "Protein",
+        average: "Average Indicators",
+        days: "Lactation Days",
+        milk: "Milk Yield",
+        fat: "Milk Fat",
+        protein: "Milk Protein",
         kg: "kg",
         class: "Class",
         offspring: "Offspring",
@@ -666,16 +887,19 @@ export default async function CertificatePage({
         score: "Score:",
         owner: "Owner:",
         recordedCorrectly: "Recorded Correctly / CONFIRMED:",
-        certStatement: "This certificate is an official document confirming the breeding value of the animal.",
+        certStatement:
+          "This certificate is an official document confirming the breeding value of the animal.",
         headOfGs: "HEAD OF GS: Alekseeva M.V. / _______________",
         date: "DATE:",
+        ancestors: "Ancestors",
+        descendants: "Offspring",
       },
       uk: {
-        average: "Середнє:",
-        days: "Днів",
+        average: "Середні показники",
+        days: "Днів лактації",
         milk: "Надій",
-        fat: "Жир",
-        protein: "Білок",
+        fat: "Молочний жир",
+        protein: "Молочний білок",
         kg: "кг",
         class: "Клас",
         offspring: "Нащадки",
@@ -687,237 +911,891 @@ export default async function CertificatePage({
         score: "Бал:",
         owner: "Власн:",
         recordedCorrectly: "Recorded Correctly / ПІДТВЕРДЖЕНО:",
-        certStatement: "Цей сертифікат є офіційним документом, що підтверджує племінну цінність тварини.",
+        certStatement:
+          "Цей сертифікат є офіційним документом, що підтверджує племінну цінність тварини.",
         headOfGs: "HEAD OF GS: Alekseeva M.V. / _______________",
         date: "DATE:",
+        ancestors: "Пращури",
+        descendants: "Нащадки",
+      },
+    };
+
+    const cl2 = cert2Labels[locale] || cert2Labels["ru"];
+
+    const renderLactTable = async (p: string, anc: any) => {
+      let rows = [1, 2, 3]
+        .map((j) => {
+          const lid = selections[`id_${p}_row${j}`];
+          return lactMap[lid];
+        })
+        .filter(Boolean);
+
+      const isMale = anc.sex === 1;
+      if (rows.length === 0 && isMale && anc.id) {
+        // For males, we fetch daughters data as fallback
+        const daughters = await getOffspringLactations(anc.id);
+        rows = daughters;
+      }
+
+      let avgMilk = 0,
+        avgFat = 0,
+        avgProt = 0;
+      if (rows.length > 0) {
+        avgMilk =
+          rows.reduce(
+            (acc: any, r: any) => acc + (parseFloat(r.milk) || 0),
+            0,
+          ) / rows.length;
+        avgFat =
+          rows.reduce((acc: any, r: any) => acc + (parseFloat(r.fat) || 0), 0) /
+          rows.length;
+        avgProt =
+          rows.reduce(
+            (acc: any, r: any) => acc + (parseFloat(r.protein) || 0),
+            0,
+          ) / rows.length;
+      }
+
+      if (isMale) {
+        return (
+          <table className="w-full text-[8px] border-collapse text-center text-black">
+            <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
+              <tr className="border-b border-black">
+                <th rowSpan={2} className="border-r border-black py-0.5 w-[18%] align-middle">
+                  {cl2.ancestors}
+                  <br />
+                  <span className="font-normal text-[6px]">{cl2.descendants}</span>
+                </th>
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.days}
+                </th>
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.milk}
+                </th>
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.fat}
+                </th>
+                <th colSpan={2} className="py-0.5">
+                  {cl2.protein}
+                </th>
+              </tr>
+              <tr className="text-[6.5px] border-b border-black">
+                <th className="border-r border-black py-0.5 w-6">№</th>
+                <th className="border-r border-black py-0.5 w-[12%]">
+                  {cl2.days}
+                </th>
+                <th className="border-r border-black py-0.5 w-[14%]">
+                  {cl2.kg}
+                </th>
+                <th className="border-r border-black py-0.5 w-[10%]">
+                  {cl2.class}
+                </th>
+                <th className="border-r border-black py-0.5 w-[10%]">%</th>
+                <th className="border-r border-black py-0.5 w-[10%]">
+                  {cl2.class}
+                </th>
+                <th className="border-r border-black py-0.5 w-[10%]">%</th>
+                <th className="py-0.5 w-[10%]">{cl2.class}</th>
+              </tr>
+            </thead>
+            <tbody className="font-bold text-[7.5px] text-black">
+              {[...Array(3)].map((_, i) => {
+                const r = rows[i] || {};
+                return (
+                  <tr
+                    key={i}
+                    className="border-b border-black h-4 leading-none"
+                  >
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px] uppercase"
+                        defaultValue={r.offspring_name || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={
+                          r.lact_no || (rows[i] ? String(i + 1) : "")
+                        }
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.lact_days || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent font-black text-[7.5px]"
+                        defaultValue={r.milk || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.fat || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.protein || ""}
+                      />
+                    </td>
+                    <td className="p-0">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="font-bold text-[7.5px] uppercase text-black">
+              <tr className="h-4 leading-none">
+                <td
+                  colSpan={3}
+                  className="border-r border-black text-center py-0.5"
+                >
+                  {cl2.average}
+                </td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center"
+                    defaultValue=""
+                  />
+                </td>
+                <td className="border-r border-black py-0.5"></td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center"
+                    defaultValue=""
+                  />
+                </td>
+                <td className="border-r border-black py-0.5"></td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center"
+                    defaultValue=""
+                  />
+                </td>
+                <td className="py-0.5"></td>
+              </tr>
+            </tfoot>
+          </table>
+        );
+      } else {
+        return (
+          <table className="w-full text-[8px] border-collapse text-center text-black">
+            <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
+              <tr className="border-b border-black">
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.days}
+                </th>
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.milk}
+                </th>
+                <th colSpan={2} className="border-r border-black py-0.5">
+                  {cl2.fat}
+                </th>
+                <th colSpan={2} className="py-0.5">
+                  {cl2.protein}
+                </th>
+              </tr>
+              <tr className="text-[6.5px] border-b border-black">
+                <th className="border-r border-black py-0.5 w-6">№</th>
+                <th className="border-r border-black py-0.5 w-[14%]">
+                  {cl2.days}
+                </th>
+                <th className="border-r border-black py-0.5 w-[18%]">
+                  {cl2.kg}
+                </th>
+                <th className="border-r border-black py-0.5 w-[11%]">
+                  {cl2.class}
+                </th>
+                <th className="border-r border-black py-0.5 w-[12%]">%</th>
+                <th className="border-r border-black py-0.5 w-[11%]">
+                  {cl2.class}
+                </th>
+                <th className="border-r border-black py-0.5 w-[12%]">%</th>
+                <th className="py-0.5 w-[11%]">{cl2.class}</th>
+              </tr>
+            </thead>
+            <tbody className="font-bold text-[7.5px] text-black">
+              {[...Array(3)].map((_, i) => {
+                const r = rows[i] || {};
+                return (
+                  <tr
+                    key={i}
+                    className="border-b border-black h-4 leading-none"
+                  >
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={
+                          r.lact_no || (rows[i] ? String(i + 1) : "")
+                        }
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.lact_days || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent font-black text-[7.5px]"
+                        defaultValue={r.milk || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.fat || ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                    <td className="p-0 border-r border-black">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={r.protein || ""}
+                      />
+                    </td>
+                    <td className="p-0">
+                      <input
+                        className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                        defaultValue={rows[i] ? "Elite" : ""}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="font-bold text-[7.5px] uppercase text-black">
+              <tr className="h-4 leading-none">
+                <td
+                  colSpan={2}
+                  className="border-r border-black text-center py-0.5"
+                >
+                  {cl2.average}
+                </td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center font-black"
+                    defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ""}
+                  />
+                </td>
+                <td className="border-r border-black py-0.5">
+                  {rows.length > 0 ? "Elite" : ""}
+                </td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center"
+                    defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ""}
+                  />
+                </td>
+                <td className="border-r border-black py-0.5">
+                  {rows.length > 0 ? "Elite" : ""}
+                </td>
+                <td className="border-r border-black py-0.5">
+                  <input
+                    className="w-full h-full border-none outline-none text-center"
+                    defaultValue={rows.length > 0 ? avgProt.toFixed(2) : ""}
+                  />
+                </td>
+                <td className="py-0.5">{rows.length > 0 ? "Elite" : ""}</td>
+              </tr>
+            </tfoot>
+          </table>
+        );
       }
     };
 
-    const cl2 = cert2Labels[locale] || cert2Labels['ru'];
+    const renderMiniLactTableRows = async (p: string, d: any) => {
+      const dbPrefixMap: Record<string, string> = {
+        mf: "fm",
+        fm: "mf",
+      };
+      const dbPrefix = dbPrefixMap[p] || p;
 
-    const renderLactTable = async (p: string, anc: any) => {
-        const isMale = anc.sex === 1;
-        let rows = [];
-        let subHeaderText = isMale ? cl2.offspringId : "№";
-        
-        if (isMale) {
-            // For males, we fetch daughters data
-            const daughters = await getOffspringLactations(anc.id);
-            rows = daughters;
-        } else {
-            rows = [1,2,3].map(j => {
-                const lid = selections[`id_${p}_row${j}`];
-                return lactMap[lid];
-            }).filter(v => v);
-        }
+      let rows = [1, 2, 3]
+        .map((j) => {
+          const lid = selections[`id_${dbPrefix}_row${j}`];
+          return lactMap[lid];
+        })
+        .filter(Boolean);
 
-        let avgMilk = 0, avgFat = 0, avgProt = 0;
-        if (rows.length > 0) {
-            avgMilk = rows.reduce((acc:any, r:any) => acc + (parseFloat(r.milk) || 0), 0) / rows.length;
-            avgFat = rows.reduce((acc:any, r:any) => acc + (parseFloat(r.fat) || 0), 0) / rows.length;
-            avgProt = rows.reduce((acc:any, r:any) => acc + (parseFloat(r.protein) || 0), 0) / rows.length;
-        }
+      const isMale = d.sex === 1;
+      if (rows.length === 0 && isMale && d.id) {
+        const daughters = await getOffspringLactations(d.id);
+        rows = daughters;
+      }
 
-        return (
-            <div className="mt-1">
-                <table className="w-full text-[8.5px] border-collapse text-center border border-black/80">
-                    <thead className="bg-[#f0f0f0] border-b border-black font-bold uppercase text-[7px]">
-                        <tr className="divide-x divide-black border-b border-black">
-                           <th rowSpan={2} className="w-8 border-r border-black">{subHeaderText}</th>
-                           <th rowSpan={2} className="w-10 border-r border-black">{isMale ? cl2.breed : cl2.days}</th>
-                           <th colSpan={2} className="border-r border-black">{cl2.milk}</th>
-                           <th colSpan={2} className="border-r border-black">{cl2.fat}</th>
-                           <th colSpan={2}>{cl2.protein}</th>
-                        </tr>
-                        <tr className="divide-x divide-black text-[6.5px]">
-                           <th className="border-r border-black">{cl2.kg}</th><th className="border-r border-black">{cl2.class}</th>
-                           <th className="border-r border-black">%</th><th className="border-r border-black">{cl2.class}</th>
-                           <th className="border-r border-black">%</th><th>{cl2.class}</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-black/40 font-bold text-[8px]">
-                        {[...Array(3)].map((_, i) => {
-                           const r = rows[i] || {};
-                           return (
-                             <tr key={i} className="divide-x divide-black/40 h-4 leading-none">
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue={isMale ? (r.offspring_name || '') : (r.lact_no || '')} /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue={isMale ? 'TFG' : (r.lact_days || '')} /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent font-black" defaultValue={r.milk || ''} /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue="Elite" /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue={r.fat || ''} /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue="Elite" /></td>
-                                <td className="p-0 border-r border-black/30"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue={r.protein || ''} /></td>
-                                <td className="p-0"><input className="w-full h-full border-none outline-none text-center bg-transparent" defaultValue="Elite" /></td>
-                             </tr>
-                           )
-                        })}
-                    </tbody>
-                    {!isMale && (
-                    <tfoot className="border-t border-black font-bold bg-[#f9f9f9] text-[7.5px] uppercase">
-                       <tr className="divide-x divide-black h-4 leading-none">
-                          <td colSpan={2} className="border-r border-black text-center pr-2">{cl2.average}</td>
-                          <td className="font-black bg-yellow-50/10 border-r border-black"><input className="w-full h-full border-none outline-none text-center" defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ''} /></td>
-                          <td className="border-r border-black">Elite</td>
-                          <td className="border-r border-black"><input className="w-full h-full border-none outline-none text-center" defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ''} /></td>
-                          <td className="border-r border-black">Elite</td>
-                          <td className="border-r border-black"><input className="w-full h-full border-none outline-none text-center" defaultValue={rows.length > 0 ? avgProt.toFixed(2) : ''} /></td>
-                          <td>Elite</td>
-                       </tr>
-                    </tfoot>
-                    )}
-                </table>
-            </div>
-        );
+      const headers = {
+        ru: ["Дней лактации", "Надой", "Жир %", "Белок %", "Класс"],
+        uk: ["Днів лактації", "Надій", "Жир %", "Білок %", "Клас"],
+        en: ["Days", "Milk", "Fat %", "Protein %", "Class"],
+      };
+      const lbls = headers[locale] || headers["ru"];
+
+      return (
+        <>
+          <tr className="border-b border-black h-4.5 bg-white font-bold uppercase text-[6.5px] text-black">
+            <td className="border-r border-black py-0.5 w-[20%] text-center select-none">
+              {lbls[0]}
+            </td>
+            <td className="border-r border-black py-0.5 w-[30%] text-center select-none">
+              {lbls[1]}
+            </td>
+            <td className="border-r border-black py-0.5 w-[16%] text-center select-none">
+              {lbls[2]}
+            </td>
+            <td className="border-r border-black py-0.5 w-[16%] text-center select-none">
+              {lbls[3]}
+            </td>
+            <td className="py-0.5 w-[18%] text-center select-none">
+              {lbls[4]}
+            </td>
+          </tr>
+          {[...Array(3)].map((_, i) => {
+            const r = rows[i] || {};
+            return (
+              <tr
+                key={i}
+                className="border-b border-black h-4 leading-none last:border-b-0"
+              >
+                <td className="p-0 border-r border-black w-[20%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                    defaultValue={r.lact_days || ""}
+                  />
+                </td>
+                <td className="p-0 border-r border-black w-[30%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-black text-[7.5px]"
+                    defaultValue={r.milk || ""}
+                  />
+                </td>
+                <td className="p-0 border-r border-black w-[16%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                    defaultValue={r.fat || ""}
+                  />
+                </td>
+                <td className="p-0 border-r border-black w-[16%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                    defaultValue={r.protein || ""}
+                  />
+                </td>
+                <td className="p-0 w-[18%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                    defaultValue={rows[i] ? "Elite" : ""}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </>
+      );
     };
 
     const renderAncBlock = async (p: string, symbol: string) => {
-        const d = detailsMap[p] || {};
-        return (
-            <div className="p-1 border-[1.5px] border-black bg-white shadow-sm flex flex-col">
-                <div className="flex border-b-2 border-black font-black text-[12px] mb-1 leading-none pb-1 items-end gap-1 w-full">
-                    <span className="mr-2 text-2xl leading-none text-blue-900/80 shrink-0">{symbol}</span>
-                    <input className="flex-1 min-w-0 border-none outline-none uppercase text-sm tracking-tight bg-transparent" defaultValue={d.name || ''} />
-                    <input className="w-20 shrink-0 border-none outline-none text-right font-bold text-[10px] self-end text-black/60 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
-                </div>
-                
-                <div className="grid grid-cols-4 gap-x-2 text-[7px] font-bold uppercase leading-[1.1] mt-1 mb-1">
-                    <div className="flex flex-col border-r border-black/10 pr-1">
-                        <span className="opacity-40 text-[5px]">A:</span>
-                        <input className="w-full border-none outline-none font-bold text-[8.5px] bg-transparent" defaultValue={d.code_abg || ''} />
-                    </div>
-                    <div className="flex flex-col border-r border-black/10 pr-1">
-                        <span className="opacity-40 text-[5px]">U:</span>
-                        <input className="w-full border-none outline-none font-bold text-[8.5px] bg-transparent" defaultValue={d.code_ua || ''} />
-                    </div>
-                    <div className="flex flex-col border-r border-black/10 pr-1">
-                        <span className="opacity-40 text-[5px]">C:</span>
-                        <input className="w-full border-none outline-none font-bold text-[8.5px] bg-transparent" defaultValue={d.code_chip || ''} />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="opacity-40 text-[5px]">S:</span>
-                        <input className="w-full border-none outline-none font-bold text-[8.5px] bg-transparent" defaultValue={getStdb(d.studbook_alias)} />
-                    </div>
-                </div>
+      const d = detailsMap[p] || {};
 
-                <div className="grid grid-cols-2 gap-x-4 text-[8px] font-bold uppercase border-t border-black/20 pt-1 leading-tight text-left">
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.breed}:</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.breed_name || ''} /></div>
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.born}</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.date_born ? new Date(d.date_born).toLocaleDateString(locale === 'en' ? 'en-US' : 'uk-UA') : ''} /></div>
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.blood}</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}%` : ''} /></div>
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.classLabel}</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px]" defaultValue={d.test_class || 'Elite'} /></div>
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.score}</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-red-700 font-black text-[9px]" defaultValue={d.test_score || ''} /></div>
-                    <div className="flex justify-between items-center gap-1"><span>{cl2.owner}</span><input className="flex-1 min-w-0 border-none outline-none text-right bg-transparent text-[9px] truncate" defaultValue={d.owner || d.manuf || ''} /></div>
-                </div>
+      const labels: Record<string, Record<string, string>> = {
+        ru: {
+          nickname: "Кличка",
+          idAbg: "ID ABG",
+          stdb: "Племкн.",
+          idUa: "ID UA",
+          dob: "д.н.",
+          purity: "Породн.",
+          expAss: "Оц.екс.бал",
+          breed: "Порода",
+          class: "Клас",
+        },
+        uk: {
+          nickname: "Кличка",
+          idAbg: "ID ABG",
+          stdb: "Племкн.",
+          idUa: "ID UA",
+          dob: "д.н.",
+          purity: "Породн.",
+          expAss: "Оц.екс.бал",
+          breed: "Порода",
+          class: "Клас",
+        },
+        en: {
+          nickname: "Name",
+          idAbg: "ID ABG",
+          stdb: "Stdb.",
+          idUa: "ID UA",
+          dob: "D.O.B.",
+          purity: "Purity",
+          expAss: "Exp.Ass.",
+          breed: "Breed",
+          class: "Class",
+        },
+      };
 
-                <div className="border-t border-black mt-1">
-                   {await renderLactTable(p, d)}
-                </div>
-            </div>
-        );
+      const lbl = labels[locale] || labels["ru"];
+
+      // Owner label per locale
+      const ownerLabel = locale === "en" ? "Owner:" : locale === "uk" ? "Власник:" : "Влад.";
+      const bloodLabel = locale === "en" ? "Blood:" : locale === "uk" ? "Кровність:" : "Кровн.";
+
+      return (
+        <table className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black">
+          <tbody>
+            {/* Row 1: Symbol | Кличка | Name | Племкн. | Stdb | ID UA | value */}
+            <tr className="border-b border-black h-[17px]">
+              <td className="w-[10%] border-r border-black font-black bg-gray-50/50 text-[11px] text-center align-middle select-none py-0">
+                {symbol}
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[12%] text-[7px] py-0">
+                {lbl.nickname}
+              </td>
+              <td className="border-r border-black p-0 w-[28%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0"
+                  defaultValue={d.name || ""}
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[10%] text-[7px] py-0">
+                {lbl.stdb}
+              </td>
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={getStdb(d.studbook_alias)}
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[10%] text-[7px] py-0">
+                {lbl.idUa}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : "")}
+                />
+              </td>
+            </tr>
+
+            {/* Row 2: ID ABG | value | Породн | value | Оц.екс | value */}
+            <tr className="border-b border-black h-[17px]">
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.idAbg}
+              </td>
+              <td colSpan={2} className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={d.code_abg || ""}
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.purity}
+              </td>
+              <td className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : ""}
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.expAss}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-red-700"
+                  defaultValue={d.test_score || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Row 3: ДН | value | Порода | value | Оц.ексбал | value */}
+            <tr className="border-b border-black h-[17px]">
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.dob}
+              </td>
+              <td colSpan={2} className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={
+                    d.date_born
+                      ? new Date(d.date_born).toLocaleDateString(locale === "en" ? "en-US" : "uk-UA")
+                      : ""
+                  }
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.breed}
+              </td>
+              <td className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={d.breed_alias || d.breed_name || ""}
+                />
+              </td>
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {lbl.expAss}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  defaultValue={d.test_class || "Elite"}
+                />
+              </td>
+            </tr>
+
+            {/* Row 4: Породн | value | Клас | value | Власник | value */}
+            <tr className="border-b border-black h-[17px]">
+              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
+                {ownerLabel}
+              </td>
+              <td colSpan={6} className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 px-1"
+                  defaultValue={d.owner || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Lactation table */}
+            {p.length === 1 ? (
+              <tr>
+                <td colSpan={7} className="p-0">
+                  {await renderLactTable(p, d)}
+                </td>
+              </tr>
+            ) : (
+              await renderMiniLactTableRows(p, d)
+            )}
+          </tbody>
+        </table>
+      );
     };
 
     const renderSmallAnc = (p: string, symbol: string) => {
-        const d = detailsMap[p] || {};
-        const rows = [1].map(j => lactMap[selections[`id_${p}_row${j}`]]).filter(v => v);
-        const l = rows[0]; 
-        const lactFormat = l ? `${l.lact_no}\\\\${l.lact_days}\\\\${l.milk}\\\\${l.fat}\\\\${l.protein}` : "";
+      const d = detailsMap[p] || {};
+      let lactFormat = "";
 
-        return (
-            <div className="border border-black p-0.5 text-[6.5px] font-bold h-full flex flex-col justify-between bg-white/40">
-                <div className="flex border-b border-black/60 mb-0.5 items-center justify-between px-0.5 gap-1 w-full">
-                    <span className="font-black text-[9px] text-blue-900/60 leading-none shrink-0">{symbol}</span>
-                    <input className="flex-1 min-w-0 border-none outline-none truncate bg-transparent leading-none text-[8px] uppercase font-bold" defaultValue={d.name || ''} />
-                    <input className="w-10 shrink-0 border-none outline-none text-right text-[6px] opacity-40 bg-transparent" defaultValue={`R${10000 + Number(d.id || 0)}`} />
-                </div>
-                <div className="grid grid-cols-1 gap-x-0 leading-[1] uppercase px-0.5">
-                   <div className="flex justify-between"><span className="opacity-40">A:</span><input className="w-20 border-none outline-none text-right bg-transparent" defaultValue={d.code_abg || ''} /></div>
-                   <div className="flex justify-between"><span className="opacity-40">U:</span><input className="w-20 border-none outline-none text-right bg-transparent truncate" defaultValue={d.code_ua || ''} /></div>
-                   <div className="flex justify-between"><span className="opacity-40">C:</span><input className="w-20 border-none outline-none text-right bg-transparent truncate" defaultValue={d.code_chip || ''} /></div>
-                   <div className="flex justify-between"><span className="opacity-40">S:</span><input className="w-20 border-none outline-none text-right bg-transparent" defaultValue={getStdb(d.studbook_alias)} /></div>
-                   <div className="mt-0.5 border-t border-black/20 pt-0.5">
-                      <input className="w-full border-none outline-none text-center bg-transparent text-[#491907] font-black text-[7px]" defaultValue={lactFormat} />
-                   </div>
-                </div>
-            </div>
-        );
+      const isThirdGen = [
+        "mmm",
+        "fmm",
+        "mfm",
+        "ffm",
+        "mmf",
+        "fmf",
+        "mff",
+        "fff",
+      ].includes(p);
+      if (isThirdGen) {
+        // Map CTE path to the profile page input field prefix
+        const dbFieldMap: Record<string, string> = {
+          mmm: "mmm",
+          fmm: "mmf",
+          mfm: "mfm",
+          ffm: "mff",
+          mmf: "fmm",
+          fmf: "fmf",
+          mff: "ffm",
+          fff: "fff",
+        };
+        const dbPrefix = dbFieldMap[p] || p;
+        const rawVal = selections[`id_${dbPrefix}_row1`];
+
+        if (rawVal && typeof rawVal === "string" && rawVal.trim() !== "") {
+          lactFormat = rawVal;
+        } else {
+          const pathMap: Record<string, string> = {
+            mmm: "MEMMM",
+            fmm: "MEFMM",
+            mfm: "MEMFM",
+            ffm: "MEFFM",
+            mmf: "MEMMF",
+            fmf: "MEFMF",
+            mff: "MEMFF",
+            fff: "MEFFF",
+          };
+          const path = pathMap[p];
+          if (path) {
+            const node = ancestorLacts[path];
+            const bestLact = node?.lactations?.[0];
+            if (bestLact) {
+              lactFormat = `${bestLact.lact_no}\\\\${bestLact.lact_days}\\\\${bestLact.milk}\\\\${bestLact.fat}\\\\${bestLact.protein}`;
+            } else {
+              const motherPath = path + "M";
+              const motherNode = ancestorLacts[motherPath];
+              const mBestLact = motherNode?.lactations?.[0];
+              if (mBestLact) {
+                lactFormat = `M\\\\${mBestLact.lact_no}\\\\${mBestLact.lact_days}\\\\${mBestLact.milk}\\\\${mBestLact.fat}\\\\${mBestLact.protein}`;
+              }
+            }
+          }
+        }
+      } else {
+        const rows = [1]
+          .map((j) => lactMap[selections[`id_${p}_row${j}`]])
+          .filter((v) => v);
+        const l = rows[0];
+        lactFormat = l
+          ? `${l.lact_no}\\\\${l.lact_days}\\\\${l.milk}\\\\${l.fat}\\\\${l.protein}`
+          : "";
+      }
+
+      // Parse/split productivity across two rows
+      let lactFormat1 = "";
+      let lactFormat2 = "";
+      if (lactFormat) {
+        const normalized = lactFormat.replace(/\\\\/g, "\\");
+        const parts = normalized.split("\\");
+        if (parts.length >= 5) {
+          const firstChar = parts[0].trim().toUpperCase();
+          if (firstChar === "M" || firstChar === "М") {
+            lactFormat1 = parts.slice(0, 4).join("\\") + "\\";
+            lactFormat2 = parts.slice(4).join("\\");
+          } else {
+            lactFormat1 = parts.slice(0, 3).join("\\") + "\\";
+            lactFormat2 = parts.slice(3).join("\\");
+          }
+        } else {
+          lactFormat1 = normalized;
+          lactFormat2 = "";
+        }
+      }
+
+      // Dynamic local translations for labels matching the certificate locale
+      const labelAbg = "ID ABG";
+      const labelUa = "ID UA";
+      const labelBreed = locale === "en" ? "Breed" : "Порода";
+      const labelPurity = locale === "en" ? "Purity" : "Породн.";
+      const labelClass =
+        locale === "en" ? "Class" : locale === "ru" ? "Класс" : "Клас";
+      const labelProd = locale === "en" ? "Prod." : "Прод.";
+
+      return (
+        <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white h-full select-text border-t border-black">
+          <tbody>
+            {/* Row 1: Symbol & Name */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="w-[30%] border-r border-black font-black bg-gray-50/50 text-[8px] py-0.5">
+                {symbol}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0.5"
+                  defaultValue={d.name || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Row 2: ID ABG */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelAbg}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  defaultValue={d.code_abg || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Row 3: ID UA */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelUa}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  defaultValue={d.code_ua || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Row 4: Порода */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelBreed}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  defaultValue={d.breed_alias || d.breed_name || ""}
+                />
+              </td>
+            </tr>
+
+            {/* Row 5: Породн. */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelPurity}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  defaultValue={
+                    d.blood_percent !== null && d.blood_percent !== undefined
+                      ? `${d.blood_percent}`
+                      : ""
+                  }
+                />
+              </td>
+            </tr>
+
+            {/* Row 6: Клас */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelClass}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  defaultValue={[d.test_class || "Elite", d.test_score]
+                    .filter(Boolean)
+                    .join(" ")}
+                />
+              </td>
+            </tr>
+
+            {/* Row 7: Прод. line 1 */}
+            <tr className="border-b border-black h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelProd}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-semibold"
+                  defaultValue={lactFormat1}
+                />
+              </td>
+            </tr>
+
+            {/* Row 8: Прод. line 2 */}
+            <tr className="h-[18px]">
+              <td className="border-r border-black font-normal text-center py-0.5">
+                {labelProd}
+              </td>
+              <td className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-semibold"
+                  defaultValue={lactFormat2}
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
     };
 
     return (
       <div className="min-h-screen bg-gray-50/20 p-4 pb-20 font-sans text-black print:p-0">
-        <style dangerouslySetInnerHTML={{ __html: `
-          @media print {
-            @page { size: landscape; margin: 0.3cm; }
-            body { background: white; }
-            .printable-area { border: 2px solid #000 !important; box-shadow: none !important; padding: 10px !important; margin: 0 !important; width: 100% !important; }
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          input { 
+            border: none !important; 
+            background: transparent !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            height: auto !important; 
+            line-height: inherit !important;
+            box-shadow: none !important;
+            outline: none !important;
+            min-width: 0 !important;
+            width: 100% !important;
+          }
+           @media print {
+            @page { size: landscape; margin: 0.5cm !important; }
+            body { background: white; margin: 0 !important; padding: 0 !important; }
+            .printable-area { border: 2px solid #000 !important; box-shadow: none !important; padding: 15px !important; margin: 0 !important; width: 100% !important; height: calc(100vh - 1cm) !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
             .no-print, .print-hidden { display: none !important; }
             header, footer, nav { display: none !important; }
-            input { 
-              border: none !important; 
-              background: transparent !important; 
-              padding: 0 !important; 
-              margin: 0 !important; 
-              height: auto !important; 
-              line-height: inherit !important;
-              box-shadow: none !important;
-            }
           }
-        `}} />
-        
-        <div className="print-hidden no-print mb-4 max-w-[1700px] mx-auto flex justify-between items-center bg-[#FDFDFD] border border-gray-200 rounded-lg p-3 shadow-sm text-black">
-           <Link href={`/goats/${id}`} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-black border border-gray-300 rounded font-black text-xs uppercase transition-all flex items-center gap-2">
-             {locale === 'en' ? '← Back to Profile' : locale === 'uk' ? '← Назад до профілю' : '← Назад к козе'}
-           </Link>
-           <div className="text-xs font-bold text-gray-500">
-             {locale === 'en' ? 'Pedigree Certificate Preview Mode' : locale === 'uk' ? 'Режим попереднього перегляду родоводу' : 'Режим предварительного просмотра родословной'}
-           </div>
-           <PrintButton label={locale === 'en' ? 'Print' : locale === 'uk' ? 'Друк' : 'Печать'} className="bg-[#522513] text-white px-6 py-2 rounded font-black text-xs uppercase hover:bg-[#3b1a0d] transition-all shadow-md" />
+        `,
+          }}
+        />
+
+        <div className="print-hidden no-print mb-4 max-w-[1200px] mx-auto flex justify-between items-center bg-[#FDFDFD] border border-gray-200 rounded-lg p-3 shadow-sm text-black">
+          <Link
+            href={`/goats/${id}`}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-black border border-gray-300 rounded font-black text-xs uppercase transition-all flex items-center gap-2"
+          >
+            {locale === "en"
+              ? "← Back to Profile"
+              : locale === "uk"
+                ? "← Назад до профілю"
+                : "← Назад к козе"}
+          </Link>
+          <div className="text-xs font-bold text-gray-500">
+            {locale === "en"
+              ? "Pedigree Certificate Preview Mode"
+              : locale === "uk"
+                ? "Режим попереднього перегляду родоводу"
+                : "Режим предварительного просмотра родословной"}
+          </div>
+          <PrintButton
+            label={
+              locale === "en" ? "Print" : locale === "uk" ? "Друк" : "Печать"
+            }
+            className="bg-[#522513] text-white px-6 py-2 rounded font-black text-xs uppercase hover:bg-[#3b1a0d] transition-all shadow-md"
+          />
         </div>
 
-        <div className="w-[96%] max-w-[1700px] mx-auto bg-white border-[2px] border-black p-6 print:border-solid shadow-xl printable-area relative overflow-hidden">
-           
-           <div className="grid grid-cols-2 gap-3 mb-3">
-               {await renderAncBlock('m', getSymbol('m'))}
-               {await renderAncBlock('f', getSymbol('f'))}
-           </div>
+        <div className="w-[96%] max-w-[1200px] mx-auto bg-white border-[2px] border-black p-6 print:border-solid shadow-xl printable-area relative overflow-hidden">
+          <div className="grid grid-cols-2 gap-0 border border-black divide-x divide-black bg-white print:flex-1">
+            {await renderAncBlock("m", getSymbol("m"))}
+            {await renderAncBlock("f", getSymbol("f"))}
+          </div>
 
-           <div className="grid grid-cols-4 gap-2 mb-3">
-               {await renderAncBlock('mm', getSymbol('mm'))}
-               {await renderAncBlock('fm', getSymbol('fm'))}
-               {await renderAncBlock('mf', getSymbol('mf'))}
-               {await renderAncBlock('ff', getSymbol('ff'))}
-           </div>
+          <div className="grid grid-cols-4 gap-0 border-x border-b border-black divide-x divide-black bg-white print:flex-1">
+            {await renderAncBlock("mm", getSymbol("mm"))}
+            {await renderAncBlock("mf", getSymbol("mf"))}
+            {await renderAncBlock("fm", getSymbol("fm"))}
+            {await renderAncBlock("ff", getSymbol("ff"))}
+          </div>
 
-           <div className="grid grid-cols-8 gap-0.5 mb-8">
-               {renderSmallAnc('mmm', getSymbol('mmm'))}
-               {renderSmallAnc('fmm', getSymbol('fmm'))}
-               {renderSmallAnc('mfm', getSymbol('mfm'))}
-               {renderSmallAnc('ffm', getSymbol('ffm'))}
-               {renderSmallAnc('mmf', getSymbol('mmf'))}
-               {renderSmallAnc('fmf', getSymbol('fmf'))}
-               {renderSmallAnc('mff', getSymbol('mff'))}
-               {renderSmallAnc('fff', getSymbol('fff'))}
-           </div>
-
-           {/* Printing specific signature area bottom of tree page */}
-            <div className="mt-8 border-t-2 border-black pt-4 flex justify-between items-start text-[10px] font-bold uppercase h-20 text-black">
-               <div className="flex flex-col gap-2">
-                  <div className="flex gap-1 text-left items-center">
-                     <span>{cl2.recordedCorrectly}</span>
-                     <input className="border-none outline-none bg-transparent font-bold text-[10px] w-64 text-left" defaultValue="_________________________" />
-                  </div>
-                  <input className="normal-case opacity-40 text-[9px] w-[500px] leading-tight border-none outline-none bg-transparent text-left" defaultValue={cl2.certStatement} />
-               </div>
-               <div className="text-right flex flex-col items-end gap-1">
-                  <div className="flex gap-1 justify-end items-center">
-                     <span>HEAD OF GS:</span>
-                     <input className="border-none outline-none bg-transparent font-bold text-[10px] text-right w-64" defaultValue={locale === 'en' ? "Alekseeva M.V. / _______________" : "Алєксєєва М.В. / _______________"} />
-                  </div>
-                  <div className="flex gap-1 justify-end items-center">
-                     <span>{cl2.date}</span>
-                     <input className="border-none outline-none bg-transparent font-bold text-[10px] text-right w-24" defaultValue={new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'uk-UA')} />
-                  </div>
-               </div>
-            </div>
-
+          <div className="grid grid-cols-8 gap-0 border-x border-b border-black divide-x divide-black bg-white print:flex-1">
+            {renderSmallAnc("mmm", getSymbol("mmm"))}
+            {renderSmallAnc("fmm", getSymbol("fmm"))}
+            {renderSmallAnc("mfm", getSymbol("mfm"))}
+            {renderSmallAnc("ffm", getSymbol("ffm"))}
+            {renderSmallAnc("mmf", getSymbol("mmf"))}
+            {renderSmallAnc("fmf", getSymbol("fmf"))}
+            {renderSmallAnc("mff", getSymbol("mff"))}
+            {renderSmallAnc("fff", getSymbol("fff"))}
+          </div>
         </div>
       </div>
     );
