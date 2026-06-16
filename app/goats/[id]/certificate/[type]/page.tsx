@@ -496,7 +496,7 @@ export default async function CertificatePage({
                 defaultValue={`${stdb} R${10000 + Number(goat.id)}`}
               />
               <input
-                className="w-full text-center font-bold uppercase text-[11px] bg-transparent outline-none text-black/60 focus:text-black print:text-black print:text-[10px]"
+                className="w-full text-center font-bold uppercase text-[11px] bg-transparent outline-none text-black focus:text-black print:text-black print:text-[10px]"
                 defaultValue={
                   locale === "en"
                     ? "OFFICIAL REGISTRATION DOCUMENT"
@@ -510,21 +510,30 @@ export default async function CertificatePage({
             <table className="grid-table border-[1.5px] border-black">
               <tbody>
                 <tr>
-                  <td className="grid-label">{cl1.nickname}</td>
-                  <td>
+                  <td colSpan={2} className="p-0">
                     <input
-                      className="w-full font-bold bg-transparent border-none outline-none text-black text-[12px]"
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[12px] px-1"
                       defaultValue={goat.name}
                     />
                   </td>
-                  <td className="grid-label">{cl1.breed}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.breed}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent border-none outline-none text-black text-[11px]"
                       defaultValue={goat.breed_name || ""}
                     />
                   </td>
-                  <td className="grid-label">{cl1.horns}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.horns}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent uppercase text-[10px] border-none outline-none text-black"
@@ -533,14 +542,24 @@ export default async function CertificatePage({
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.birthDate}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.birthDate}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
                       defaultValue={formatDate(goat.date_born)}
                     />
                   </td>
-                  <td className="grid-label">{cl1.purity}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.purity}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -551,7 +570,12 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">{cl1.scoreBorn}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.scoreBorn}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -562,14 +586,24 @@ export default async function CertificatePage({
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.sex}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.sex}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent uppercase text-[11px] border-none outline-none text-black"
                       defaultValue={goat.sex === 1 ? cl1.male : cl1.female}
                     />
                   </td>
-                  <td className="grid-label">{cl1.bloodPercent}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.bloodPercent}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -581,8 +615,11 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">
-                    {locale === "en" ? "Teats Qty:" : "Кіл-ть сосків:"}
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={locale === "en" ? "Teats Qty:" : "Кіл-ть сосків:"}
+                    />
                   </td>
                   <td>
                     <input
@@ -592,7 +629,12 @@ export default async function CertificatePage({
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.idAbg}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.idAbg}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent border-none outline-none text-black"
@@ -602,7 +644,12 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">{cl1.qtyBorn}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.qtyBorn}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -611,23 +658,38 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">{cl1.expertAssessment}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.expertAssessment}
+                    />
+                  </td>
                   <td>
                     <input
-                      className="w-full bg-transparent border-none outline-none font-bold text-red-600"
+                      className="w-full bg-transparent border-none outline-none font-bold text-black"
                       defaultValue={goat.test_score || ""}
                     />
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.idUa}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.idUa}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
                       defaultValue={goat.code_ua || ""}
                     />
                   </td>
-                  <td className="grid-label">{cl1.weightBorn}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.weightBorn}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -636,7 +698,12 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">{cl1.class}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.class}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent border-none outline-none text-black"
@@ -645,21 +712,36 @@ export default async function CertificatePage({
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.chip}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.chip}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent border-none outline-none text-black"
                       defaultValue={goat.code_chip || ""}
                     />
                   </td>
-                  <td className="grid-label">{cl1.liveWeight}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.liveWeight}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
                       defaultValue=""
                     />
                   </td>
-                  <td className="grid-label">{cl1.studbook}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.studbook}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent border-none outline-none text-black"
@@ -668,7 +750,12 @@ export default async function CertificatePage({
                   </td>
                 </tr>
                 <tr>
-                  <td className="grid-label">{cl1.breeder}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.breeder}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full font-bold bg-transparent text-[10px] border-none outline-none text-black"
@@ -677,7 +764,12 @@ export default async function CertificatePage({
                       }
                     />
                   </td>
-                  <td className="grid-label">{cl1.color}</td>
+                  <td className="grid-label p-0">
+                    <input
+                      className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
+                      defaultValue={cl1.color}
+                    />
+                  </td>
                   <td>
                     <input
                       className="w-full bg-transparent border-none outline-none text-black"
@@ -752,7 +844,7 @@ export default async function CertificatePage({
 
                   {/* Line 3: Date Label */}
                   <input
-                    className="bg-transparent border-none outline-none text-[10.5px] text-black/60 font-bold w-full"
+                    className="bg-transparent border-none outline-none text-[10.5px] text-black font-bold w-full"
                     defaultValue={cl1.dateIssued}
                   />
                 </div>
@@ -1376,35 +1468,41 @@ export default async function CertificatePage({
       return (
         <table className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black">
           <tbody>
-            {/* Row 1: Symbol | Кличка | Name | Племкн. | Stdb | ID UA | value */}
+            {/* Row 1: Symbol | Name | Племкн. | Stdb | ID UA | value */}
             <tr className="border-b border-black h-[17px]">
-              <td className="w-[10%] border-r border-black font-black bg-gray-50/50 text-[11px] text-center align-middle select-none py-0">
-                {symbol}
-              </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[12%] text-[7px] py-0">
-                {lbl.nickname}
-              </td>
-              <td className="border-r border-black p-0 w-[28%]">
+              <td className="w-[12%] border-r border-black p-0 text-black">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0"
+                  className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[11px] text-center bg-transparent py-0 text-black"
+                  defaultValue={symbol}
+                />
+              </td>
+              <td className="border-r border-black p-0 w-[36%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0 text-black"
                   defaultValue={d.name || ""}
                 />
               </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[10%] text-[7px] py-0">
-                {lbl.stdb}
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.stdb}
+                />
               </td>
               <td className="border-r border-black p-0 w-[10%]">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={getStdb(d.studbook_alias)}
                 />
               </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none w-[10%] text-[7px] py-0">
-                {lbl.idUa}
-              </td>
-              <td className="p-0">
+              <td className="border-r border-black p-0 w-[13%]">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.idUa}
+                />
+              </td>
+              <td className="p-0 w-[19%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : "")}
                 />
               </td>
@@ -1412,30 +1510,39 @@ export default async function CertificatePage({
 
             {/* Row 2: ID ABG | value | Породн | value | Оц.екс | value */}
             <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.idAbg}
-              </td>
-              <td colSpan={2} className="border-r border-black p-0">
+              <td className="border-r border-black p-0 w-[10%]">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
-                  defaultValue={d.code_abg || ""}
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.idAbg}
                 />
-              </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.purity}
               </td>
               <td className="border-r border-black p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                  defaultValue={d.code_abg || ""}
+                />
+              </td>
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.purity}
+                />
+              </td>
+              <td className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : ""}
                 />
               </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.expAss}
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.expAss}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-red-700"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.test_score || ""}
                 />
               </td>
@@ -1443,12 +1550,15 @@ export default async function CertificatePage({
 
             {/* Row 3: ДН | value | Порода | value | Оц.ексбал | value */}
             <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.dob}
-              </td>
-              <td colSpan={2} className="border-r border-black p-0">
+              <td className="border-r border-black p-0 w-[10%]">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.dob}
+                />
+              </td>
+              <td className="border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={
                     d.date_born
                       ? new Date(d.date_born).toLocaleDateString(locale === "en" ? "en-US" : "uk-UA")
@@ -1456,21 +1566,27 @@ export default async function CertificatePage({
                   }
                 />
               </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.breed}
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.breed}
+                />
               </td>
               <td className="border-r border-black p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.breed_alias || d.breed_name || ""}
                 />
               </td>
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {lbl.expAss}
+              <td className="border-r border-black p-0 w-[10%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.expAss}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.test_class || "Elite"}
                 />
               </td>
@@ -1478,12 +1594,15 @@ export default async function CertificatePage({
 
             {/* Row 4: Породн | value | Клас | value | Власник | value */}
             <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black font-normal text-black/60 text-center px-0.5 select-none text-[7px] py-0">
-                {ownerLabel}
-              </td>
-              <td colSpan={6} className="p-0">
+              <td className="border-r border-black p-0 w-[10%]">
                 <input
-                  className="w-full h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 px-1"
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={ownerLabel}
+                />
+              </td>
+              <td colSpan={5} className="p-0">
+                <input
+                  className="w-full h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 px-1 text-black"
                   defaultValue={d.owner || ""}
                 />
               </td>
@@ -1492,12 +1611,20 @@ export default async function CertificatePage({
             {/* Lactation table */}
             {p.length === 1 ? (
               <tr>
-                <td colSpan={7} className="p-0">
+                <td colSpan={6} className="p-0">
                   {await renderLactTable(p, d)}
                 </td>
               </tr>
             ) : (
-              await renderMiniLactTableRows(p, d)
+              <tr>
+                <td colSpan={6} className="p-0">
+                  <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white text-black">
+                    <tbody>
+                      {await renderMiniLactTableRows(p, d)}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -1572,26 +1699,8 @@ export default async function CertificatePage({
           : "";
       }
 
-      // Parse/split productivity across two rows
-      let lactFormat1 = "";
-      let lactFormat2 = "";
-      if (lactFormat) {
-        const normalized = lactFormat.replace(/\\\\/g, "\\");
-        const parts = normalized.split("\\");
-        if (parts.length >= 5) {
-          const firstChar = parts[0].trim().toUpperCase();
-          if (firstChar === "M" || firstChar === "М") {
-            lactFormat1 = parts.slice(0, 4).join("\\") + "\\";
-            lactFormat2 = parts.slice(4).join("\\");
-          } else {
-            lactFormat1 = parts.slice(0, 3).join("\\") + "\\";
-            lactFormat2 = parts.slice(3).join("\\");
-          }
-        } else {
-          lactFormat1 = normalized;
-          lactFormat2 = "";
-        }
-      }
+      // Parse/split productivity across two rows - now combined to a single row
+      const displayLact = lactFormat ? lactFormat.replace(/\\\\/g, "\\") : "";
 
       // Dynamic local translations for labels matching the certificate locale
       const labelAbg = "ID ABG";
@@ -1603,16 +1712,19 @@ export default async function CertificatePage({
       const labelProd = locale === "en" ? "Prod." : "Прод.";
 
       return (
-        <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white h-full select-text border-t border-black">
+        <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white h-full select-text border-t border-black text-black">
           <tbody>
             {/* Row 1: Symbol & Name */}
             <tr className="border-b border-black h-[18px]">
-              <td className="w-[30%] border-r border-black font-black bg-gray-50/50 text-[8px] py-0.5">
-                {symbol}
+              <td className="w-[30%] border-r border-black p-0">
+                <input
+                  className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[8px] py-0.5 text-black text-center"
+                  defaultValue={symbol}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0.5"
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0.5 text-black"
                   defaultValue={d.name || ""}
                 />
               </td>
@@ -1620,12 +1732,15 @@ export default async function CertificatePage({
 
             {/* Row 2: ID ABG */}
             <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelAbg}
+              <td className="border-r border-black p-0 w-[30%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelAbg}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-bold text-black"
                   defaultValue={d.code_abg || ""}
                 />
               </td>
@@ -1633,12 +1748,15 @@ export default async function CertificatePage({
 
             {/* Row 3: ID UA */}
             <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelUa}
+              <td className="border-r border-black p-0 w-[30%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelUa}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-bold text-black"
                   defaultValue={d.code_ua || ""}
                 />
               </td>
@@ -1646,12 +1764,15 @@ export default async function CertificatePage({
 
             {/* Row 4: Порода */}
             <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelBreed}
+              <td className="border-r border-black p-0 w-[30%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelBreed}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-bold text-black"
                   defaultValue={d.breed_alias || d.breed_name || ""}
                 />
               </td>
@@ -1659,12 +1780,15 @@ export default async function CertificatePage({
 
             {/* Row 5: Породн. */}
             <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelPurity}
+              <td className="border-r border-black p-0 w-[30%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelPurity}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-bold text-black"
                   defaultValue={
                     d.blood_percent !== null && d.blood_percent !== undefined
                       ? `${d.blood_percent}`
@@ -1676,12 +1800,15 @@ export default async function CertificatePage({
 
             {/* Row 6: Клас */}
             <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelClass}
+              <td className="border-r border-black p-0 w-[30%]">
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelClass}
+                />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px]"
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-bold text-black"
                   defaultValue={[d.test_class || "Elite", d.test_score]
                     .filter(Boolean)
                     .join(" ")}
@@ -1689,28 +1816,18 @@ export default async function CertificatePage({
               </td>
             </tr>
 
-            {/* Row 7: Прод. line 1 */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelProd}
-              </td>
-              <td className="p-0">
+            {/* Row 7: Прод. */}
+            <tr className="h-[18px]">
+              <td className="border-r border-black p-0 w-[30%]">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-semibold"
-                  defaultValue={lactFormat1}
+                  className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
+                  defaultValue={labelProd}
                 />
               </td>
-            </tr>
-
-            {/* Row 8: Прод. line 2 */}
-            <tr className="h-[18px]">
-              <td className="border-r border-black font-normal text-center py-0.5">
-                {labelProd}
-              </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7.5px] font-semibold"
-                  defaultValue={lactFormat2}
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0.5 text-[7px] font-bold text-black"
+                  defaultValue={displayLact}
                 />
               </td>
             </tr>

@@ -529,14 +529,9 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.certLactDataTitle}
             </h2>
-            <form action={`/api/goats/${goat.id}/cert`} method="POST">
-              <button
-                type="submit"
-                className="bg-white border-2 border-[#491907] text-[#491907] px-4 py-1.5 rounded text-[11px] font-black uppercase hover:bg-[#491907] hover:text-white transition-all shadow-sm"
-              >
-                {lang === 'ru' ? 'Обновить' : 'Update'}
-              </button>
-            </form>
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+              {lang === 'ru' ? 'Сохраняется автоматически' : 'Saves automatically'}
+            </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse font-bold text-center whitespace-nowrap text-black">
