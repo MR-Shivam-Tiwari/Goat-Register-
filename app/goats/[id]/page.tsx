@@ -451,17 +451,27 @@ export default async function GoatDetailPage({
               <table className="w-full text-sm border-collapse text-center uppercase font-black whitespace-nowrap">
                 <thead className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100/50 text-blue-800">
                   <tr className="divide-x divide-blue-100">
-                    <th className="p-3">{t.goats.breeder}</th>
-                    <th className="p-3">{t.goats.added}</th>
-                    <th className="p-3">{t.goats.certType}</th>
-                    <th className="p-3">{t.goats.certHeightWithers}</th>
-                    <th className="p-3">{t.goats.certHeightSacrum}</th>
-                    <th className="p-3">{t.goats.certChestCirc}</th>
-                    <th className="p-3">{t.goats.certBodyLength}</th>
-                    <th className="p-3">{t.goats.weightKg}</th>
-                    <th className="p-3">{t.goats.certFinalScore}</th>
-                    <th className="p-3">{t.goats.certClass}</th>
-                    <th className="p-3">{t.goats.certCategory}</th>
+                    <th className="p-3">{t.goats.breeder || (lang === 'ru' ? 'Эксперт' : 'Expert')}</th>
+                    <th className="p-3">{t.goats.added || (lang === 'ru' ? 'Дата' : 'Date')}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Тип' : 'Type'}</th>
+                    <th className="p-3" title={lang === 'ru' ? 'Высота в холке' : 'Height at withers'}>{lang === 'ru' ? 'ВХ' : 'WH'}</th>
+                    <th className="p-3" title={lang === 'ru' ? 'Высота в крестце' : 'Height at sacrum'}>{lang === 'ru' ? 'ВК' : 'WK'}</th>
+                    <th className="p-3" title={lang === 'ru' ? 'Обхват груди' : 'Chest circumference'}>{lang === 'ru' ? 'ОГ' : 'OG'}</th>
+                    <th className="p-3" title={lang === 'ru' ? 'Глубина груди' : 'Chest depth'}>{lang === 'ru' ? 'ГГ' : 'GG'}</th>
+                    <th className="p-3" title={lang === 'ru' ? 'Косая длина туловища' : 'Body length'}>{lang === 'ru' ? 'КД' : 'KD'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Об. Развитие' : 'Dev'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Х,С,П,Ср.Ч' : 'H,S,P,S'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Грудь' : 'Chest'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Кр-ц' : 'Kr-ts'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'К-ти' : 'Limbs'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Копыта' : 'Hooves'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Вымя' : 'Udder'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Вымя спереди' : 'Udder F'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Вымя сзади' : 'Udder B'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Соски' : 'Teats'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Мошонка' : 'Scrotum'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Средний балл' : 'Avg Score'}</th>
+                    <th className="p-3">{lang === 'ru' ? 'Класс' : 'Class'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -491,14 +501,25 @@ export default async function GoatDetailPage({
                         </td>
                         <td className="p-3 opacity-60">
                           {test.test_type === 1 || test.Test_type === 1
-                            ? t.goats.classical
-                            : t.goats.young}
+                            ? (t.goats.classical || 'Класс.')
+                            : (t.goats.young || 'Молод.')}
                         </td>
-                        <td className="p-3">{get("par_1")}</td>
-                        <td className="p-3">{get("par_2")}</td>
-                        <td className="p-3">{get("par_3")}</td>
-                        <td className="p-3">{get("par_4")}</td>
-                        <td className="p-3">{get("weight")}</td>
+                        <td className="p-3">{get("mark_wh")}</td>
+                        <td className="p-3">{get("mark_wk")}</td>
+                        <td className="p-3">{get("mark_og")}</td>
+                        <td className="p-3">{get("mark_gg")}</td>
+                        <td className="p-3">{get("mark_kd")}</td>
+                        <td className="p-3">{get("mark_dev")}</td>
+                        <td className="p-3">{get("mark_hsp")}</td>
+                        <td className="p-3">{get("mark_chest")}</td>
+                        <td className="p-3">{get("mark_krts")}</td>
+                        <td className="p-3">{get("mark_kti")}</td>
+                        <td className="p-3">{get("mark_hooves")}</td>
+                        <td className="p-3">{get("mark_udder")}</td>
+                        <td className="p-3">{get("mark_udder_f")}</td>
+                        <td className="p-3">{get("mark_udder_b")}</td>
+                        <td className="p-3">{get("mark_teats")}</td>
+                        <td className="p-3">{get("mark_scrotum")}</td>
                         <td className="p-3 text-red-600 text-[11px] scale-105">
                           {get("score_total")}
                         </td>
@@ -507,7 +528,6 @@ export default async function GoatDetailPage({
                             {get("class")}
                           </span>
                         </td>
-                        <td className="p-3">{get("category")}</td>
                       </tr>
                     );
                   })}

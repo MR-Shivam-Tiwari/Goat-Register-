@@ -39,7 +39,23 @@ export default function AssessmentForm({
     weight: initialData?.weight || initialData?.Weight || '',
     score_total: initialData?.score_total || initialData?.Score_total || '',
     class_val: initialData?.class || initialData?.Class || '',
-    category: initialData?.category || initialData?.Category || ''
+    category: initialData?.category || initialData?.Category || '',
+    mark_wh: initialData?.mark_wh || '',
+    mark_wk: initialData?.mark_wk || '',
+    mark_og: initialData?.mark_og || '',
+    mark_gg: initialData?.mark_gg || '',
+    mark_kd: initialData?.mark_kd || '',
+    mark_dev: initialData?.mark_dev || '',
+    mark_hsp: initialData?.mark_hsp || '',
+    mark_chest: initialData?.mark_chest || '',
+    mark_krts: initialData?.mark_krts || '',
+    mark_kti: initialData?.mark_kti || '',
+    mark_hooves: initialData?.mark_hooves || '',
+    mark_udder: initialData?.mark_udder || '',
+    mark_udder_f: initialData?.mark_udder_f || '',
+    mark_udder_b: initialData?.mark_udder_b || '',
+    mark_teats: initialData?.mark_teats || '',
+    mark_scrotum: initialData?.mark_scrotum || ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,97 +73,122 @@ export default function AssessmentForm({
         router.push(`/goats/${goatId}`);
         router.refresh();
       } else {
-        alert(t.goatForm.assessment.errorSave);
+        alert(t.goatForm.assessment.errorSave || 'Error');
       }
     } catch (error) {
       console.error(error);
-      alert(t.goatForm.assessment.errorSave);
+      alert(t.goatForm.assessment.errorSave || 'Error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-[#FCFAF2] rounded-lg border border-[#491907] p-8 shadow-sm font-sans text-left">
+    <div className="max-w-3xl mx-auto bg-white rounded-lg border border-[#491907] p-8 shadow-sm font-sans text-left">
       <h2 className="text-[#491907] font-extrabold text-2xl mb-6 tracking-tight">
         {lang === 'ru' ? 'Экспертная оценка' : 'Expert assessment'}
       </h2>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Expert Name */}
-        <p>
-          <input 
-            type="text" 
-            value={formData.who_expert}
-            onChange={e => setFormData({...formData, who_expert: e.target.value})}
-            className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
-            placeholder={t.goatForm.assessment.expertName}
-          />
-        </p>
-
-        {/* Date of certification */}
-        <p>
-          <input 
-            type="text" 
-            value={formData.date_test}
-            onChange={e => setFormData({...formData, date_test: e.target.value})}
-            className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
-            placeholder={t.goatForm.assessment.certDate}
-          />
-        </p>
-
-        {/* Type of certification Dropdown & Label */}
-        <p className="flex items-center gap-3 flex-wrap">
-          <select 
-            value={formData.test_type}
-            onChange={e => setFormData({...formData, test_type: parseInt(e.target.value)})}
-            className="border border-gray-400 bg-white rounded-[4px] px-3 py-1 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
-          >
-            <option value={0}>{t.goatForm.assessment.notHeld}</option>
-            <option value={1}>{t.goatForm.assessment.classical}</option>
-            <option value={2}>{t.goatForm.assessment.young}</option>
-          </select>
-          <span className="text-amber-950 text-xs font-semibold font-sans">
-            {lang === 'ru' 
-              ? 'Тип аттестации (не проведена/классическая углубленная/аттест молодняка)' 
-              : 'Type of certification (not conducted/classical depth/young animals certification)'
-            }
-          </span>
-        </p>
-
-        {/* Stats fields */}
-        {[
-          { f: 'par_1', l: t.goatForm.assessment.heightWithers, v: formData.par_1 },
-          { f: 'par_2', l: t.goatForm.assessment.heightSacrum, v: formData.par_2 },
-          { f: 'par_3', l: t.goatForm.assessment.chestCircum, v: formData.par_3 },
-          { f: 'par_4', l: t.goatForm.assessment.bodyLength, v: formData.par_4 },
-          { f: 'weight', l: t.goatForm.assessment.weight, v: formData.weight },
-          { f: 'score_total', l: t.goatForm.assessment.finalScore, v: formData.score_total },
-          { f: 'class_val', l: t.goatForm.assessment.class, v: formData.class_val },
-          { f: 'category', l: t.goatForm.assessment.category, v: formData.category },
-        ].map((item) => (
-          <p key={item.f}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Top Info section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Expert Name */}
+          <div>
+            <label className="block text-amber-950 text-xs font-semibold mb-1">
+              {t.goatForm.assessment?.expertName || 'ФИО эксперта'}
+            </label>
             <input 
-              type="text"
-              value={item.v}
-              onChange={e => setFormData({...formData, [item.f]: e.target.value})}
-              className="w-[420px] max-w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
-              placeholder={item.l}
+              type="text" 
+              value={formData.who_expert}
+              onChange={e => setFormData({...formData, who_expert: e.target.value})}
+              className="w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+              placeholder=""
             />
-          </p>
-        ))}
+          </div>
+
+          {/* Date of certification */}
+          <div>
+            <label className="block text-amber-950 text-xs font-semibold mb-1">
+              {t.goatForm.assessment?.certDate || 'Дата проведения'}
+            </label>
+            <input 
+              type="date" 
+              value={formData.date_test}
+              onChange={e => setFormData({...formData, date_test: e.target.value})}
+              className="w-full border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+              placeholder=""
+            />
+          </div>
+
+          {/* 1. Type of certification Dropdown */}
+          <div className="md:col-span-2">
+            <label className="block text-amber-950 text-xs font-semibold mb-1">
+              {lang === 'ru' ? 'Тип аттестации' : 'Type of assessment'}
+            </label>
+            <select 
+              value={formData.test_type}
+              onChange={e => setFormData({...formData, test_type: parseInt(e.target.value)})}
+              className="w-full md:w-1/2 border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
+            >
+              <option value={0}>{t.goatForm.assessment?.notHeld || 'Не проведена'}</option>
+              <option value={1}>{t.goatForm.assessment?.classical || 'Классическая'}</option>
+              <option value={2}>{t.goatForm.assessment?.young || 'Аттест. молодняка'}</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-200 pt-6"></div>
+
+        {/* Stats fields - the 18 specific items */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-4">
+          {[
+            { f: 'mark_wh', l: lang === 'ru' ? 'ВХ' : 'WH' },
+            { f: 'mark_wk', l: lang === 'ru' ? 'ВК' : 'WK' },
+            { f: 'mark_og', l: lang === 'ru' ? 'ОГ' : 'OG' },
+            { f: 'mark_gg', l: lang === 'ru' ? 'ГГ' : 'GG' },
+            { f: 'mark_kd', l: lang === 'ru' ? 'КД' : 'KD' },
+            { f: 'mark_dev', l: lang === 'ru' ? 'Об. Развитие' : 'General Dev.' },
+            { f: 'mark_hsp', l: lang === 'ru' ? 'Х,С,П,Ср.Ч' : 'H,S,P,Sr.Ch' },
+            { f: 'mark_chest', l: lang === 'ru' ? 'Грудь' : 'Chest' },
+            { f: 'mark_krts', l: lang === 'ru' ? 'Кр-ц' : 'Kr-ts' },
+            { f: 'mark_kti', l: lang === 'ru' ? 'К-ти' : 'K-ti' },
+            { f: 'mark_hooves', l: lang === 'ru' ? 'Копыта' : 'Hooves' },
+            { f: 'mark_udder', l: lang === 'ru' ? 'Вымя' : 'Udder' },
+            { f: 'mark_udder_f', l: lang === 'ru' ? 'Вымя спереди' : 'Udder front' },
+            { f: 'mark_udder_b', l: lang === 'ru' ? 'Вымя сзади' : 'Udder behind' },
+            { f: 'mark_teats', l: lang === 'ru' ? 'Соски' : 'Teats' },
+            { f: 'mark_scrotum', l: lang === 'ru' ? 'Мошонка' : 'Scrotum' },
+            { f: 'score_total', l: lang === 'ru' ? 'Средний балл' : 'Avg score' },
+            { f: 'class_val', l: lang === 'ru' ? 'Класс' : 'Class' },
+          ].map((item) => (
+            <div key={item.f} className="flex flex-col gap-1">
+              <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis">
+                {item.l}
+              </label>
+              <input 
+                type="text"
+                value={(formData as any)[item.f]}
+                onChange={e => setFormData({...formData, [item.f]: e.target.value})}
+                className="w-full h-9 border border-gray-300 bg-white rounded-[4px] px-3 text-sm focus:outline-none focus:border-amber-950 focus:ring-1 focus:ring-amber-950 font-sans text-black"
+                placeholder=""
+                maxLength={10}
+              />
+            </div>
+          ))}
+        </div>
 
         {/* Submit button */}
-        <p className="pt-2">
+        <div className="pt-6 border-t border-gray-200 mt-6">
           <button 
             type="submit"
             disabled={loading}
-            className="border border-gray-400 bg-gray-200 text-black px-4 py-1.5 rounded-[4px] text-xs font-bold hover:bg-gray-300 active:bg-gray-400 transition-colors font-sans cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto border border-gray-400 bg-[#491907] text-white px-8 py-2 rounded-[4px] text-sm font-bold hover:bg-[#60250b] active:bg-[#491907] transition-colors font-sans cursor-pointer disabled:opacity-50"
           >
-            {loading ? t.goatForm.assessment.processing : t.goatForm.assessment.save}
+            {loading ? (t.goatForm.assessment?.processing || 'Сохранение...') : (t.goatForm.assessment?.save || 'Сохранить')}
           </button>
-        </p>
+        </div>
       </form>
     </div>
   );
 }
+

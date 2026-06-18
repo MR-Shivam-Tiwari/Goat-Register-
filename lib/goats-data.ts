@@ -23,6 +23,9 @@ export async function getGoatData(id: string) {
 
         T.test_type, T.score_total, T.par_1, T.par_2, T.par_3, T.par_4,
         T.class AS cert_class, T.category,
+        T.mark_wh, T.mark_wk, T.mark_og, T.mark_gg, T.mark_kd, T.mark_dev, 
+        T.mark_hsp, T.mark_chest, T.mark_krts, T.mark_kti, T.mark_hooves,
+        T.mark_udder, T.mark_udder_f, T.mark_udder_b, T.mark_teats, T.mark_scrotum,
 
         L.viewer, L.lact_no, L.lact_days, L.milk, L.fat, L.protein, L.milk_day, L.have_graph,
 
@@ -66,6 +69,9 @@ export async function getOffspringDetailed(id: string) {
 
         T.test_type, T.score_total, T.par_1, T.par_2, T.par_3, T.par_4,
         T.class AS cert_class, T.category,
+        T.mark_wh, T.mark_wk, T.mark_og, T.mark_gg, T.mark_kd, T.mark_dev, 
+        T.mark_hsp, T.mark_chest, T.mark_krts, T.mark_kti, T.mark_hooves,
+        T.mark_udder, T.mark_udder_f, T.mark_udder_b, T.mark_teats, T.mark_scrotum,
 
         L.viewer, L.lact_no, L.lact_days, L.milk, L.fat, L.protein, L.milk_day, L.have_graph,
 

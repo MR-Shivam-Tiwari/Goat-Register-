@@ -90,7 +90,7 @@ export default function ClassicGoatTable({
                 {t.goats.productivitySection}
               </th>
               <th
-                colSpan={8}
+                colSpan={19}
                 className="p-1 text-center border-r border-black bg-[#23DC69]"
               >
                 {t.goats.certSection}
@@ -258,26 +258,59 @@ export default function ClassicGoatTable({
               <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
                 {t.goats.certType}
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                {t.goats.score}
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="ВХ">
+                ВХ
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                H.X.
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="ВК">
+                ВК
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                H.K.
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="ОГ">
+                ОГ
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                O.G.
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="ГГ">
+                ГГ
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                K.D.
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="КД">
+                КД
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                {t.goats.certClass}
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Об. Развитие">
+                Об.Р
               </th>
-              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40">
-                {t.goats.certCategory}
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Х,С,П,Ср.Ч">
+                Х,С,П
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Грудь">
+                Гр
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Кр-ц">
+                Кр-ц
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="К-ти">
+                К-ти
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Копыта">
+                Коп
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Вымя">
+                Вымя
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Вымя спереди">
+                Вм.Сп
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Вымя сзади">
+                Вм.Сз
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Соски">
+                Соски
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Мошонка">
+                Мош
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Средний балл">
+                Балл
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black bg-[#CFE2F3]/40" title="Класс">
+                Класс
               </th>
 
               {/* Meta Group */}
@@ -589,32 +622,65 @@ export default function ClassicGoatTable({
 
                   {/* Cert Details */}
                   <td className="p-0.5 px-2 text-center bg-[#CFE2F3]/10">
-                    {g.test_type === 1
-                      ? "Classical"
-                      : g.test_type === 2
+                    {g.test_type === 1 || g.test_type === "1"
+                      ? "Class."
+                      : g.test_type === 2 || g.test_type === "2"
                         ? "Young"
                         : "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_wh || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_wk || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_og || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_gg || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_kd || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_dev || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_hsp || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_chest || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_krts || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_kti || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_hooves || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_udder || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_udder_f || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_udder_b || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_teats || "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
+                    {g.mark_scrotum || "-"}
                   </td>
                   <td className="p-0.5 px-2 text-center font-extrabold text-red-600 bg-[#CFE2F3]/10">
                     {g.score_total || "-"}
                   </td>
-                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
-                    {g.par_1 || "-"}
-                  </td>
-                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
-                    {g.par_2 || "-"}
-                  </td>
-                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
-                    {g.par_3 || "-"}
-                  </td>
-                  <td className="p-0.5 px-2 text-center font-mono bg-[#CFE2F3]/10">
-                    {g.par_4 || "-"}
-                  </td>
                   <td className="p-0.5 px-2 text-center bg-[#CFE2F3]/10">
                     {g.cert_class || "-"}
-                  </td>
-                  <td className="p-0.5 px-2 text-center bg-[#CFE2F3]/10">
-                    {g.category || "-"}
                   </td>
 
                   {/* Meta Details */}
