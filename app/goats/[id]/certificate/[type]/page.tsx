@@ -618,7 +618,9 @@ export default async function CertificatePage({
                   <td className="grid-label p-0">
                     <input
                       className="w-full h-full font-bold bg-transparent border-none outline-none text-black text-[10px] px-1"
-                      defaultValue={locale === "en" ? "Teats Qty:" : "Кіл-ть сосків:"}
+                      defaultValue={
+                        locale === "en" ? "Teats Qty:" : "Кіл-ть сосків:"
+                      }
                     />
                   </td>
                   <td>
@@ -1050,13 +1052,21 @@ export default async function CertificatePage({
 
       if (isMale) {
         return (
-          <table className="w-full text-[8px] border-collapse text-center text-black">
+          <table
+            className="w-full text-[8px] border-collapse text-center text-black border-t border-black"
+            style={{ borderTopWidth: "1px" }}
+          >
             <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
               <tr className="border-b border-black">
-                <th rowSpan={2} className="border-r border-black py-0.5 w-[18%] align-middle">
+                <th
+                  rowSpan={2}
+                  className="border-r border-black py-0.5 w-[18%] align-middle"
+                >
                   {cl2.ancestors}
                   <br />
-                  <span className="font-normal text-[6px]">{cl2.descendants}</span>
+                  <span className="font-normal text-[6px]">
+                    {cl2.descendants}
+                  </span>
                 </th>
                 <th colSpan={2} className="border-r border-black py-0.5">
                   {cl2.days}
@@ -1193,7 +1203,10 @@ export default async function CertificatePage({
         );
       } else {
         return (
-          <table className="w-full text-[8px] border-collapse text-center text-black">
+          <table
+            className="w-full text-[8px] border-collapse text-center text-black border-t border-black"
+            style={{ borderTopWidth: "1px" }}
+          >
             <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
               <tr className="border-b border-black">
                 <th colSpan={2} className="border-r border-black py-0.5">
@@ -1359,17 +1372,32 @@ export default async function CertificatePage({
 
       return (
         <>
-          <tr className="border-b border-black h-4.5 bg-white font-bold uppercase text-[6.5px] text-black">
-            <td className="border-r border-black py-0.5 w-[20%] text-center select-none">
+          <tr
+            className="border-b border-black h-4.5 bg-white font-bold uppercase text-[6.5px] text-black"
+            style={{ borderBottomWidth: "1px" }}
+          >
+            <td
+              className="border-r border-black py-0.5 w-[20%] text-center select-none"
+              style={{ borderRightWidth: "1px" }}
+            >
               {lbls[0]}
             </td>
-            <td className="border-r border-black py-0.5 w-[30%] text-center select-none">
+            <td
+              className="border-r border-black py-0.5 w-[30%] text-center select-none"
+              style={{ borderRightWidth: "1px" }}
+            >
               {lbls[1]}
             </td>
-            <td className="border-r border-black py-0.5 w-[16%] text-center select-none">
+            <td
+              className="border-r border-black py-0.5 w-[16%] text-center select-none"
+              style={{ borderRightWidth: "1px" }}
+            >
               {lbls[2]}
             </td>
-            <td className="border-r border-black py-0.5 w-[16%] text-center select-none">
+            <td
+              className="border-r border-black py-0.5 w-[16%] text-center select-none"
+              style={{ borderRightWidth: "1px" }}
+            >
               {lbls[3]}
             </td>
             <td className="py-0.5 w-[18%] text-center select-none">
@@ -1378,30 +1406,44 @@ export default async function CertificatePage({
           </tr>
           {[...Array(3)].map((_, i) => {
             const r = rows[i] || {};
+            const isLast = i === 2;
             return (
               <tr
                 key={i}
-                className="border-b border-black h-4 leading-none last:border-b-0"
+                className={isLast ? "h-4 leading-none" : "border-b border-black h-4 leading-none"}
+                style={isLast ? {} : { borderBottomWidth: "1px" }}
               >
-                <td className="p-0 border-r border-black w-[20%]">
+                <td
+                  className="p-0 border-r border-black w-[20%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
                     defaultValue={r.lact_days || ""}
                   />
                 </td>
-                <td className="p-0 border-r border-black w-[30%]">
+                <td
+                  className="p-0 border-r border-black w-[30%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-black text-[7.5px]"
                     defaultValue={r.milk || ""}
                   />
                 </td>
-                <td className="p-0 border-r border-black w-[16%]">
+                <td
+                  className="p-0 border-r border-black w-[16%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
                     defaultValue={r.fat || ""}
                   />
                 </td>
-                <td className="p-0 border-r border-black w-[16%]">
+                <td
+                  className="p-0 border-r border-black w-[16%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
                     defaultValue={r.protein || ""}
@@ -1434,6 +1476,7 @@ export default async function CertificatePage({
           expAss: "Оц.екс.бал",
           breed: "Порода",
           class: "Клас",
+          bloodline: "Кровность %",
         },
         uk: {
           nickname: "Кличка",
@@ -1445,6 +1488,7 @@ export default async function CertificatePage({
           expAss: "Оц.екс.бал",
           breed: "Порода",
           class: "Клас",
+          bloodline: "Кровність %",
         },
         en: {
           nickname: "Name",
@@ -1456,91 +1500,394 @@ export default async function CertificatePage({
           expAss: "Exp.Ass.",
           breed: "Breed",
           class: "Class",
+          bloodline: "Bloodline %",
         },
       };
 
       const lbl = labels[locale] || labels["ru"];
 
       // Owner label per locale
-      const ownerLabel = locale === "en" ? "Owner:" : locale === "uk" ? "Власник:" : "Влад.";
-      const bloodLabel = locale === "en" ? "Blood:" : locale === "uk" ? "Кровність:" : "Кровн.";
+      const ownerLabel =
+        locale === "en" ? "Owner:" : locale === "uk" ? "Власник:" : "Влад.";
+      const bloodLabel =
+        locale === "en" ? "Blood:" : locale === "uk" ? "Кровність:" : "Кровн.";
+      const chipLabel =
+        locale === "en" ? "Chip:" : locale === "uk" ? "Чіп:" : "Чип:";
+
+      if (p.length > 1) {
+        return (
+          <table
+            className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black"
+            style={{ borderTopWidth: "1px" }}
+          >
+            <tbody>
+              {/* Row 1: Symbol & Name */}
+              <tr
+                className="border-b border-black h-[17px]"
+                style={{ borderBottomWidth: "1px" }}
+              >
+                <td
+                  className="w-[18%] p-0 text-black"
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[11px] text-center bg-transparent py-0 text-black"
+                    defaultValue={symbol}
+                  />
+                </td>
+                <td className="p-0" colSpan={3}>
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0 text-black"
+                    defaultValue={d.name || ""}
+                  />
+                </td>
+              </tr>
+
+              {/* Row 2: ID ABG | value | ID UA | value */}
+              <tr
+                className="border-b border-black h-[17px]"
+                style={{ borderBottomWidth: "1px" }}
+              >
+                <td
+                  className="w-[18%] border-r border-black p-0 text-black"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.idAbg}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[32%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={d.code_abg || ""}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[18%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.idUa}
+                  />
+                </td>
+                <td className="p-0 w-[32%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={
+                      d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : "")
+                    }
+                  />
+                </td>
+              </tr>
+
+              {/* Row 3: Племкн. (Stdb) | value | Bloodline % | value */}
+              <tr
+                className="border-b border-black h-[17px]"
+                style={{ borderBottomWidth: "1px" }}
+              >
+                <td
+                  className="w-[18%] border-r border-black p-0 text-black"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.stdb}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[32%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={getStdb(d.studbook_alias)}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[18%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue=""
+                  />
+                </td>
+                <td className="p-0 w-[32%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue=""
+                  />
+                </td>
+              </tr>
+
+              {/* Row 4: д.н. (D.O.B.) | value | (blank) | (blank) */}
+              <tr
+                className="border-b border-black h-[17px]"
+                style={{ borderBottomWidth: "1px" }}
+              >
+                <td
+                  className="w-[18%] border-r border-black p-0 text-black"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.dob}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[32%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={
+                      d.date_born
+                        ? new Date(d.date_born).toLocaleDateString(
+                            locale === "en" ? "en-US" : "uk-UA",
+                          )
+                        : ""
+                    }
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[18%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue=""
+                  />
+                </td>
+                <td className="p-0 w-[32%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue=""
+                  />
+                </td>
+              </tr>
+
+              {/* Row 5: Порода | value | Оц.екс.бал | value */}
+              <tr
+                className="border-b border-black h-[17px]"
+                style={{ borderBottomWidth: "1px" }}
+              >
+                <td
+                  className="w-[18%] border-r border-black p-0 text-black"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.breed}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[32%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={d.breed_alias || d.breed_name || ""}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[18%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.expAss}
+                  />
+                </td>
+                <td className="p-0 w-[32%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={d.test_score || ""}
+                  />
+                </td>
+              </tr>
+
+              {/* Row 6: Породн | value | Клас | value */}
+              <tr className="h-[17px]">
+                <td
+                  className="w-[18%] border-r border-black p-0 text-black"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.purity}
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[32%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={
+                      d.blood_percent !== null && d.blood_percent !== undefined
+                        ? `${d.blood_percent}`
+                        : ""
+                    }
+                  />
+                </td>
+                <td
+                  className="border-r border-black p-0 w-[18%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                    defaultValue={lbl.class}
+                  />
+                </td>
+                <td className="p-0 w-[32%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={d.test_class || "Elite"}
+                  />
+                </td>
+              </tr>
+
+              {/* Lactation table row */}
+              <tr>
+                <td colSpan={4} className="p-0">
+                  <table
+                    className="w-full border-collapse text-center text-[7.5px] font-bold bg-white text-black border-t border-black"
+                    style={{ borderTopWidth: "1px" }}
+                  >
+                    <tbody>{await renderMiniLactTableRows(p, d)}</tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        );
+      }
 
       return (
-        <table className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black">
+        <table
+          className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black"
+          style={{ borderTopWidth: "1px" }}
+        >
           <tbody>
-            {/* Row 1: Symbol | Name | Племкн. | Stdb | ID UA | value */}
-            <tr className="border-b border-black h-[17px]">
-              <td className="w-[12%] border-r border-black p-0 text-black">
+            {/* Row 1: Symbol & Name */}
+            <tr
+              className="border-b border-black h-[17px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="w-[10%] p-0 text-black"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[11px] text-center bg-transparent py-0 text-black"
                   defaultValue={symbol}
                 />
               </td>
-              <td className="border-r border-black p-0 w-[36%]">
-                <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0 text-black"
-                  defaultValue={d.name || ""}
-                />
-              </td>
-              <td className="border-r border-black p-0 w-[10%]">
-                <input
-                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
-                  defaultValue={lbl.stdb}
-                />
-              </td>
-              <td className="border-r border-black p-0 w-[10%]">
-                <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
-                  defaultValue={getStdb(d.studbook_alias)}
-                />
-              </td>
-              <td className="border-r border-black p-0 w-[13%]">
-                <input
-                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
-                  defaultValue={lbl.idUa}
-                />
-              </td>
-              <td className="p-0 w-[19%]">
-                <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
-                  defaultValue={d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : "")}
-                />
+              <td className="p-0" colSpan={4}>
+                <div className="flex items-center h-full px-1">
+                  <input
+                    className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] uppercase py-0 text-black"
+                    defaultValue={((d.name || "") + "   " + (d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : ""))).trim()}
+                  />
+                </div>
               </td>
             </tr>
 
-            {/* Row 2: ID ABG | value | Породн | value | Оц.екс | value */}
-            <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black p-0 w-[10%]">
+            {/* Row 2: ID ABG | value | Племкнига value | ID UA | value */}
+            <tr
+              className="h-[17px]"
+            >
+              <td
+                className="w-[10%] p-0 text-black"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.idAbg}
                 />
               </td>
-              <td className="border-r border-black p-0">
+              <td
+                className="p-0 w-[20%]"
+              >
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.code_abg || ""}
                 />
               </td>
-              <td className="border-r border-black p-0 w-[10%]">
+              <td
+                className="p-0 w-[30%]"
+              >
+                <div className="flex items-center px-1 h-full gap-2">
+                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">{lbl.stdb}</span>
+                  <input
+                    className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={getStdb(d.studbook_alias) || ""}
+                  />
+                </div>
+              </td>
+              <td
+                className="p-0 w-[15%]"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
-                  defaultValue={lbl.purity}
+                  defaultValue={lbl.idUa}
                 />
               </td>
-              <td className="border-r border-black p-0">
+              <td className="p-0 w-[25%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
-                  defaultValue={d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : ""}
+                  defaultValue={
+                    d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : "")
+                  }
                 />
               </td>
-              <td className="border-r border-black p-0 w-[10%]">
+            </tr>
+
+            {/* Row 3: д.н. | value | Породність value | Оц.екс.,бал. | value */}
+            <tr
+              className="h-[17px]"
+            >
+              <td
+                className="w-[10%] p-0 text-black"
+              >
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.dob}
+                />
+              </td>
+              <td
+                className="p-0 w-[20%]"
+              >
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
+                  defaultValue={
+                    d.date_born
+                      ? new Date(d.date_born).toLocaleDateString(
+                          locale === "en" ? "en-US" : "uk-UA",
+                        )
+                      : ""
+                  }
+                />
+              </td>
+              <td
+                className="p-0 w-[30%]"
+              >
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-[8px] py-0 text-black px-1"
+                  defaultValue={(lbl.purity + " " + (d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : "")).trim()}
+                />
+              </td>
+              <td
+                className="p-0 w-[15%]"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.expAss}
                 />
               </td>
-              <td className="p-0">
+              <td className="p-0 w-[25%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.test_score || ""}
@@ -1548,43 +1895,43 @@ export default async function CertificatePage({
               </td>
             </tr>
 
-            {/* Row 3: ДН | value | Порода | value | Оц.ексбал | value */}
-            <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black p-0 w-[10%]">
-                <input
-                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
-                  defaultValue={lbl.dob}
-                />
-              </td>
-              <td className="border-r border-black p-0">
-                <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
-                  defaultValue={
-                    d.date_born
-                      ? new Date(d.date_born).toLocaleDateString(locale === "en" ? "en-US" : "uk-UA")
-                      : ""
-                  }
-                />
-              </td>
-              <td className="border-r border-black p-0 w-[10%]">
+            {/* Row 4: Порода | value | Кровність value | Клас | value */}
+            <tr
+              className="h-[17px]"
+            >
+              <td
+                className="w-[10%] p-0 text-black"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.breed}
                 />
               </td>
-              <td className="border-r border-black p-0">
+              <td
+                className="p-0 w-[20%]"
+              >
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.breed_alias || d.breed_name || ""}
                 />
               </td>
-              <td className="border-r border-black p-0 w-[10%]">
+              <td
+                className="p-0 w-[30%]"
+              >
                 <input
-                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
-                  defaultValue={lbl.expAss}
+                  className="w-full h-full border-none outline-none font-bold text-[8px] py-0 text-black px-1"
+                  defaultValue={(bloodLabel + " " + (d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : "")).trim()}
                 />
               </td>
-              <td className="p-0">
+              <td
+                className="p-0 w-[15%]"
+              >
+                <input
+                  className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
+                  defaultValue={lbl.class}
+                />
+              </td>
+              <td className="p-0 w-[25%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.test_class || "Elite"}
@@ -1592,40 +1939,51 @@ export default async function CertificatePage({
               </td>
             </tr>
 
-            {/* Row 4: Породн | value | Клас | value | Власник | value */}
-            <tr className="border-b border-black h-[17px]">
-              <td className="border-r border-black p-0 w-[10%]">
+            {/* Row 5: Власник | value */}
+            <tr className="h-[17px]">
+              <td
+                className="w-[10%] p-0 text-black"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={ownerLabel}
                 />
               </td>
-              <td colSpan={5} className="p-0">
+              <td className="p-0 w-[20%]">
                 <input
                   className="w-full h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 px-1 text-black"
                   defaultValue={d.owner || ""}
                 />
               </td>
+              <td className="p-0 w-[30%]">
+                <div className="flex items-center px-1 h-full gap-2">
+                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">{chipLabel}</span>
+                  <input
+                    className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
+                    defaultValue={d.code_chip || ""}
+                  />
+                </div>
+              </td>
+              <td className="p-0 w-[15%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0 text-black"
+                  defaultValue=""
+                />
+              </td>
+              <td className="p-0 w-[25%]">
+                <input
+                  className="w-full h-full border-none outline-none text-center bg-transparent py-0 text-black"
+                  defaultValue=""
+                />
+              </td>
             </tr>
 
             {/* Lactation table */}
-            {p.length === 1 ? (
-              <tr>
-                <td colSpan={6} className="p-0">
-                  {await renderLactTable(p, d)}
-                </td>
-              </tr>
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-0">
-                  <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white text-black">
-                    <tbody>
-                      {await renderMiniLactTableRows(p, d)}
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            )}
+            <tr>
+              <td colSpan={5} className="p-0">
+                {await renderLactTable(p, d)}
+              </td>
+            </tr>
           </tbody>
         </table>
       );
@@ -1712,11 +2070,19 @@ export default async function CertificatePage({
       const labelProd = locale === "en" ? "Prod." : "Прод.";
 
       return (
-        <table className="w-full border-collapse text-center text-[7.5px] font-bold bg-white h-full select-text border-t border-black text-black">
+        <table
+          className="w-full border-collapse text-center text-[7.5px] font-bold bg-white h-full select-text border-t border-black text-black"
+          style={{ borderTopWidth: "1px" }}
+        >
           <tbody>
             {/* Row 1: Symbol & Name */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="w-[30%] border-r border-black p-0">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="w-[30%] p-0"
+              >
                 <input
                   className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[8px] py-0.5 text-black text-center"
                   defaultValue={symbol}
@@ -1731,8 +2097,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 2: ID ABG */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelAbg}
@@ -1747,8 +2119,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 3: ID UA */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelUa}
@@ -1763,8 +2141,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 4: Порода */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelBreed}
@@ -1779,8 +2163,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 5: Породн. */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelPurity}
@@ -1799,8 +2189,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 6: Клас */}
-            <tr className="border-b border-black h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+            <tr
+              className="border-b border-black h-[18px]"
+              style={{ borderBottomWidth: "1px" }}
+            >
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelClass}
@@ -1818,7 +2214,10 @@ export default async function CertificatePage({
 
             {/* Row 7: Прод. */}
             <tr className="h-[18px]">
-              <td className="border-r border-black p-0 w-[30%]">
+              <td
+                className="border-r border-black p-0 w-[30%]"
+                style={{ borderRightWidth: "1px" }}
+              >
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center py-0.5 text-[7.5px] bg-transparent"
                   defaultValue={labelProd}
@@ -1841,24 +2240,176 @@ export default async function CertificatePage({
         <style
           dangerouslySetInnerHTML={{
             __html: `
-          input { 
-            border: none !important; 
-            background: transparent !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            height: auto !important; 
+          input {
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: auto !important;
             line-height: inherit !important;
             box-shadow: none !important;
             outline: none !important;
             min-width: 0 !important;
             width: 100% !important;
           }
-           @media print {
-            @page { size: landscape; margin: 0.5cm !important; }
-            body { background: white; margin: 0 !important; padding: 0 !important; }
-            .printable-area { border: 2px solid #000 !important; box-shadow: none !important; padding: 15px !important; margin: 0 !important; width: 100% !important; height: calc(100vh - 1cm) !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
-            .no-print, .print-hidden { display: none !important; }
+
+          /* ══════════════════════════════════════════════
+             PEDIGREE BORDER SYSTEM
+             2.5px = outer wrapper + section separators + dividers
+             ALL BLACK — zero gray
+          ══════════════════════════════════════════════ */
+
+          /* 1 ─ OUTER WRAPPER: thick on all 4 sides */
+          .ped-wrapper {
+            border: 3.5px solid #000;
+            background: #fff;
+            box-sizing: border-box;
+          }
+          .ped-wrapper,
+          .ped-wrapper * {
+            color: #000 !important;
+          }
+
+          /* 2 ─ Thick horizontal separators between the 3 section rows */
+          .ped-section-mid { border-top: 2.5px solid #000 !important; }
+          .ped-bot-section { border-top: 2.5px solid #000 !important; }
+
+          /* 3 ─ TOP SECTION: M|Б centre divider via border-left on the second table.
+                 This ensures perfect alignment with the middle and bottom section dividers. */
+          .ped-section-top > table:nth-child(2) {
+            border-left: 2.5px solid #000 !important;
+          }
+
+          /* 4 ─ MIDDLE & BOTTOM column dividers */
+          .ped-mid-col + .ped-mid-col > table { border-left: 2.5px solid #000 !important; }
+          .ped-bot-col + .ped-bot-col > table { border-left: 2.5px solid #000 !important; }
+
+          /* 5 ─ All inner tables: clean border-collapse and thin internal lines */
+          .ped-wrapper table {
+            border-collapse: collapse;
+            border-spacing: 0;
+          }
+          .ped-wrapper .border-r { border-right-width: 0.6px !important; }
+          .ped-wrapper .border-b { border-bottom-width: 0.6px !important; }
+          .ped-wrapper .border-t { border-top-width: 0.6px !important; }
+
+          /* 6 ─ Suppress double top-border (section separator already provides it) */
+          .ped-section-top > table,
+          .ped-mid-col > table,
+          .ped-bot-col > table { border-top: none !important; }
+
+          /* 7 ─ Suppress border-right on the rightmost edge to prevent double border with wrapper */
+          .ped-section-top > table:nth-child(2),
+          .ped-mid-col:nth-child(4) > table,
+          .ped-bot-col:nth-child(8) > table {
+            border-right: none !important;
+          }
+
+          /* ═══════════════ PRINT STYLES ═══════════════ */
+          @media print {
+            @page { size: A4 landscape; margin: 0.5cm; }
+            body  { background: white !important; margin: 0 !important; padding: 0 !important; }
             header, footer, nav { display: none !important; }
+            .no-print, .print-hidden { display: none !important; }
+
+            /* Screen wrapper: remove width/height caps */
+            .printable-area {
+              display: block !important;
+              border: none !important;
+              box-shadow: none !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              height: auto !important;
+            }
+
+            /* PEDIGREE WRAPPER: fills A4 landscape (210mm − 2×0.5cm = 200mm) */
+            .ped-wrapper {
+              border: 3.5px solid #000 !important;
+              max-width: 100% !important;
+              width: 100% !important;
+              height: 200mm !important;
+              display: flex !important;
+              flex-direction: column !important;
+              box-sizing: border-box !important;
+              overflow: hidden !important;
+              page-break-inside: avoid !important;
+              position: relative !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* SECTION ROWS: proportional height */
+            .ped-section-top {
+              flex: 2 1 0% !important;
+              overflow: hidden !important;
+              position: relative !important;
+            }
+            .ped-section-mid {
+              flex: 2 1 0% !important;
+              overflow: hidden !important;
+            }
+            .ped-bot-section {
+              flex: 1.5 1 0% !important;
+              overflow: hidden !important;
+            }
+
+            .ped-section-mid { border-top: 2.5px solid #000 !important; }
+            .ped-bot-section { border-top: 2.5px solid #000 !important; }
+
+            /* TOP SECTION: repeat centre divider rule explicitly for print */
+            .ped-section-top > table:nth-child(2) {
+              border-left: 2.5px solid #000 !important;
+            }
+
+            /* MIDDLE & BOTTOM: repeat divider rules explicitly for print */
+            .ped-mid-col + .ped-mid-col > table { border-left: 2.5px solid #000 !important; }
+            .ped-bot-col + .ped-bot-col > table { border-left: 2.5px solid #000 !important; }
+
+            /* Suppress border-right on the rightmost edge to prevent double border with wrapper on print */
+            .ped-section-top > table:nth-child(2),
+            .ped-mid-col:nth-child(4) > table,
+            .ped-bot-col:nth-child(8) > table {
+              border-right: none !important;
+            }
+
+            /* Thin internal lines explicitly for print */
+            .ped-wrapper .border-r { border-right-width: 0.6px !important; }
+            .ped-wrapper .border-b { border-bottom-width: 0.6px !important; }
+            .ped-wrapper .border-t { border-top-width: 0.6px !important; }
+
+            /* Tables fill their container height */
+            .ped-section-top > table { height: 100% !important; }
+
+            .ped-mid-col,
+            .ped-bot-col {
+              height: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              overflow: hidden !important;
+            }
+            .ped-mid-col > *,
+            .ped-bot-col > * {
+              flex: 1 !important;
+              height: 100% !important;
+              overflow: hidden !important;
+            }
+
+            .ped-wrapper table {
+              width: 100% !important;
+              height: 100% !important;
+              border-collapse: collapse !important;
+            }
+
+            .ped-wrapper tr { height: auto !important; min-height: 0 !important; }
+
+            /* Force all children: black colour, exact colour rendering */
+            .ped-wrapper * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color: #000 !important;
+            }
           }
         `,
           }}
@@ -1890,28 +2441,58 @@ export default async function CertificatePage({
           />
         </div>
 
-        <div className="w-[96%] max-w-[1200px] mx-auto bg-white border-[2px] border-black p-6 print:border-solid shadow-xl printable-area relative overflow-hidden">
-          <div className="grid grid-cols-2 gap-0 border border-black divide-x divide-black bg-white print:flex-1">
+        <div
+          className="ped-wrapper w-[96%] max-w-[1200px] mx-auto shadow-xl relative overflow-hidden printable-area"
+          style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
+        >
+          {/* ── TOP SECTION: M | Б ── thick outer border, thick centre divider */}
+          <div className="ped-section-top ped-top-divider grid grid-cols-2 gap-0 bg-white print:flex-1">
             {await renderAncBlock("m", getSymbol("m"))}
             {await renderAncBlock("f", getSymbol("f"))}
           </div>
 
-          <div className="grid grid-cols-4 gap-0 border-x border-b border-black divide-x divide-black bg-white print:flex-1">
-            {await renderAncBlock("mm", getSymbol("mm"))}
-            {await renderAncBlock("mf", getSymbol("mf"))}
-            {await renderAncBlock("fm", getSymbol("fm"))}
-            {await renderAncBlock("ff", getSymbol("ff"))}
+          {/* ── MIDDLE SECTION: ММ | БМ | МБ | ББ ── thin internal dividers, thick centre */}
+          <div className="ped-section-mid grid grid-cols-4 gap-0 bg-white print:flex-1">
+            <div className="ped-mid-col">
+              {await renderAncBlock("mm", getSymbol("mm"))}
+            </div>
+            <div className="ped-mid-col ped-mid-female-divider">
+              {await renderAncBlock("mf", getSymbol("mf"))}
+            </div>
+            <div className="ped-mid-col ped-mid-half-divider">
+              {await renderAncBlock("fm", getSymbol("fm"))}
+            </div>
+            <div className="ped-mid-col ped-mid-female-divider">
+              {await renderAncBlock("ff", getSymbol("ff"))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-8 gap-0 border-x border-b border-black divide-x divide-black bg-white print:flex-1">
-            {renderSmallAnc("mmm", getSymbol("mmm"))}
-            {renderSmallAnc("fmm", getSymbol("fmm"))}
-            {renderSmallAnc("mfm", getSymbol("mfm"))}
-            {renderSmallAnc("ffm", getSymbol("ffm"))}
-            {renderSmallAnc("mmf", getSymbol("mmf"))}
-            {renderSmallAnc("fmf", getSymbol("fmf"))}
-            {renderSmallAnc("mff", getSymbol("mff"))}
-            {renderSmallAnc("fff", getSymbol("fff"))}
+          {/* ── BOTTOM SECTION: 8 grandparent cells ── thin internal dividers, thick centre */}
+          <div className="ped-bot-section grid grid-cols-8 gap-0 bg-white print:flex-1">
+            <div className="ped-bot-col">
+              {renderSmallAnc("mmm", getSymbol("mmm"))}
+            </div>
+            <div className="ped-bot-col ped-bot-female-divider">
+              {renderSmallAnc("fmm", getSymbol("fmm"))}
+            </div>
+            <div className="ped-bot-col ped-bot-quarter-divider">
+              {renderSmallAnc("mfm", getSymbol("mfm"))}
+            </div>
+            <div className="ped-bot-col ped-bot-female-divider">
+              {renderSmallAnc("ffm", getSymbol("ffm"))}
+            </div>
+            <div className="ped-bot-col ped-bot-half-divider">
+              {renderSmallAnc("mmf", getSymbol("mmf"))}
+            </div>
+            <div className="ped-bot-col ped-bot-female-divider">
+              {renderSmallAnc("fmf", getSymbol("fmf"))}
+            </div>
+            <div className="ped-bot-col ped-bot-quarter-divider">
+              {renderSmallAnc("mff", getSymbol("mff"))}
+            </div>
+            <div className="ped-bot-col ped-bot-female-divider">
+              {renderSmallAnc("fff", getSymbol("fff"))}
+            </div>
           </div>
         </div>
       </div>
