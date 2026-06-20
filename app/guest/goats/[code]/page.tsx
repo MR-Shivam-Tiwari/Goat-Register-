@@ -370,7 +370,7 @@ export default async function GuestGoatPage({
             {expertTests.length > 0 ? (
               <table className="w-full text-[9px] border-collapse text-center uppercase font-black whitespace-nowrap">
                 <thead className="bg-[#00FF00] border-b border-gray-100 text-[#491907]">
-                  <tr className="divide-x divide-green-200">
+                  <tr className="divide-x-2 divide-gray-400">
                     <th className="p-3">{t.goats.breeder || (lang === 'ru' ? 'Эксперт' : 'Expert')}</th>
                     <th className="p-3">{t.goats.added || (lang === 'ru' ? 'Дата' : 'Date')}</th>
                     <th className="p-3">{lang === 'ru' ? 'Тип' : 'Type'}</th>
@@ -401,13 +401,19 @@ export default async function GuestGoatPage({
                         return (val !== null && val !== undefined && val !== "") ? val : "-";
                       };
                       return (
-                        <tr key={i} className="divide-x divide-gray-100 hover:bg-blue-50/10 transition-colors">
+                        <tr key={i} className="divide-x-2 divide-gray-400 hover:bg-blue-50/10 transition-colors">
                           <td className="p-3 truncate max-w-[150px] font-bold">{get('who_expert')}</td>
                           <td className="p-3 text-gray-400">
                             {test.date_test || test.Date_test ? new Date(test.date_test || test.Date_test).toLocaleDateString() : "-"}
                           </td>
                           <td className="p-3 opacity-60">
-                            {test.test_type === 1 || test.Test_type === 1 ? t.goats.classical : t.goats.young}
+                            {(() => {
+                              const val = test.test_type !== undefined ? test.test_type : test.Test_type;
+                              if (val === 1 || val === "1") return 'КУ';
+                              if (val === 2 || val === "2") return 'AM';
+                              if (val === 3 || val === "3") return 'К';
+                              return 'NO';
+                            })()}
                           </td>
                           <td className="p-3">{get('mark_wh')}</td>
                           <td className="p-3">{get('mark_wk')}</td>

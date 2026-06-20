@@ -559,7 +559,7 @@ export default function GoatTable({
                   {/* Certification fields */}
                   <td className="p-1 px-4 text-nowrap text-center bg-[#B4E0E0]/10">
                     {g.test_type
-                      ? g.test_type === 1
+                      ? (g.test_type === 1 || g.test_type === 3)
                         ? "Classical"
                         : "Young"
                       : "-"}

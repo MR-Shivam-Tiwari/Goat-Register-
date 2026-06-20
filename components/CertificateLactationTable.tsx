@@ -45,7 +45,10 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
     <div className="w-full">
       {/* Table Header Bar (Standalone Heading outside table) */}
       <div className="productive-table-header flex items-center justify-center text-center text-black py-1 mb-2 font-black text-[11.5px] uppercase select-none">
-        <span className="font-sans tracking-wide">{cl1.tribalValue || 'BREEDING VALUE AND OWN PRODUCTIVITY OF THE ANIMAL'}</span>
+        <input
+          className="w-full text-center bg-transparent border-none outline-none font-sans font-black tracking-wide text-[11.5px] uppercase text-black"
+          defaultValue={cl1.tribalValue || 'BREEDING VALUE AND OWN PRODUCTIVITY OF THE ANIMAL'}
+        />
       </div>
 
       <div className="overflow-x-auto w-full">
@@ -53,21 +56,81 @@ export default function CertificateLactationTable({ lactations, cl1 }: Certifica
         <thead>
           <tr className="bg-white text-black text-[9px] font-black uppercase h-7 divide-x divide-black border-b border-black">
             <th className="w-[5%] border-black">V</th>
-            <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.lactHeader || 'LACTATION'}</th>
-            <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.milkHeader || 'MILK YIELD'}</th>
-            <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.fatHeader || 'MILK FAT'}</th>
-            <th colSpan={2} className="uppercase text-[9px] border-black">{cl1.proteinHeader || 'MILK PROTEIN'}</th>
+            <th colSpan={2} className="uppercase text-[9px] border-black p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[9px] font-black uppercase text-black"
+                defaultValue={cl1.lactHeader || 'LACTATION'}
+              />
+            </th>
+            <th colSpan={2} className="uppercase text-[9px] border-black p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[9px] font-black uppercase text-black"
+                defaultValue={cl1.milkHeader || 'MILK YIELD'}
+              />
+            </th>
+            <th colSpan={2} className="uppercase text-[9px] border-black p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[9px] font-black uppercase text-black"
+                defaultValue={cl1.fatHeader || 'MILK FAT'}
+              />
+            </th>
+            <th colSpan={2} className="uppercase text-[9px] border-black p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[9px] font-black uppercase text-black"
+                defaultValue={cl1.proteinHeader || 'MILK PROTEIN'}
+              />
+            </th>
           </tr>
           <tr className="bg-white text-black text-[8px] font-black uppercase h-6 divide-x divide-black border-b border-black">
             <th className="border-black"></th>
-            <th className="border-black w-[10%]">{cl1.lactNo || '№'}</th>
-            <th className="border-black w-[14%]">{cl1.lactDays || 'DAYS'}</th>
-            <th className="border-black w-[19%]">{cl1.milkKg || 'KG'}</th>
-            <th className="border-black w-[10%]">{cl1.milkClass || 'CLASS'}</th>
-            <th className="border-black w-[11%]">{cl1.fatPercent || '%'}</th>
-            <th className="border-black w-[9%]">{cl1.fatClass || 'CLASS'}</th>
-            <th className="border-black w-[11%]">{cl1.proteinPercent || '%'}</th>
-            <th className="border-black w-[9%]">{cl1.proteinClass || 'CLASS'}</th>
+            <th className="border-black w-[10%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.lactNo || '№'}
+              />
+            </th>
+            <th className="border-black w-[14%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.lactDays || 'DAYS'}
+              />
+            </th>
+            <th className="border-black w-[19%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.milkKg || 'KG'}
+              />
+            </th>
+            <th className="border-black w-[10%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.milkClass || 'CLASS'}
+              />
+            </th>
+            <th className="border-black w-[11%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.fatPercent || '%'}
+              />
+            </th>
+            <th className="border-black w-[9%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.fatClass || 'CLASS'}
+              />
+            </th>
+            <th className="border-black w-[11%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.proteinPercent || '%'}
+              />
+            </th>
+            <th className="border-black w-[9%] p-0">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[8px] font-black uppercase text-black"
+                defaultValue={cl1.proteinClass || 'CLASS'}
+              />
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-black font-bold">

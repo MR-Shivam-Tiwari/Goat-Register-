@@ -622,7 +622,7 @@ export default function ClassicGoatTable({
 
                   {/* Cert Details */}
                   <td className="p-0.5 px-2 text-center bg-[#CFE2F3]/10">
-                    {g.test_type === 1 || g.test_type === "1"
+                    {g.test_type === 1 || g.test_type === "1" || g.test_type === 3 || g.test_type === "3"
                       ? "Class."
                       : g.test_type === 2 || g.test_type === "2"
                         ? "Young"

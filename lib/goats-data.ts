@@ -245,10 +245,34 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
     [ids],
   );
 
+  const daughtersLactRes = await query(
+    `
+    SELECT L.*, A.name as goat_name, A.id_mother, A.id_father 
+    FROM goats_lact L 
+    JOIN animals A ON L.id_goat = A.id 
+    WHERE A.id_mother = ANY($1) OR A.id_father = ANY($1)
+    ORDER BY L.id ASC
+  `,
+    [ids],
+  );
+
   const groups: any = {};
   lactRes.rows.forEach((l: any) => {
     if (!groups[l.id_goat]) groups[l.id_goat] = [];
     groups[l.id_goat].push(l);
+  });
+
+  const daughtersGroupsByMother: any = {};
+  const daughtersGroupsByFather: any = {};
+  daughtersLactRes.rows.forEach((l: any) => {
+    if (l.id_mother) {
+      if (!daughtersGroupsByMother[l.id_mother]) daughtersGroupsByMother[l.id_mother] = [];
+      daughtersGroupsByMother[l.id_mother].push(l);
+    }
+    if (l.id_father) {
+      if (!daughtersGroupsByFather[l.id_father]) daughtersGroupsByFather[l.id_father] = [];
+      daughtersGroupsByFather[l.id_father].push(l);
+    }
   });
 
   const pathMap: any = {};
@@ -257,7 +281,11 @@ export async function getAncestorLactations(id: string, maxLevel: number = 5) {
       id: r.id,
       name: r.name,
       sex: r.sex,
-      lactations: groups[r.id] || [],
+      ownLactations: groups[r.id] || [],
+      daughtersLactations: [
+        ...(daughtersGroupsByMother[r.id] || []),
+        ...(daughtersGroupsByFather[r.id] || []),
+      ],
     };
   });
 

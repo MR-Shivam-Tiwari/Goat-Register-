@@ -386,24 +386,34 @@ export default async function CertificatePage({
     const stdb = getStdb(goat.studbook_alias);
 
     return (
-      <div className="min-h-screen bg-gray-100 p-4 pb-20 font-sans text-black print:p-0 print:bg-white">
+      <div className="min-h-screen bg-white p-4 pb-20 font-sans text-black print:p-0 print:bg-white">
         <style
           dangerouslySetInnerHTML={{
             __html: `
             /* Hide global UI on this page */
             header, nav, footer, .global-nav, .global-footer { display: none !important; }
-            body { background: #f3f4f6 !important; }
+            body { background: #ffffff !important; }
 
             @media print {
               /* Print on top of pre-printed blank:
                  Blank already has: UKRAINE header, Association Of Breeding Goats,
                  goat watermark, decorative border, holographic sticker (~6-7cm top).
                  Our content fills the remaining ~22cm below that area. */
-              @page { size: A4 portrait; margin-top: 7.3cm; margin-left: 0.8cm; margin-right: 0.8cm; margin-bottom: 1.0cm; }
+              @page { size: A4 portrait; margin: 0; }
               body { 
                 background: transparent !important; 
                 margin: 0 !important; 
-                padding: 0 !important; 
+                padding-top: 7.3cm !important;
+                padding-left: 0.8cm !important;
+                padding-right: 0.8cm !important;
+                padding-bottom: 1.0cm !important;
+              }
+              .cert-title-block {
+                margin-top: -1.8cm !important;
+                margin-bottom: 1.8cm !important;
+              }
+              .lactation-table-container {
+                margin-top: 45px !important;
               }
               .printable-area { 
                 border: none !important; 
@@ -413,7 +423,7 @@ export default async function CertificatePage({
                 width: 100% !important; 
                 max-width: 100% !important; 
                 box-sizing: border-box !important;
-                overflow: hidden !important;
+                overflow: visible !important;
                 background: transparent !important;
               }
               .print-hidden, .no-print { display: none !important; }
@@ -445,11 +455,13 @@ export default async function CertificatePage({
             }
             .grid-table { border-collapse: collapse; width: 100%; border: 1.5px solid #000; }
             .grid-table td { border: 1px solid #000; padding: 2px 5px; font-size: 10.5px; vertical-align: middle; height: 22px; }
+            .grid-table input { font-weight: bold !important; }
             .grid-label { font-weight: bold; width: 115px; background: #fff; text-align: left; font-size: 10px; }
             .productive-table { border-collapse: collapse; width: 100%; border: 1.5px solid #000; text-align: center; }
             .productive-table th, .productive-table td { border: 1px solid #000; padding: 0px; font-size: 10px; }
             .productive-table th { background: transparent; color: #000; font-weight: bold; padding: 1px; }
             .productive-table input { width: 100%; height: 100%; border: none; outline: none; text-align: center; background: transparent; font-size: 10.5px; font-weight: bold; }
+            .lactation-table-container { margin-top: 40px; }
             .print-only { display: none; }
         `,
           }}
@@ -474,7 +486,7 @@ export default async function CertificatePage({
         <div className="w-full max-w-[950px] mx-auto bg-white p-4 shadow-md relative printable-area border-2 border-black overflow-hidden rounded-sm print:shadow-none print:border-none print:p-0 print:bg-transparent">
           <main className="space-y-2 print:space-y-1">
             {/* Certificate header — 3 lines printed on blank (unique per animal) */}
-            <div className="flex flex-col gap-0.5 mx-auto w-full text-center mb-2">
+            <div className="cert-title-block flex flex-col gap-0.5 mx-auto w-full text-center mb-2">
               <input
                 className="w-full text-center font-black uppercase text-[15px] bg-transparent border-b border-black/20 pb-0.5 outline-none text-black focus:border-black/60 print:border-none print:pb-0 print:text-[14px]"
                 defaultValue={
@@ -784,7 +796,7 @@ export default async function CertificatePage({
             </table>
 
             {/* Lactation Table component */}
-            <div className="w-full mt-6 print:mt-4">
+            <div className="w-full lactation-table-container">
               <CertificateLactationTable lactations={lactations} cl1={cl1} />
             </div>
 
@@ -824,15 +836,9 @@ export default async function CertificatePage({
 
               {/* Row 4: Bottom strip: date/org left | name center-right | empty sticker space far-right */}
               <div className="flex justify-between items-start relative min-h-[90px] mt-4 px-2 py-2 print:px-0 print:py-0 print:mt-6 bg-transparent text-black">
-                {/* Left Column: 3 lines stacked vertically */}
+                {/* Left Column: 2 lines stacked vertically */}
                 <div className="flex flex-col gap-2.5 flex-1 min-w-0 pr-[40px] print:pr-[40px]">
-                  {/* Line 1: Date Value */}
-                  <input
-                    className="bg-transparent border-none outline-none text-[12px] font-bold text-black w-full"
-                    defaultValue={formatDate(new Date())}
-                  />
-
-                  {/* Line 2: Head of GS / Title */}
+                  {/* Line 1: Head of GS / Title */}
                   <input
                     className="bg-transparent border-none outline-none text-[11px] font-bold text-black w-full leading-tight"
                     defaultValue={
@@ -844,10 +850,10 @@ export default async function CertificatePage({
                     }
                   />
 
-                  {/* Line 3: Date Label */}
+                  {/* Line 2: Date Label & Value */}
                   <input
-                    className="bg-transparent border-none outline-none text-[10.5px] text-black font-bold w-full"
-                    defaultValue={cl1.dateIssued}
+                    className="bg-transparent border-none outline-none text-[11px] text-black font-bold w-full"
+                    defaultValue={`${cl1.dateIssued || "Date of issue / Дата видачі:"} ${formatDate(new Date())}`}
                   />
                 </div>
 
@@ -1057,14 +1063,14 @@ export default async function CertificatePage({
             style={{ borderTopWidth: "1px" }}
           >
             <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
-              <tr className="border-b border-black">
+              <tr className="border-b border-black h-[14px]">
                 <th
                   rowSpan={2}
-                  className="border-r border-black py-0.5 w-[18%] align-middle"
+                  className="border-r border-black p-0 w-[18%] align-middle leading-[8px] text-[6.5px]"
                 >
                   {cl2.ancestors}
                   <br />
-                  <span className="font-normal text-[6px]">
+                  <span className="font-normal text-[5.5px]">
                     {cl2.descendants}
                   </span>
                 </th>
@@ -1081,9 +1087,9 @@ export default async function CertificatePage({
                   {cl2.protein}
                 </th>
               </tr>
-              <tr className="text-[6.5px] border-b border-black">
+              <tr className="text-[6.5px] border-b border-black h-[11px]">
                 <th className="border-r border-black py-0.5 w-6">№</th>
-                <th className="border-r border-black py-0.5 w-[12%]">
+                <th className="border-r border-black py-0.5 w-[12%] whitespace-nowrap">
                   {cl2.days}
                 </th>
                 <th className="border-r border-black py-0.5 w-[14%]">
@@ -1178,25 +1184,29 @@ export default async function CertificatePage({
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
-                    className="w-full h-full border-none outline-none text-center"
-                    defaultValue=""
+                    className="w-full h-full border-none outline-none text-center font-black"
+                    defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5"></td>
+                <td className="border-r border-black py-0.5">
+                  {rows.length > 0 ? "Elite" : ""}
+                </td>
                 <td className="border-r border-black py-0.5">
                   <input
                     className="w-full h-full border-none outline-none text-center"
-                    defaultValue=""
+                    defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5"></td>
+                <td className="border-r border-black py-0.5">
+                  {rows.length > 0 ? "Elite" : ""}
+                </td>
                 <td className="border-r border-black py-0.5">
                   <input
                     className="w-full h-full border-none outline-none text-center"
-                    defaultValue=""
+                    defaultValue={rows.length > 0 ? avgProt.toFixed(2) : ""}
                   />
                 </td>
-                <td className="py-0.5"></td>
+                <td className="py-0.5">{rows.length > 0 ? "Elite" : ""}</td>
               </tr>
             </tfoot>
           </table>
@@ -1208,7 +1218,7 @@ export default async function CertificatePage({
             style={{ borderTopWidth: "1px" }}
           >
             <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
-              <tr className="border-b border-black">
+              <tr className="border-b border-black h-[14px]">
                 <th colSpan={2} className="border-r border-black py-0.5">
                   {cl2.days}
                 </th>
@@ -1222,9 +1232,9 @@ export default async function CertificatePage({
                   {cl2.protein}
                 </th>
               </tr>
-              <tr className="text-[6.5px] border-b border-black">
+              <tr className="text-[6.5px] border-b border-black h-[11px]">
                 <th className="border-r border-black py-0.5 w-6">№</th>
-                <th className="border-r border-black py-0.5 w-[14%]">
+                <th className="border-r border-black py-0.5 w-[14%] whitespace-nowrap">
                   {cl2.days}
                 </th>
                 <th className="border-r border-black py-0.5 w-[18%]">
@@ -1364,8 +1374,8 @@ export default async function CertificatePage({
       }
 
       const headers = {
-        ru: ["Дней лактации", "Надой", "Жир %", "Белок %", "Класс"],
-        uk: ["Днів лактації", "Надій", "Жир %", "Білок %", "Клас"],
+        ru: ["Дней лакт.", "Надой", "Жир %", "Белок %", "Класс"],
+        uk: ["Днів лакт.", "Надій", "Жир %", "Білок %", "Клас"],
         en: ["Days", "Milk", "Fat %", "Protein %", "Class"],
       };
       const lbls = headers[locale] || headers["ru"];
@@ -1373,34 +1383,34 @@ export default async function CertificatePage({
       return (
         <>
           <tr
-            className="border-b border-black h-4.5 bg-white font-bold uppercase text-[6.5px] text-black"
-            style={{ borderBottomWidth: "1px" }}
+            className="border-t border-b border-black h-[11px] bg-white font-bold uppercase text-[6.5px] text-black"
+            style={{ borderTopWidth: "0.6px", borderBottomWidth: "1px" }}
           >
             <td
-              className="border-r border-black py-0.5 w-[20%] text-center select-none"
+              className="border-r border-black py-0.5 w-[15%] text-center select-none"
               style={{ borderRightWidth: "1px" }}
             >
               {lbls[0]}
             </td>
             <td
-              className="border-r border-black py-0.5 w-[30%] text-center select-none"
+              className="border-r border-black py-0.5 w-[35%] text-center select-none"
               style={{ borderRightWidth: "1px" }}
             >
               {lbls[1]}
             </td>
             <td
-              className="border-r border-black py-0.5 w-[16%] text-center select-none"
+              className="border-r border-black py-0.5 w-[15%] text-center select-none"
               style={{ borderRightWidth: "1px" }}
             >
               {lbls[2]}
             </td>
             <td
-              className="border-r border-black py-0.5 w-[16%] text-center select-none"
+              className="border-r border-black py-0.5 w-[15%] text-center select-none"
               style={{ borderRightWidth: "1px" }}
             >
               {lbls[3]}
             </td>
-            <td className="py-0.5 w-[18%] text-center select-none">
+            <td className="py-0.5 w-[20%] text-center select-none">
               {lbls[4]}
             </td>
           </tr>
@@ -1410,11 +1420,15 @@ export default async function CertificatePage({
             return (
               <tr
                 key={i}
-                className={isLast ? "h-4 leading-none" : "border-b border-black h-4 leading-none"}
+                className={
+                  isLast
+                    ? "h-[10.5px] leading-none"
+                    : "border-b border-black h-[10.5px] leading-none"
+                }
                 style={isLast ? {} : { borderBottomWidth: "1px" }}
               >
                 <td
-                  className="p-0 border-r border-black w-[20%]"
+                  className="p-0 border-r border-black w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1423,7 +1437,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="p-0 border-r border-black w-[30%]"
+                  className="p-0 border-r border-black w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1432,7 +1446,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="p-0 border-r border-black w-[16%]"
+                  className="p-0 border-r border-black w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1441,7 +1455,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="p-0 border-r border-black w-[16%]"
+                  className="p-0 border-r border-black w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1449,7 +1463,7 @@ export default async function CertificatePage({
                     defaultValue={r.protein || ""}
                   />
                 </td>
-                <td className="p-0 w-[18%]">
+                <td className="p-0 w-[20%]">
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
                     defaultValue={rows[i] ? "Elite" : ""}
@@ -1475,7 +1489,7 @@ export default async function CertificatePage({
           purity: "Породн.",
           expAss: "Оц.екс.бал",
           breed: "Порода",
-          class: "Клас",
+          class: "Класс",
           bloodline: "Кровность %",
         },
         uk: {
@@ -1518,25 +1532,30 @@ export default async function CertificatePage({
         return (
           <table
             className="w-full border-collapse text-[7.5px] font-bold bg-white h-full select-text text-black border-t border-black"
-            style={{ borderTopWidth: "1px" }}
+            style={{ borderTopWidth: "1px", tableLayout: "fixed" }}
           >
+            <colgroup>
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "35%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "20%" }} />
+            </colgroup>
             <tbody>
               {/* Row 1: Symbol & Name */}
               <tr
-                className="border-b border-black h-[17px]"
+                className="border-b border-black h-[11px]"
                 style={{ borderBottomWidth: "1px" }}
               >
-                <td
-                  className="w-[18%] p-0 text-black"
-                >
+                <td className="w-[15%] p-0 text-black">
                   <input
-                    className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[11px] text-center bg-transparent py-0 text-black"
+                    className="w-full h-full border-none outline-none font-black text-[11px] text-center bg-transparent py-0 text-black"
                     defaultValue={symbol}
                   />
                 </td>
-                <td className="p-0" colSpan={3}>
+                <td className="p-0" colSpan={4}>
                   <input
-                    className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0 text-black"
+                    className="w-full h-full border-none outline-none text-left pl-0 bg-transparent font-bold text-[8px] uppercase py-0 text-black"
                     defaultValue={d.name || ""}
                   />
                 </td>
@@ -1544,11 +1563,11 @@ export default async function CertificatePage({
 
               {/* Row 2: ID ABG | value | ID UA | value */}
               <tr
-                className="border-b border-black h-[17px]"
+                className="border-b border-black h-[11px]"
                 style={{ borderBottomWidth: "1px" }}
               >
                 <td
-                  className="w-[18%] border-r border-black p-0 text-black"
+                  className="w-[15%] border-r border-black p-0 text-black"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1557,7 +1576,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[32%]"
+                  className="border-r border-black p-0 w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1566,7 +1585,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[18%]"
+                  className="border-r border-black p-0 w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1574,7 +1593,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.idUa}
                   />
                 </td>
-                <td className="p-0 w-[32%]">
+                <td className="p-0 w-[35%]" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={
@@ -1586,11 +1605,11 @@ export default async function CertificatePage({
 
               {/* Row 3: Племкн. (Stdb) | value | Bloodline % | value */}
               <tr
-                className="border-b border-black h-[17px]"
+                className="border-b border-black h-[11px]"
                 style={{ borderBottomWidth: "1px" }}
               >
                 <td
-                  className="w-[18%] border-r border-black p-0 text-black"
+                  className="w-[15%] border-r border-black p-0 text-black"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1599,7 +1618,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[32%]"
+                  className="border-r border-black p-0 w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1608,7 +1627,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[18%]"
+                  className="border-r border-black p-0 w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1616,7 +1635,7 @@ export default async function CertificatePage({
                     defaultValue=""
                   />
                 </td>
-                <td className="p-0 w-[32%]">
+                <td className="p-0 w-[35%]" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue=""
@@ -1626,11 +1645,11 @@ export default async function CertificatePage({
 
               {/* Row 4: д.н. (D.O.B.) | value | (blank) | (blank) */}
               <tr
-                className="border-b border-black h-[17px]"
+                className="border-b border-black h-[11px]"
                 style={{ borderBottomWidth: "1px" }}
               >
                 <td
-                  className="w-[18%] border-r border-black p-0 text-black"
+                  className="w-[15%] border-r border-black p-0 text-black"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1639,7 +1658,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[32%]"
+                  className="border-r border-black p-0 w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1654,7 +1673,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[18%]"
+                  className="border-r border-black p-0 w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1662,7 +1681,7 @@ export default async function CertificatePage({
                     defaultValue=""
                   />
                 </td>
-                <td className="p-0 w-[32%]">
+                <td className="p-0 w-[35%]" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent"
                     defaultValue=""
@@ -1672,11 +1691,11 @@ export default async function CertificatePage({
 
               {/* Row 5: Порода | value | Оц.екс.бал | value */}
               <tr
-                className="border-b border-black h-[17px]"
+                className="border-b border-black h-[11px]"
                 style={{ borderBottomWidth: "1px" }}
               >
                 <td
-                  className="w-[18%] border-r border-black p-0 text-black"
+                  className="w-[15%] border-r border-black p-0 text-black"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1685,7 +1704,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[32%]"
+                  className="border-r border-black p-0 w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1694,7 +1713,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[18%]"
+                  className="border-r border-black p-0 w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1702,7 +1721,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.expAss}
                   />
                 </td>
-                <td className="p-0 w-[32%]">
+                <td className="p-0 w-[35%]" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.test_score || ""}
@@ -1711,9 +1730,9 @@ export default async function CertificatePage({
               </tr>
 
               {/* Row 6: Породн | value | Клас | value */}
-              <tr className="h-[17px]">
+              <tr className="h-[11px]">
                 <td
-                  className="w-[18%] border-r border-black p-0 text-black"
+                  className="w-[15%] border-r border-black p-0 text-black"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1722,7 +1741,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[32%]"
+                  className="border-r border-black p-0 w-[35%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1735,7 +1754,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[18%]"
+                  className="border-r border-black p-0 w-[15%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1743,7 +1762,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.class}
                   />
                 </td>
-                <td className="p-0 w-[32%]">
+                <td className="p-0 w-[35%]" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.test_class || "Elite"}
@@ -1751,17 +1770,8 @@ export default async function CertificatePage({
                 </td>
               </tr>
 
-              {/* Lactation table row */}
-              <tr>
-                <td colSpan={4} className="p-0">
-                  <table
-                    className="w-full border-collapse text-center text-[7.5px] font-bold bg-white text-black border-t border-black"
-                    style={{ borderTopWidth: "1px" }}
-                  >
-                    <tbody>{await renderMiniLactTableRows(p, d)}</tbody>
-                  </table>
-                </td>
-              </tr>
+              {/* Lactation table rows (directly sibling inside the same table for perfect grid alignment) */}
+              {await renderMiniLactTableRows(p, d)}
             </tbody>
           </table>
         );
@@ -1778,58 +1788,52 @@ export default async function CertificatePage({
               className="border-b border-black h-[17px]"
               style={{ borderBottomWidth: "1px" }}
             >
-              <td
-                className="w-[10%] p-0 text-black"
-              >
+              <td className="w-[10%] p-0 text-black">
                 <input
-                  className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[11px] text-center bg-transparent py-0 text-black"
+                  className="w-full h-full border-none outline-none font-black text-[11px] text-center bg-transparent py-0 text-black"
                   defaultValue={symbol}
                 />
               </td>
               <td className="p-0" colSpan={4}>
                 <div className="flex items-center h-full px-1">
                   <input
-                    className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] uppercase py-0 text-black"
-                    defaultValue={((d.name || "") + "   " + (d.code_ua || (d.id ? "R" + (10000 + Number(d.id)) : ""))).trim()}
+                    className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] uppercase py-0 text-black text-left pl-0"
+                    defaultValue={(
+                      (d.name || "") +
+                      "   " +
+                      (d.id ? "R" + (10000 + Number(d.id)) : "")
+                    ).trim()}
                   />
                 </div>
               </td>
             </tr>
 
             {/* Row 2: ID ABG | value | Племкнига value | ID UA | value */}
-            <tr
-              className="h-[17px]"
-            >
-              <td
-                className="w-[10%] p-0 text-black"
-              >
+            <tr className="h-[17px]">
+              <td className="w-[10%] p-0 text-black">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.idAbg}
                 />
               </td>
-              <td
-                className="p-0 w-[20%]"
-              >
+              <td className="p-0 w-[20%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.code_abg || ""}
                 />
               </td>
-              <td
-                className="p-0 w-[30%]"
-              >
+              <td className="p-0 w-[30%]">
                 <div className="flex items-center px-1 h-full gap-2">
-                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">{lbl.stdb}</span>
+                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">
+                    {lbl.stdb}
+                  </span>
                   <input
                     className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={getStdb(d.studbook_alias) || ""}
                   />
                 </div>
               </td>
-              <td
-                className="p-0 w-[15%]"
-              >
+              <td className="p-0 w-[15%]">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.idUa}
@@ -1846,20 +1850,14 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 3: д.н. | value | Породність value | Оц.екс.,бал. | value */}
-            <tr
-              className="h-[17px]"
-            >
-              <td
-                className="w-[10%] p-0 text-black"
-              >
+            <tr className="h-[17px]">
+              <td className="w-[10%] p-0 text-black">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.dob}
                 />
               </td>
-              <td
-                className="p-0 w-[20%]"
-              >
+              <td className="p-0 w-[20%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={
@@ -1871,17 +1869,19 @@ export default async function CertificatePage({
                   }
                 />
               </td>
-              <td
-                className="p-0 w-[30%]"
-              >
+              <td className="p-0 w-[30%]">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-[8px] py-0 text-black px-1"
-                  defaultValue={(lbl.purity + " " + (d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : "")).trim()}
+                  defaultValue={(
+                    lbl.purity +
+                    " " +
+                    (d.blood_percent !== null && d.blood_percent !== undefined
+                      ? `${d.blood_percent}`
+                      : "")
+                  ).trim()}
                 />
               </td>
-              <td
-                className="p-0 w-[15%]"
-              >
+              <td className="p-0 w-[15%]">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.expAss}
@@ -1896,36 +1896,32 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 4: Порода | value | Кровність value | Клас | value */}
-            <tr
-              className="h-[17px]"
-            >
-              <td
-                className="w-[10%] p-0 text-black"
-              >
+            <tr className="h-[17px]">
+              <td className="w-[10%] p-0 text-black">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.breed}
                 />
               </td>
-              <td
-                className="p-0 w-[20%]"
-              >
+              <td className="p-0 w-[20%]">
                 <input
                   className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                   defaultValue={d.breed_alias || d.breed_name || ""}
                 />
               </td>
-              <td
-                className="p-0 w-[30%]"
-              >
+              <td className="p-0 w-[30%]">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-[8px] py-0 text-black px-1"
-                  defaultValue={(bloodLabel + " " + (d.blood_percent !== null && d.blood_percent !== undefined ? `${d.blood_percent}` : "")).trim()}
+                  defaultValue={(
+                    bloodLabel +
+                    " " +
+                    (d.blood_percent !== null && d.blood_percent !== undefined
+                      ? `${d.blood_percent}`
+                      : "")
+                  ).trim()}
                 />
               </td>
-              <td
-                className="p-0 w-[15%]"
-              >
+              <td className="p-0 w-[15%]">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={lbl.class}
@@ -1941,9 +1937,7 @@ export default async function CertificatePage({
 
             {/* Row 5: Власник | value */}
             <tr className="h-[17px]">
-              <td
-                className="w-[10%] p-0 text-black"
-              >
+              <td className="w-[10%] p-0 text-black">
                 <input
                   className="w-full h-full border-none outline-none font-bold text-black text-center px-0.5 text-[7px] bg-transparent py-0"
                   defaultValue={ownerLabel}
@@ -1957,7 +1951,9 @@ export default async function CertificatePage({
               </td>
               <td className="p-0 w-[30%]">
                 <div className="flex items-center px-1 h-full gap-2">
-                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">{chipLabel}</span>
+                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">
+                    {chipLabel}
+                  </span>
                   <input
                     className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.code_chip || ""}
@@ -2034,13 +2030,21 @@ export default async function CertificatePage({
           const path = pathMap[p];
           if (path) {
             const node = ancestorLacts[path];
-            const bestLact = node?.lactations?.[0];
+            const lactations = [
+              ...(node?.ownLactations || []),
+              ...(node?.daughtersLactations || []),
+            ];
+            const bestLact = lactations[0];
             if (bestLact) {
               lactFormat = `${bestLact.lact_no}\\\\${bestLact.lact_days}\\\\${bestLact.milk}\\\\${bestLact.fat}\\\\${bestLact.protein}`;
             } else {
               const motherPath = path + "M";
               const motherNode = ancestorLacts[motherPath];
-              const mBestLact = motherNode?.lactations?.[0];
+              const motherLacts = [
+                ...(motherNode?.ownLactations || []),
+                ...(motherNode?.daughtersLactations || []),
+              ];
+              const mBestLact = motherLacts[0];
               if (mBestLact) {
                 lactFormat = `M\\\\${mBestLact.lact_no}\\\\${mBestLact.lact_days}\\\\${mBestLact.milk}\\\\${mBestLact.fat}\\\\${mBestLact.protein}`;
               }
@@ -2077,20 +2081,18 @@ export default async function CertificatePage({
           <tbody>
             {/* Row 1: Symbol & Name */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
-              <td
-                className="w-[30%] p-0"
-              >
+              <td className="w-[30%] p-0">
                 <input
-                  className="w-full h-full border-none outline-none font-black bg-gray-50/50 text-[8px] py-0.5 text-black text-center"
+                  className="w-full h-full border-none outline-none font-black text-[8px] py-0.5 text-black text-center bg-transparent"
                   defaultValue={symbol}
                 />
               </td>
               <td className="p-0">
                 <input
-                  className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] uppercase py-0.5 text-black"
+                  className="w-full h-full border-none outline-none text-left pl-0 bg-transparent font-bold text-[8px] uppercase py-0.5 text-black"
                   defaultValue={d.name || ""}
                 />
               </td>
@@ -2098,7 +2100,7 @@ export default async function CertificatePage({
 
             {/* Row 2: ID ABG */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
               <td
@@ -2120,7 +2122,7 @@ export default async function CertificatePage({
 
             {/* Row 3: ID UA */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
               <td
@@ -2142,7 +2144,7 @@ export default async function CertificatePage({
 
             {/* Row 4: Порода */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
               <td
@@ -2164,7 +2166,7 @@ export default async function CertificatePage({
 
             {/* Row 5: Породн. */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
               <td
@@ -2190,7 +2192,7 @@ export default async function CertificatePage({
 
             {/* Row 6: Клас */}
             <tr
-              className="border-b border-black h-[18px]"
+              className="border-b border-black h-[11px]"
               style={{ borderBottomWidth: "1px" }}
             >
               <td
@@ -2213,7 +2215,7 @@ export default async function CertificatePage({
             </tr>
 
             {/* Row 7: Прод. */}
-            <tr className="h-[18px]">
+            <tr className="h-[11px]">
               <td
                 className="border-r border-black p-0 w-[30%]"
                 style={{ borderRightWidth: "1px" }}
@@ -2236,7 +2238,7 @@ export default async function CertificatePage({
     };
 
     return (
-      <div className="min-h-screen bg-gray-50/20 p-4 pb-20 font-sans text-black print:p-0">
+      <div className="min-h-screen bg-white p-4 pb-20 font-sans text-black print:p-0">
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -2252,6 +2254,14 @@ export default async function CertificatePage({
             min-width: 0 !important;
             width: 100% !important;
           }
+
+          /* Font size adjustments (10-15% bigger) */
+          .ped-wrapper [class*="text-[6px]"] { font-size: 7px !important; }
+          .ped-wrapper [class*="text-[6.5px]"] { font-size: 7.5px !important; }
+          .ped-wrapper [class*="text-[7px]"] { font-size: 8px !important; }
+          .ped-wrapper [class*="text-[7.5px]"] { font-size: 8.5px !important; }
+          .ped-wrapper [class*="text-[8px]"] { font-size: 9.2px !important; }
+          .ped-wrapper [class*="text-[11px]"] { font-size: 12.5px !important; }
 
           /* ══════════════════════════════════════════════
              PEDIGREE BORDER SYSTEM
@@ -2271,18 +2281,18 @@ export default async function CertificatePage({
           }
 
           /* 2 ─ Thick horizontal separators between the 3 section rows */
-          .ped-section-mid { border-top: 2.5px solid #000 !important; }
-          .ped-bot-section { border-top: 2.5px solid #000 !important; }
+          .ped-section-mid { border-top: 3.5px solid #000 !important; }
+          .ped-bot-section { border-top: 3.5px solid #000 !important; }
 
           /* 3 ─ TOP SECTION: M|Б centre divider via border-left on the second table.
                  This ensures perfect alignment with the middle and bottom section dividers. */
           .ped-section-top > table:nth-child(2) {
-            border-left: 2.5px solid #000 !important;
+            border-left: 3.5px solid #000 !important;
           }
 
           /* 4 ─ MIDDLE & BOTTOM column dividers */
-          .ped-mid-col + .ped-mid-col > table { border-left: 2.5px solid #000 !important; }
-          .ped-bot-col + .ped-bot-col > table { border-left: 2.5px solid #000 !important; }
+          .ped-mid-col + .ped-mid-col > table { border-left: 3.5px solid #000 !important; }
+          .ped-bot-col + .ped-bot-col > table { border-left: 3.5px solid #000 !important; }
 
           /* 5 ─ All inner tables: clean border-collapse and thin internal lines */
           .ped-wrapper table {
@@ -2324,12 +2334,12 @@ export default async function CertificatePage({
               height: auto !important;
             }
 
-            /* PEDIGREE WRAPPER: fills A4 landscape (210mm − 2×0.5cm = 200mm) */
+            /* PEDIGREE WRAPPER: fills A4 landscape, leaving room at the bottom for stamp */
             .ped-wrapper {
               border: 3.5px solid #000 !important;
               max-width: 100% !important;
               width: 100% !important;
-              height: 200mm !important;
+              height: 165mm !important;
               display: flex !important;
               flex-direction: column !important;
               box-sizing: border-box !important;
@@ -2342,30 +2352,30 @@ export default async function CertificatePage({
 
             /* SECTION ROWS: proportional height */
             .ped-section-top {
-              flex: 2 1 0% !important;
+              flex: 1.6 1 0% !important;
               overflow: hidden !important;
               position: relative !important;
             }
             .ped-section-mid {
-              flex: 2 1 0% !important;
-              overflow: hidden !important;
-            }
-            .ped-bot-section {
               flex: 1.5 1 0% !important;
               overflow: hidden !important;
             }
+            .ped-bot-section {
+              flex: 1.3 1 0% !important;
+              overflow: hidden !important;
+            }
 
-            .ped-section-mid { border-top: 2.5px solid #000 !important; }
-            .ped-bot-section { border-top: 2.5px solid #000 !important; }
+            .ped-section-mid { border-top: 3.5px solid #000 !important; }
+            .ped-bot-section { border-top: 3.5px solid #000 !important; }
 
             /* TOP SECTION: repeat centre divider rule explicitly for print */
             .ped-section-top > table:nth-child(2) {
-              border-left: 2.5px solid #000 !important;
+              border-left: 3.5px solid #000 !important;
             }
 
             /* MIDDLE & BOTTOM: repeat divider rules explicitly for print */
-            .ped-mid-col + .ped-mid-col > table { border-left: 2.5px solid #000 !important; }
-            .ped-bot-col + .ped-bot-col > table { border-left: 2.5px solid #000 !important; }
+            .ped-mid-col + .ped-mid-col > table { border-left: 3.5px solid #000 !important; }
+            .ped-bot-col + .ped-bot-col > table { border-left: 3.5px solid #000 !important; }
 
             /* Suppress border-right on the rightmost edge to prevent double border with wrapper on print */
             .ped-section-top > table:nth-child(2),
@@ -2402,7 +2412,25 @@ export default async function CertificatePage({
               border-collapse: collapse !important;
             }
 
-            .ped-wrapper tr { height: auto !important; min-height: 0 !important; }
+            /* Lock top section card table details rows height on print */
+            .ped-section-top > table > tbody > tr:nth-child(-n+5) {
+              height: 17px !important;
+            }
+            /* Lock nested lactation table rows to ensure identical height distribution */
+            .ped-section-top table table thead tr:nth-child(1) {
+              height: 14px !important;
+            }
+            .ped-section-top table table thead tr:nth-child(2) {
+              height: 11px !important;
+            }
+            .ped-section-top table table tbody tr {
+              height: 11px !important;
+            }
+            .ped-section-top table table tfoot tr {
+              height: 11px !important;
+            }
+
+
 
             /* Force all children: black colour, exact colour rendering */
             .ped-wrapper * {

@@ -131,7 +131,8 @@ export default function AssessmentForm({
               className="w-full md:w-1/2 border border-gray-400 bg-white rounded-[4px] px-3 py-1.5 text-sm focus:outline-none focus:border-amber-950 font-sans text-black"
             >
               <option value={0}>{t.goatForm.assessment?.notHeld || 'Не проведена'}</option>
-              <option value={1}>{t.goatForm.assessment?.classical || 'Классическая'}</option>
+              <option value={3}>{t.goatForm.assessment?.classicalStd || 'Классическая'}</option>
+              <option value={1}>{t.goatForm.assessment?.classical || 'Классическая углубленная'}</option>
               <option value={2}>{t.goatForm.assessment?.young || 'Аттест. молодняка'}</option>
             </select>
           </div>
