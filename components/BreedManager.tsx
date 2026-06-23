@@ -102,7 +102,7 @@ export default function BreedManager({ initialBreeds, t }: { initialBreeds: Bree
                     <div className="w-8 h-6 bg-white border border-black/10 rounded-sm overflow-hidden flex items-center justify-center flex-shrink-0">
                       {breed.ico ? (
                         <img 
-                          src={breed.ico.startsWith('breed_') ? `/uploads/${breed.ico}` : `/breedimage/${breed.ico}`} 
+                          src={breed.ico.startsWith('breed_') ? `/api/uploads/${breed.ico}` : `/breedimage/${breed.ico}`} 
                           className="w-full h-full object-contain p-0.5" 
                           alt=""
                         />

@@ -53,7 +53,7 @@ export default function BreedCatalogDisplay({
                   <img
                     src={
                       breed.ico.startsWith("breed_")
-                        ? `/uploads/${breed.ico}`
+                        ? `/api/uploads/${breed.ico}`
                         : `/breedimage/${breed.ico}`
                     }
                     alt={displayName}

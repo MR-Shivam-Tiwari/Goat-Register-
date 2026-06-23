@@ -201,7 +201,7 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
               <div className="aspect-square w-48 mx-auto bg-gray-50 border border-gray-100 rounded-sm overflow-hidden flex items-center justify-center p-4">
                 {breed.ico ? (
                   <img 
-                    src={breed.ico.startsWith('breed_') ? `/uploads/${breed.ico}` : `/breedimage/${breed.ico}`} 
+                    src={breed.ico.startsWith('breed_') ? `/api/uploads/${breed.ico}` : `/breedimage/${breed.ico}`} 
                     className="max-w-full max-h-full object-contain"
                     alt={breed.name}
                   />
