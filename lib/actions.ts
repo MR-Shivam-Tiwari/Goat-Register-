@@ -582,12 +582,12 @@ export async function addBreedAction(formData: FormData) {
 
 export async function updateBreedAction(formData: FormData) {
     const t = await getT();
-    const id = formData.get('breedId') as string;
+    const id = (formData.get('id') || formData.get('breedId')) as string;
     const name = formData.get('name') as string;
     const alias = formData.get('alias') as string;
     const id_family = parseInt(formData.get('id_family') as string) || 1;
     const place = parseInt(formData.get('place') as string) || 0;
-    const icoFile = formData.get('icoFile') as File | null;
+    const icoFile = (formData.get('file') || formData.get('icoFile')) as File | null;
     const removeIco = formData.get('removeIco') === 'true';
 
     if (!id || !name || !alias) return { error: "ID, Name and Alias are required" };

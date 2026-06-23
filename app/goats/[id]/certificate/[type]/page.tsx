@@ -1068,42 +1068,89 @@ export default async function CertificatePage({
                   rowSpan={2}
                   className="border-r border-black p-0 w-[18%] align-middle leading-[8px] text-[6.5px]"
                 >
-                  {cl2.ancestors}
-                  <br />
-                  <span className="font-normal text-[5.5px]">
-                    {cl2.descendants}
-                  </span>
+                  <input
+                    className="w-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black"
+                    defaultValue={cl2.ancestors}
+                  />
+                  <input
+                    className="w-full border-none outline-none text-center bg-transparent text-[5.5px] font-normal uppercase text-black"
+                    defaultValue={cl2.descendants}
+                  />
                 </th>
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.days}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.days}
+                  />
                 </th>
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.milk}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.milk}
+                  />
                 </th>
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.fat}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.fat}
+                  />
                 </th>
-                <th colSpan={2} className="py-0.5">
-                  {cl2.protein}
+                <th colSpan={2} className="p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.protein}
+                  />
                 </th>
               </tr>
               <tr className="text-[6.5px] border-b border-black h-[11px]">
-                <th className="border-r border-black py-0.5 w-6">№</th>
-                <th className="border-r border-black py-0.5 w-[12%] whitespace-nowrap">
-                  {cl2.days}
+                <th className="border-r border-black p-0 w-6">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="№"
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[14%]">
-                  {cl2.kg}
+                <th className="border-r border-black p-0 w-[12%] whitespace-nowrap">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.days}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[10%]">
-                  {cl2.class}
+                <th className="border-r border-black p-0 w-[14%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.kg}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[10%]">%</th>
-                <th className="border-r border-black py-0.5 w-[10%]">
-                  {cl2.class}
+                <th className="border-r border-black p-0 w-[10%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[10%]">%</th>
-                <th className="py-0.5 w-[10%]">{cl2.class}</th>
+                <th className="border-r border-black p-0 w-[10%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="%"
+                  />
+                </th>
+                <th className="border-r border-black p-0 w-[10%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
+                </th>
+                <th className="border-r border-black p-0 w-[10%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="%"
+                  />
+                </th>
+                <th className="p-0 w-[10%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
+                </th>
               </tr>
             </thead>
             <tbody className="font-bold text-[7.5px] text-black">
@@ -1178,9 +1225,12 @@ export default async function CertificatePage({
               <tr className="h-4 leading-none">
                 <td
                   colSpan={3}
-                  className="border-r border-black text-center py-0.5"
+                  className="border-r border-black p-0 text-center"
                 >
-                  {cl2.average}
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent py-0.5"
+                    defaultValue={cl2.average}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1188,8 +1238,11 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5">
-                  {rows.length > 0 ? "Elite" : ""}
+                <td className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1197,8 +1250,11 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5">
-                  {rows.length > 0 ? "Elite" : ""}
+                <td className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1206,7 +1262,12 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgProt.toFixed(2) : ""}
                   />
                 </td>
-                <td className="py-0.5">{rows.length > 0 ? "Elite" : ""}</td>
+                <td className="p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -1219,36 +1280,80 @@ export default async function CertificatePage({
           >
             <thead className="bg-white border-b border-black font-bold uppercase text-[7px] text-black">
               <tr className="border-b border-black h-[14px]">
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.days}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.days}
+                  />
                 </th>
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.milk}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.milk}
+                  />
                 </th>
-                <th colSpan={2} className="border-r border-black py-0.5">
-                  {cl2.fat}
+                <th colSpan={2} className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.fat}
+                  />
                 </th>
-                <th colSpan={2} className="py-0.5">
-                  {cl2.protein}
+                <th colSpan={2} className="p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7px] font-bold uppercase text-black py-0.5"
+                    defaultValue={cl2.protein}
+                  />
                 </th>
               </tr>
               <tr className="text-[6.5px] border-b border-black h-[11px]">
-                <th className="border-r border-black py-0.5 w-6">№</th>
-                <th className="border-r border-black py-0.5 w-[14%] whitespace-nowrap">
-                  {cl2.days}
+                <th className="border-r border-black p-0 w-6">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="№"
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[18%]">
-                  {cl2.kg}
+                <th className="border-r border-black p-0 w-[14%] whitespace-nowrap">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.days}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[11%]">
-                  {cl2.class}
+                <th className="border-r border-black p-0 w-[18%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.kg}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[12%]">%</th>
-                <th className="border-r border-black py-0.5 w-[11%]">
-                  {cl2.class}
+                <th className="border-r border-black p-0 w-[11%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
                 </th>
-                <th className="border-r border-black py-0.5 w-[12%]">%</th>
-                <th className="py-0.5 w-[11%]">{cl2.class}</th>
+                <th className="border-r border-black p-0 w-[12%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="%"
+                  />
+                </th>
+                <th className="border-r border-black p-0 w-[11%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
+                </th>
+                <th className="border-r border-black p-0 w-[12%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue="%"
+                  />
+                </th>
+                <th className="p-0 w-[11%]">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold py-0.5 text-black"
+                    defaultValue={cl2.class}
+                  />
+                </th>
               </tr>
             </thead>
             <tbody className="font-bold text-[7.5px] text-black">
@@ -1317,9 +1422,12 @@ export default async function CertificatePage({
               <tr className="h-4 leading-none">
                 <td
                   colSpan={2}
-                  className="border-r border-black text-center py-0.5"
+                  className="border-r border-black p-0 text-center"
                 >
-                  {cl2.average}
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent py-0.5"
+                    defaultValue={cl2.average}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1327,8 +1435,11 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgMilk.toFixed(1) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5">
-                  {rows.length > 0 ? "Elite" : ""}
+                <td className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1336,8 +1447,11 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgFat.toFixed(2) : ""}
                   />
                 </td>
-                <td className="border-r border-black py-0.5">
-                  {rows.length > 0 ? "Elite" : ""}
+                <td className="border-r border-black p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
                 </td>
                 <td className="border-r border-black py-0.5">
                   <input
@@ -1345,7 +1459,12 @@ export default async function CertificatePage({
                     defaultValue={rows.length > 0 ? avgProt.toFixed(2) : ""}
                   />
                 </td>
-                <td className="py-0.5">{rows.length > 0 ? "Elite" : ""}</td>
+                <td className="p-0">
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent"
+                    defaultValue={rows.length > 0 ? "Elite" : ""}
+                  />
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -1374,9 +1493,9 @@ export default async function CertificatePage({
       }
 
       const headers = {
-        ru: ["Дней лакт.", "Надой", "Жир %", "Белок %", "Класс"],
-        uk: ["Днів лакт.", "Надій", "Жир %", "Білок %", "Клас"],
-        en: ["Days", "Milk", "Fat %", "Protein %", "Class"],
+        ru: ["Дней лакт.", "Надой", "Класс", "Жир %", "Белок %", "Класс"],
+        uk: ["Днів лакт.", "Надій", "Клас", "Жир %", "Білок %", "Клас"],
+        en: ["Days", "Milk", "Class", "Fat %", "Protein %", "Class"],
       };
       const lbls = headers[locale] || headers["ru"];
 
@@ -1387,31 +1506,55 @@ export default async function CertificatePage({
             style={{ borderTopWidth: "0.6px", borderBottomWidth: "1px" }}
           >
             <td
-              className="border-r border-black py-0.5 w-[15%] text-center select-none"
+              className="border-r border-black p-0 w-[15%] text-center"
               style={{ borderRightWidth: "1px" }}
             >
-              {lbls[0]}
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[0]}
+              />
             </td>
             <td
-              className="border-r border-black py-0.5 w-[35%] text-center select-none"
+              className="border-r border-black p-0 w-[20%] text-center"
               style={{ borderRightWidth: "1px" }}
             >
-              {lbls[1]}
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[1]}
+              />
             </td>
             <td
-              className="border-r border-black py-0.5 w-[15%] text-center select-none"
+              className="border-r border-black p-0 w-[15%] text-center"
               style={{ borderRightWidth: "1px" }}
             >
-              {lbls[2]}
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[2]}
+              />
             </td>
             <td
-              className="border-r border-black py-0.5 w-[15%] text-center select-none"
+              className="border-r border-black p-0 w-[15%] text-center"
               style={{ borderRightWidth: "1px" }}
             >
-              {lbls[3]}
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[3]}
+              />
             </td>
-            <td className="py-0.5 w-[20%] text-center select-none">
-              {lbls[4]}
+            <td
+              className="border-r border-black p-0 w-[15%] text-center"
+              style={{ borderRightWidth: "1px" }}
+            >
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[4]}
+              />
+            </td>
+            <td className="p-0 w-[20%] text-center">
+              <input
+                className="w-full h-full border-none outline-none text-center bg-transparent text-[6.5px] font-bold uppercase text-black py-0.5"
+                defaultValue={lbls[5]}
+              />
             </td>
           </tr>
           {[...Array(3)].map((_, i) => {
@@ -1437,12 +1580,21 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="p-0 border-r border-black w-[35%]"
+                  className="p-0 border-r border-black w-[20%]"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-black text-[7.5px]"
                     defaultValue={r.milk || ""}
+                  />
+                </td>
+                <td
+                  className="p-0 border-r border-black w-[15%]"
+                  style={{ borderRightWidth: "1px" }}
+                >
+                  <input
+                    className="w-full h-full border-none outline-none text-center bg-transparent text-[7.5px]"
+                    defaultValue={rows[i] ? "Elite" : ""}
                   />
                 </td>
                 <td
@@ -1536,7 +1688,8 @@ export default async function CertificatePage({
           >
             <colgroup>
               <col style={{ width: "15%" }} />
-              <col style={{ width: "35%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "15%" }} />
               <col style={{ width: "15%" }} />
               <col style={{ width: "15%" }} />
               <col style={{ width: "20%" }} />
@@ -1553,7 +1706,7 @@ export default async function CertificatePage({
                     defaultValue={symbol}
                   />
                 </td>
-                <td className="p-0" colSpan={4}>
+                <td className="p-0" colSpan={5}>
                   <input
                     className="w-full h-full border-none outline-none text-left pl-0 bg-transparent font-bold text-[8px] uppercase py-0 text-black"
                     defaultValue={d.name || ""}
@@ -1576,8 +1729,9 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[35%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
+                  colSpan={2}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
@@ -1585,7 +1739,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[15%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1593,7 +1747,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.idUa}
                   />
                 </td>
-                <td className="p-0 w-[35%]" colSpan={2}>
+                <td className="p-0" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={
@@ -1618,8 +1772,9 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[35%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
+                  colSpan={2}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
@@ -1627,7 +1782,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[15%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1635,7 +1790,7 @@ export default async function CertificatePage({
                     defaultValue=""
                   />
                 </td>
-                <td className="p-0 w-[35%]" colSpan={2}>
+                <td className="p-0" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue=""
@@ -1658,8 +1813,9 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[35%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
+                  colSpan={2}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
@@ -1673,7 +1829,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[15%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1681,7 +1837,7 @@ export default async function CertificatePage({
                     defaultValue=""
                   />
                 </td>
-                <td className="p-0 w-[35%]" colSpan={2}>
+                <td className="p-0" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent"
                     defaultValue=""
@@ -1704,8 +1860,9 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[35%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
+                  colSpan={2}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
@@ -1713,7 +1870,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[15%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1721,7 +1878,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.expAss}
                   />
                 </td>
-                <td className="p-0 w-[35%]" colSpan={2}>
+                <td className="p-0" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.test_score || ""}
@@ -1741,8 +1898,9 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[35%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
+                  colSpan={2}
                 >
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
@@ -1754,7 +1912,7 @@ export default async function CertificatePage({
                   />
                 </td>
                 <td
-                  className="border-r border-black p-0 w-[15%]"
+                  className="border-r border-black p-0"
                   style={{ borderRightWidth: "1px" }}
                 >
                   <input
@@ -1762,7 +1920,7 @@ export default async function CertificatePage({
                     defaultValue={lbl.class}
                   />
                 </td>
-                <td className="p-0 w-[35%]" colSpan={2}>
+                <td className="p-0" colSpan={2}>
                   <input
                     className="w-full h-full border-none outline-none text-center bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.test_class || "Elite"}
@@ -1823,10 +1981,11 @@ export default async function CertificatePage({
                 />
               </td>
               <td className="p-0 w-[30%]">
-                <div className="flex items-center px-1 h-full gap-2">
-                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">
-                    {lbl.stdb}
-                  </span>
+                <div className="flex items-center px-1 h-full gap-1">
+                  <input
+                    className="w-12 h-full border-none outline-none bg-transparent font-bold text-[7.5px] text-black py-0"
+                    defaultValue={lbl.stdb}
+                  />
                   <input
                     className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={getStdb(d.studbook_alias) || ""}
@@ -1950,10 +2109,11 @@ export default async function CertificatePage({
                 />
               </td>
               <td className="p-0 w-[30%]">
-                <div className="flex items-center px-1 h-full gap-2">
-                  <span className="font-bold text-[7.5px] text-black select-none whitespace-nowrap">
-                    {chipLabel}
-                  </span>
+                <div className="flex items-center px-1 h-full gap-1">
+                  <input
+                    className="w-10 h-full border-none outline-none bg-transparent font-bold text-[7.5px] text-black py-0"
+                    defaultValue={chipLabel}
+                  />
                   <input
                     className="flex-1 h-full border-none outline-none bg-transparent font-bold text-[8px] py-0 text-black"
                     defaultValue={d.code_chip || ""}

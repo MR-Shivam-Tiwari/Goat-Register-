@@ -636,7 +636,11 @@ export default async function GoatDetailPage({
                 { l: "BBB", p: "fff", path: "MEFFF" },
               ].map((item, i) => {
                 const node = ancestorLacts[item.path];
-                const bestLact = node?.lactations?.[0];
+                const lactations = [
+                  ...(node?.ownLactations || []),
+                  ...(node?.daughtersLactations || []),
+                ];
+                const bestLact = lactations[0];
 
                 let displayVal = "";
 
@@ -646,7 +650,11 @@ export default async function GoatDetailPage({
                   // Fallback to mother
                   const motherPath = item.path + "M";
                   const motherNode = ancestorLacts[motherPath];
-                  const mBestLact = motherNode?.lactations?.[0];
+                  const motherLacts = [
+                    ...(motherNode?.ownLactations || []),
+                    ...(motherNode?.daughtersLactations || []),
+                  ];
+                  const mBestLact = motherLacts[0];
                   if (mBestLact) {
                     displayVal = `M\\${mBestLact.lact_no}\\${mBestLact.lact_days}\\${mBestLact.milk}\\${mBestLact.fat}\\${mBestLact.protein}`;
                   }
