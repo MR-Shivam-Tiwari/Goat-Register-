@@ -52,7 +52,7 @@ export default function LactationTable({
     const pathNode = Object.values(ancestorLacts).find(
       (n: any) => n && Number(n.id) === node.id,
     ) as any;
-    const lactations = pathNode?.lactations || [];
+    const lactations = pathNode?.ownLactations || pathNode?.lactations || [];
 
     lactations.forEach((l: any) => {
       const isSelf = node.id === Number(goatId);

@@ -2398,7 +2398,7 @@ export default async function CertificatePage({
     };
 
     return (
-      <div className="min-h-screen bg-white p-4 pb-20 font-sans text-black print:p-0">
+      <div className="cert-page-container min-h-screen bg-white p-4 pb-20 font-sans text-black print:p-0">
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -2477,10 +2477,28 @@ export default async function CertificatePage({
 
           /* ═══════════════ PRINT STYLES ═══════════════ */
           @media print {
-            @page { size: A4 landscape; margin: 0.5cm; }
-            body  { background: white !important; margin: 0 !important; padding: 0 !important; }
+            @page { size: A4 landscape; margin: 0; }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              height: 100% !important;
+              overflow: hidden !important;
+            }
+            body  { 
+              background: white !important; 
+              padding-top: 2.0cm !important; 
+              padding-bottom: 0 !important; 
+              padding-left: 0.5cm !important; 
+              padding-right: 0.5cm !important; 
+            }
             header, footer, nav { display: none !important; }
             .no-print, .print-hidden { display: none !important; }
+
+            .cert-page-container {
+              min-height: 0 !important;
+              height: 100% !important;
+              overflow: hidden !important;
+            }
 
             /* Screen wrapper: remove width/height caps */
             .printable-area {

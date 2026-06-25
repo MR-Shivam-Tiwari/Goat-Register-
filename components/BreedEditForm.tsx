@@ -30,6 +30,7 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
     ico: breed.ico
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -38,12 +39,18 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const removeSelectedFile = () => {
     setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -195,11 +202,19 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
           </div>
 
           <div className="bg-white p-8 border border-gray-100 rounded-sm shadow-sm space-y-8">
-            {/* CURRENT IMAGE */}
+            {/* CURRENT IMAGE / NEW PREVIEW */}
             <div className="space-y-3 text-center">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">{t.common.currentPhoto || "CURRENT ICON"}</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">
+                {previewUrl ? (t.common.newPhotoPreview || "NEW PREVIEW") : (t.common.currentPhoto || "CURRENT ICON")}
+              </label>
               <div className="aspect-square w-48 mx-auto bg-gray-50 border border-gray-100 rounded-sm overflow-hidden flex items-center justify-center p-4">
-                {breed.ico ? (
+                {previewUrl ? (
+                  <img 
+                    src={previewUrl} 
+                    className="max-w-full max-h-full object-contain rounded-sm border border-emerald-400"
+                    alt="New preview"
+                  />
+                ) : breed.ico ? (
                   <img 
                     src={breed.ico.startsWith('breed_') ? `/api/uploads/${breed.ico}` : `/breedimage/${breed.ico}`} 
                     className="max-w-full max-h-full object-contain"
@@ -209,7 +224,9 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
                   <ImageIcon size={48} className="text-gray-200" />
                 )}
               </div>
-              <p className="text-[10px] font-mono text-gray-400">{breed.ico || 'no-icon-assigned'}</p>
+              <p className="text-[10px] font-mono text-gray-400">
+                {previewUrl ? selectedFile?.name : (breed.ico || 'no-icon-assigned')}
+              </p>
             </div>
 
             {/* UPLOAD NEW */}
@@ -230,16 +247,22 @@ export default function BreedEditForm({ breed, t }: BreedEditFormProps) {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-4 bg-[#DCFCE7] border border-black p-4 rounded-sm">
-                    <Check className="text-green-700" size={24} />
-                    <div className="flex-1">
+                  <div className="flex items-center gap-4 bg-[#DCFCE7] border border-black p-3 rounded-sm">
+                    {previewUrl ? (
+                      <div className="w-12 h-12 bg-white border border-green-200 rounded-sm overflow-hidden flex items-center justify-center p-1 shrink-0">
+                        <img src={previewUrl} className="max-w-full max-h-full object-contain" alt="thumbnail" />
+                      </div>
+                    ) : (
+                      <Check className="text-green-700 shrink-0" size={24} />
+                    )}
+                    <div className="flex-1 min-w-0">
                       <p className="text-[9px] font-black text-green-800 uppercase tracking-widest">{t.common.fileSelected || "Ready for upload"}</p>
                       <p className="text-xs font-bold text-gray-900 truncate">{selectedFile.name}</p>
                     </div>
                     <button
                       type="button"
                       onClick={removeSelectedFile}
-                      className="text-red-600 hover:text-black"
+                      className="text-red-600 hover:text-black shrink-0"
                     >
                       <X size={20} />
                     </button>
