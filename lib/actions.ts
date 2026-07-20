@@ -864,4 +864,21 @@ export async function saveLactationAction(goatId: number | string, rowId: number
     }
 }
 
+export async function deleteLactationAction(goatId: number | string, rowId: number | string) {
+    const t = await getT();
+    try {
+        const idGoat = parseInt(goatId as string);
+        const rid = parseInt(rowId as string);
+        await query(
+            'DELETE FROM goats_lact WHERE id = $1 AND id_goat = $2',
+            [rid, idGoat]
+        );
+        revalidatePath(`/goats/${idGoat}`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Delete Lactation Error:', e.message);
+        return { error: t.errors.dbError + e.message };
+    }
+}
+
 

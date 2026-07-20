@@ -121,7 +121,7 @@ export default async function GoatDetailPage({
                   {goat.name}
                 </h1>
                 <p className="text-white/80 font-bold text-[10px] uppercase tracking-[0.2em]">
-                  {(goat.is_abg ? "R" : "X") + goat.id} • {goat.breed_name} •{" "}
+                  {(goat.is_abg ? "R" : "X") + (10000 + Number(goat.id))} • {goat.breed_name} •{" "}
                   {goat.sex === 1 ? t.goats.male : t.goats.female}
                 </p>
               </div>
@@ -135,7 +135,7 @@ export default async function GoatDetailPage({
                   {t.goats.registryCode}
                 </span>
                 <span className="text-[#491907] font-black text-xs">
-                  {(goat.is_abg ? "R" : "X") + goat.id}
+                  {(goat.is_abg ? "R" : "X") + (10000 + Number(goat.id))}
                 </span>
               </div>
               {goat.f_id ? (
@@ -410,41 +410,39 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.expertAssessment}
             </h2>
-            {goat.cert_no || goat.cert_serial || certData.id ? (
-              <div className="flex items-center gap-4">
-                <Link
-                  href={`/goats/${goat.id}/assessment`}
-                  className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
-                >
-                  {expertTests.length > 0 ? t.goats.editShort : t.goats.add}{" "}
-                  {t.goats.expertAssessment.replace(":", "")}
-                </Link>
-                <div className="h-6 w-[1px] bg-gray-200"></div>
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#491907]/50">
-                  <a
-                    href={`/goats/${goat.id}/certificate/1`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 hover:underline"
-                  >
-                    {t.goats.cert1}
-                  </a>
-                  <span className="opacity-30">|</span>
-                  <a
-                    href={`/goats/${goat.id}/certificate/2`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 hover:underline"
-                  >
-                    {t.goats.cert2}
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <div className="text-[10px] font-black uppercase text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 border-dashed">
-                {t.goats.certNo || "Certificate"} {t.goats.certRequired}
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              <Link
+                href={`/goats/${goat.id}/assessment`}
+                className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
+              >
+                {expertTests.length > 0 ? t.goats.editShort : t.goats.add}{" "}
+                {t.goats.expertAssessment.replace(":", "")}
+              </Link>
+              {(goat.cert_no || goat.cert_serial || certData.id) && (
+                <>
+                  <div className="h-6 w-[1px] bg-gray-200"></div>
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#491907]/50">
+                    <a
+                      href={`/goats/${goat.id}/certificate/1`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-blue-600 hover:underline"
+                    >
+                      {t.goats.cert1}
+                    </a>
+                    <span className="opacity-30">|</span>
+                    <a
+                      href={`/goats/${goat.id}/certificate/2`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-blue-600 hover:underline"
+                    >
+                      {t.goats.cert2}
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <div className="overflow-x-auto">
             {expertTests.length > 0 ? (

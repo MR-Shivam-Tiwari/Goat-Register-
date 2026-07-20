@@ -6,6 +6,7 @@ import { getTranslation, Locale } from "@/lib/translations";
 import { getSessionUser } from "@/lib/access-control";
 import { redirect } from "next/navigation";
 import { saveLactationAction } from "@/lib/actions";
+import DeleteLactationButton from "@/components/DeleteLactationButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -173,13 +174,16 @@ export default async function LactationFormPage({
             </span>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 flex justify-between items-center">
             <button
               type="submit"
               className="bg-[#491907] hover:bg-black text-white font-black text-xs uppercase tracking-widest px-8 py-3 rounded-lg shadow-md transition-all active:scale-95"
             >
               {lang === 'ru' ? 'Записать' : 'Write down'}
             </button>
+            {row && (
+              <DeleteLactationButton goatId={id} rowId={row} lang={lang} />
+            )}
           </div>
         </form>
       </div>

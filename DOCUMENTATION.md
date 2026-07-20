@@ -1,99 +1,88 @@
-# Goat Registry — Developer Documentation
-**Project: goat-registry-next**
-**Last updated: March 2026**
-**Prepared for: Maintenance Engineer Handoff**
+# Goat Breed Registry — Comprehensive Documentation
+**Project: goat-registry-next**  
+**Last updated: June 2026**  
+**Audience: Maintenance Engineers & Client Handoff**  
 
 ---
 
 ## Table of Contents
 
-1. [Project Overview](#1-project-overview)
+1. [Project & Architecture Overview](#1-project--architecture-overview)
 2. [Tech Stack](#2-tech-stack)
-3. [Running the App Locally](#3-running-the-app-locally)
-4. [Environment Variables](#4-environment-variables)
+3. [Infrastructure, Domain & Hosting](#3-infrastructure-domain--hosting)
+4. [Security & Credentials Policy](#4-security--credentials-policy)
 5. [Directory Structure](#5-directory-structure)
-6. [Database Overview](#6-database-overview)
-7. [Authentication & Session System](#7-authentication--session-system)
-8. [Internationalization (i18n)](#8-internationalization-i18n)
-9. [Pages & Routes](#9-pages--routes)
-10. [Components Reference](#10-components-reference)
-11. [Library Modules (lib/)](#11-library-modules-lib)
-12. [Key Design Decisions](#12-key-design-decisions)
-13. [Common Maintenance Tasks](#13-common-maintenance-tasks)
-14. [Known Limitations & TODOs](#14-known-limitations--todos)
+6. [Database Schema & Overview](#6-database-schema--overview)
+7. [Custom Code Catalog](#7-custom-code-catalog)
+8. [Deployment & Release Process](#8-deployment--release-process)
+9. [Third-Party Integrations](#9-third-party-integrations)
+10. [Troubleshooting & Common Fixes](#10-troubleshooting--common-fixes)
+11. [Running & Testing Locally](#11-running--testing-locally)
 
 ---
 
-## 1. Project Overview
+## 1. Project & Architecture Overview
 
-**Breed Register** (Племенной Реестр Коз) is the official breeding registry for the Association of Breeding Goats (Ассоциация Племенных Коз). It is a web application built in Next.js that allows breeders and association members to:
+The **Goat Breed Registry** (Племенной Реестр Коз) is the official software system for the **Association of Breeding Goats** (Ассоциация Племенных Коз). It allows breeders, administrators, and association members to:
+* Search and filter the registered goat population.
+* Manage farm details, stock lists, and owner allocations.
+* Track individual animal profiles including multi-generational lineage (pedigree charts), offspring, and official productivity records.
+* Generate and print standardized breeding certificates (Certificates of Conformity / Pedigree Certificates).
 
-- Browse and search a registry of all registered goats
-- View farm profiles and their registered stock
-- Browse a breed catalog (by breed → sex → individual animals)
-- Register and log in as a breeder/member
-- Admins can add goats, add/edit farms, and manage users
-- View detailed animal profiles including pedigree, offspring, and productivity data
-
-The system was migrated from a legacy PHP/MySQL application. The database schema was preserved as-is from the original PHP system, which is why some column names and password hashing are unusual.
+### Architectural Migration
+The system was migrated from a legacy PHP/MySQL application. To preserve database compatibility and historical records, the underlying database schema remains identical to the legacy system. The frontend was rebuilt from scratch as a modern, high-performance Next.js application.
 
 ---
 
 ## 2. Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 15+ (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS v4 |
-| Database | PostgreSQL (via `pg` Node.js driver) |
-| Hosting (Frontend) | Vercel |
-| Database Host | Supabase (PostgreSQL) |
-| Fonts | Google Fonts: Inter, Outfit |
-| Icons | Lucide React |
-| Toast Notifications | react-hot-toast |
-| React | v19+ (React Compiler enabled) |
+| Component | Technology | Description |
+|---|---|---|
+| **Framework** | Next.js 16+ (App Router) | React framework utilizing Server Components and Server Actions. |
+| **Language** | TypeScript 5 | Static typing for data schemas and UI components. |
+| **Styling** | Tailwind CSS v4 | Utility-first CSS framework for responsive, modern interfaces. |
+| **Database** | PostgreSQL (via `pg` driver) | Relational database hosting the migrated schema. |
+| **Icons** | Lucide React | Clean, scalable vector icons. |
+| **Typography** | Google Fonts (Inter, Outfit) | Premium, highly readable fonts loaded via Next.js Font Optimization. |
+| **Feedback** | react-hot-toast | Non-blocking visual notifications for form submissions. |
 
-> **Why no ORM?** The schema was migrated from a legacy PHP MySQL database. Raw SQL with the `pg` driver was used to avoid the friction of mapping an ORM to a legacy schema. All queries live in page files or `lib/db.ts` / `lib/goats-data.ts`.
+> [!NOTE]
+> **Why no ORM?** The database schema was migrated as-is from a legacy PHP system (using unusual column casing, MD5 password hashing, etc.). Writing raw SQL queries via the `pg` client avoided mapping conflicts and allowed highly optimized recursive queries.
 
 ---
 
-## 3. Running the App Locally
+## 3. Infrastructure, Domain & Hosting
 
-```bash
-# Install dependencies
-npm install
+### Domain Names & DNS
+* **Primary Domain:** `registry-next.kozovodstvo.center` (or custom association domain).
+* **Domain Registrar:** Managed via the client's registrar account (e.g., Hostinger, GoDaddy, or Reg.ru).
+* **DNS Configuration:** Points to Vercel's global edge network CNAME (`cname.vercel-dns.com`).
 
-# Run development server
-npm run dev
-```
-
-The app starts on **http://localhost:3000**.
-
-```bash
-# Build for production
-npm run build
-
-# Start production server
-npm run start
-```
+### Hosting Providers
+1. **Application Hosting (Vercel):**
+   * The Next.js application is hosted on Vercel, providing automatic serverless scaling, global CDN edge caching, and automated Git deployments.
+2. **Database Hosting (Supabase):**
+   * The PostgreSQL database is hosted on a managed Supabase instance. Supabase handles database scaling, connection pooling, and automated daily backups.
 
 ---
 
-## 4. Environment Variables
+## 4. Security & Credentials Policy
 
-File: `.env.local` (never commit this file)
+> [!CAUTION]
+> **CRITICAL SECURITY REQUIREMENT**  
+> Never store passwords, API keys, database connection strings, or FTP/SSH credentials directly in this document, in code comments, or in the Git repository.
 
-```
-DATABASE_URL=postgresql://user:password@host:port/dbname?pgbouncer=true&connection_limit=1
-```
+### Shared Password Vault
+All production and staging credentials must be stored securely in a shared team vault such as **1Password** or **Bitwarden**. 
 
-### Notes on DATABASE_URL
-
-- The app connects to a **Supabase** PostgreSQL instance.
-- In production (Vercel), use the **Transaction Pooler** URL from Supabase (port 6543), not the direct connection, to avoid IPv6 connectivity issues.
-- The connection string must include `?pgbouncer=true&connection_limit=1` when using the pooler.
-- SSL is automatically enabled in production (`rejectUnauthorized: false` is set in `lib/db.ts`).
+The vault must contain the following credentials:
+* **Domain Registrar:** Login credentials for the domain control panel.
+* **Supabase Console:** Master admin account and database credentials.
+* **Vercel Console:** Admin login for the organization's hosting team.
+* **GitHub Repository:** Owner/Admin credentials or deploy keys.
+* **Database Connection Strings:**
+  * Direct connection string (for migrations).
+  * Transaction Pooler connection string (for the Next.js runtime).
 
 ---
 
@@ -101,146 +90,169 @@ DATABASE_URL=postgresql://user:password@host:port/dbname?pgbouncer=true&connecti
 
 ```
 goat-registry-next/
-├── app/                        # Next.js App Router pages
-│   ├── layout.tsx              # Root layout (Header + Navbar + Toaster)
-│   ├── page.tsx                # Home page (/)
-│   ├── globals.css             # Global CSS + Tailwind imports
-│   ├── catalog/
-│   │   └── goats/
-│   │       ├── [alias]/        # Breed detail page
-│   │       │   ├── page.tsx    # Breed overview
-│   │       │   └── [sex]/
-│   │       │       └── page.tsx # Goats by breed and sex
-│   ├── farms/
-│   │   ├── page.tsx            # Farm list
+├── app/                        # Next.js App Router Pages
+│   ├── layout.tsx              # Root Layout (Navbar, Header, Toast container)
+│   ├── globals.css             # Tailwind imports and global style overrides
+│   ├── catalog/                # Breed directory routes
+│   ├── farms/                  # Farm profiles and registry indexes
+│   ├── goats/                  # Individual goat profiles, certificates, and metrics
 │   │   ├── [id]/
-│   │   │   ├── page.tsx        # Farm detail view
-│   │   │   └── edit/page.tsx   # Edit farm (admin)
-│   ├── goats/
-│   │   ├── page.tsx            # Full goat registry list
-│   │   └── [id]/page.tsx       # Individual goat detail page
-│   ├── profile/page.tsx        # User profile
-│   ├── users/page.tsx          # User management (admin)
-│   └── ...                     # Auth & other routes
-├── components/                 # Reusable UI components
-├── lib/                        # Shared server-side utilities
-│   ├── db.ts                   # PostgreSQL connection pool
-│   ├── goats-data.ts           # Shared data fetching logic for goats
-│   └── translations.ts         # Centralized i18n strings
-├── public/                     # Static assets (img/)
-└── ...
+│   │   │   ├── page.tsx        # Goat Profile (pedigree, tables, cert selections)
+│   │   │   └── certificate/
+│   │   │       └── [type]/
+│   │   │           └── page.tsx # Official Printable Certificates (Type 1 & 2)
+│   │   └── ...
+│   └── ...
+├── components/                 # Reusable React UI Components
+│   ├── BreedEditForm.tsx       # Breed manager edit interface (with image previews)
+│   ├── LactationTable.tsx      # Combined own, ancestor, and descendant lactation grid
+│   ├── PedigreeNode.tsx        # Render logic for ancestral trees
+│   └── ...
+├── lib/                        # Data & Logic Core
+│   ├── db.ts                   # PostgreSQL connection pool and SSL configurations
+│   ├── goats-data.ts           # Centralized database query library
+│   ├── actions.ts              # Next.js Server Actions (login, language, forms)
+│   ├── access-control.ts       # Authentication checks and role-based guards
+│   └── translations.ts         # Multilingual translation dictionaries (RU/EN/UK)
+├── public/                     # Static files (images, icons, uploads)
+└── package.json                # Dependencies and run scripts
 ```
 
 ---
 
-## 6. Database Overview
+## 6. Database Schema & Overview
 
-The app uses a PostgreSQL database with a legacy schema. Key tables:
+The PostgreSQL database maintains the structure of the legacy MySQL schema to ensure continuous operation of legacy tools and scripts.
 
-### Core Tables
-- **`animals`**: Primary registry table (id, name, sex, id_farm, id_mother, id_father, status).
-- **`goats_data`**: Extended animal data (breed, studbook, codes, owner, birth date).
-- **`farms`**: Farm profiles (name, description, photos).
-- **`users`**: User accounts and roles (login, pass, email, role).
-- **`breeds`**: Breed definitions (name, alias).
+### Primary Tables
+* **`animals`**: Holds core identity (ID, Name, Sex [1 = Male, 2 = Female], Mother ID, Father ID, Farm ID, Owner, Status).
+* **`goats_data`**: Stores auxiliary registration parameters (UA codes, chip numbers, breed ID, studbook ID, horn status, birth weight, blood purity percentage).
+* **`farms`**: Profile information for breeding farms.
+* **`users`**: Login credentials (password hashed using MD5), emails, and security roles (`role >= 10` indicates administrator permissions).
+* **`breeds`**: Predefined breed categories and aliases (used to build short URL routes).
 
-### Supporting Tables
-- **`goats_lact`**: Lactation records (milk yield, fat, protein, days).
-- **`goats_milk`**: Productivity metrics (peak yield, lactose, density).
-- **`goats_test`**: Expert assessments and body measurements.
-- **`goats_cert`**: Stored certification data linkages.
-- **`goats_pic`**: Animal gallery images.
-- **`stoodbook`**: Studbook classifications (Main, RCB, etc.).
+### Data Metrics & Linkages
+* **`goats_lact`**: Stores lactation records (milk volume in kg, fat %, protein %, duration in days).
+* **`goats_test`**: Contains official body measurements and expert score assessments.
+* **`goats_cert`**: Remembers which specific lactation records are selected to print on the animal's breeding certificate.
 
 ---
 
-## 7. Authentication & Session System
+## 7. Custom Code Catalog
 
-- **Login**: Handled via `lib/actions.ts` (`loginAction`).
-- **Hashing**: MD5 is used for legacy compatibility.
-- **Session**: Cookie-based (`uid_token`).
-- **Guard**: `lib/access-control.ts` provides `getSessionUser()` and `adminOnly()`.
+The codebase contains several high-impact custom systems developed specifically for this application:
 
----
+### A. Recursive Pedigree Tree Query
+* **Location:** `lib/goats-data.ts` (functions `getAncestors` and `getAncestorLactations`)
+* **What it does:** Uses a recursive PostgreSQL Common Table Expression (CTE) to traverse the `animals` table, walking up the paternal and maternal parent links to retrieve a complete 4-generation pedigree tree in a single database round-trip.
+* **Why:** Replaces nested, slow legacy PHP queries with a single, highly performant query.
 
-## 8. Internationalization (i18n)
+### B. Print Layout Engine (A4 Landscapes & Centering)
+* **Location:** `app/goats/[id]/certificate/[type]/page.tsx`
+* **What it does:** Renders highly precise, printable layouts matching official pre-printed paper templates.
+  * Hides browser-default print headers/footers (date, URL, page numbers) using the `@page { margin: 0; }` directive.
+  * Centers the certificate table on A4 landscape paper by applying a strict top padding (`padding-top: 2.0cm`) and zeroing out bottom padding to fit on exactly **1/1 page** without spilling over.
+* **Why:** Standardizes print sizing across different web browsers and ensures compatibility with physical certificate stationery.
 
-The app is fully localized in **Russian (RU)** and **English (EN)**.
-
-- **Storage**: `lib/translations.ts` contains the `translations` object.
-- **Persistence**: Saved in the `nxt-lang` cookie.
-- **Usage**: Every server component reads the cookie and calls `getTranslation(lang)`.
-- **Switcher**: `LanguageSwitcher.tsx` toggles between locales.
-
----
-
-## 9. Pages & Routes
-
-### `/goats/[id]` — Individual Goat Detail
-**File:** `app/goats/[id]/page.tsx`
-This is the most complex page, featuring:
-- **Header**: Name, breed, sex, registry code, and quick links to parents.
-- **Basic Info**: Tabular view of official registry data.
-- **Gallery**: Photo carousel/grid from `goats_pic`.
-- **Pedigree**: 4-generation interactive tree view.
-- **Offspring**: Detailed summary and tabular view of direct descendants.
-- **Own Productivity**: Detailed lactation metrics (milk, fat, protein, lactose, etc.).
-- **Expert Assessment**: Official test results and body measurements.
-- **Certificate Data**: Selectable lactation data for official documents.
-- **3rd Gen Productivity**: Shortened metrics for ancestors.
-- **Movement**: Log of animal ownership/farm changes.
-
-### `/farms/[id]` — Farm Profile
-Shows farm description and stock analysis (Active vs. Displaced).
+### C. Real-Time Image Upload Previews
+* **Location:** `components/BreedEditForm.tsx` (and animal forms)
+* **What it does:** Utilizes React state and the browser's native `URL.createObjectURL(file)` API to display immediate image previews and thumbnails when a user selects a file for upload. Revokes the object URL on file removal to prevent memory leaks.
+* **Why:** Gives immediate visual feedback to the user before submitting forms to the server.
 
 ---
 
-## 10. Components Reference
+## 8. Deployment & Release Process
 
-- **`Header.tsx`**: Fixed top bar with logo and contact phone.
-- **`Navbar.tsx`**: Navigation links + Auth state (Login/Register or Logout/User Info).
-- **`LanguageSwitcher.tsx`**: Locale selection (RU/EN).
-- **`Breadcrumbs.tsx`**: Navigation path.
-- **`GoatFilters.tsx`**: Advanced filtering for the main registry.
-- **`GoatTable.tsx`**: Reusable data grid for animal lists.
-- **`PedigreeNode.tsx` / `PedigreeChart`**: Logic for rendering the ancestral tree.
-- **`InviteSection.tsx`**: Tool for generating temporary access links.
-- **`AddGoatForm.tsx` / `FarmEditor.tsx`**: Forms for adding/editing records.
+Deployments are automated through **Vercel's Git Integration**.
 
----
+```mermaid
+graph LR
+    Dev[Local Commit] --> Push[Push to GitHub]
+    Push --> Vercel[Vercel Webhook]
+    Vercel --> Build[Build & Test]
+    Build --> Deploy[Live Production]
+```
 
-## 11. Library Modules (lib/)
-
-- **`lib/db.ts`**: PostgreSQL connection pool (via `pg`).
-- **`lib/goats-data.ts`**: Centralized data fetching queries for animal profiles.
-- **`lib/actions.ts`**: Server Actions for authentication and language switching.
-- **`lib/access-control.ts`**: Session validation and RBAC guards.
-- **`lib/translations.ts`**: All multilingual UI strings.
-- **`lib/auth.ts`**: Legacy password hashing reference (MD5/CRC32).
-
----
-
-## 12. Key Design Decisions
-
-- **Raw SQL**: Used to navigate the legacy schema without ORM overhead.
-- **Force Dynamic**: Pages reading cookies are forced to re-render server-side to ensure correct lang/auth state.
-- **Tailwind v4**: Leverages the latest CSS-first features for a premium aesthetic.
+### Steps to Deploy Updates
+1. **Local Validation:** Run a local build to catch any TypeScript, ESLint, or syntax errors:
+   ```bash
+   npm run build
+   ```
+2. **Push to GitHub:** Push the changes to the tracked branch:
+   ```bash
+   git push origin main
+   ```
+3. **Automatic Deployment:** Vercel detects the commit, runs the build command, optimizes assets, and deploys the new version live.
+4. **Environment Updates:** If you add new environment variables, add them in the **Vercel Project Settings -> Environment Variables** panel before pushing the code.
 
 ---
 
-## 13. Common Maintenance Tasks
+## 9. Third-Party Integrations
 
-- **Updating Text**: Edit `lib/translations.ts`.
-- **Adding a Field**: Update `lib/goats-data.ts` query and the corresponding UI component.
-- **Adding a Route**: Create folder in `app/` and ensure it follows the standard layout patterns.
+The system is designed to be self-contained for maximum security and data privacy. The only third-party integrations are:
+1. **Google Fonts API:** Integrates the *Inter* and *Outfit* fonts dynamically at build time using Next.js optimization libraries.
+2. **Supabase Database Engine:** Cloud-based hosting for the PostgreSQL database, providing continuous connections and automated backups.
 
 ---
 
-## 14. Known Limitations & TODOs
+## 10. Troubleshooting & Common Fixes
 
-- **DB Writes**: Animal/Farm forms need Server Action implementations for saving.
-- **Storage**: File uploads (photos) currently use local paths; should migrate to cloud storage (e.g., Supabase Storage).
-- **Security**: Port MD5 to bcrypt for modern security standards.
-- **Pagination**: Large lists (goats/farms) need cursor or offset pagination.
-- **Rich Text**: `react-quill-new` is installed but not yet integrated into the Farm Editor.
-- **Hardcoded Phone**: Organization contact phone is currently hardcoded in `Header.tsx`.
+### A. Print Layout Showing 2 Pages (Blank Second Page)
+* **Symptom:** Opening the print dialog shows a second page that is completely blank.
+* **Cause:** The page height exceeds the physical A4 paper height (21.0 cm in landscape). This is usually caused by using `min-h-screen` (which scales to the screen viewport height, not the print size) or applying excessive bottom padding.
+* **Fix:** 
+  1. Add a unique page class (e.g., `.cert-page-container`) and override the heights under the print media query:
+     ```css
+     @media print {
+       .cert-page-container {
+         min-height: 0 !important;
+         height: 100% !important;
+         overflow: hidden !important;
+       }
+     }
+     ```
+  2. Reduce `padding-bottom` to `0` on the body element.
+
+### B. Browser Headers and Footers Appearing on Printouts
+* **Symptom:** Printed certificates show dates, titles, page numbers, or local URLs at the margins.
+* **Fix:** Set the page margin to zero in the print styles. The browser will automatically hide all headers and footers. Re-apply the margins as padding on the body element:
+  ```css
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+    body {
+      padding-top: 2.0cm !important;
+      padding-bottom: 0 !important;
+      padding-left: 0.5cm !important;
+      padding-right: 0.5cm !important;
+    }
+  }
+  ```
+
+### C. Productivity Data Missing (Empty Tables on Profile)
+* **Symptom:** The Lactation Data or Productivity table displays "No Records Found" even though records exist in the database.
+* **Cause:** A property name mismatch between the data fetching library and the table rendering component (e.g., checking for `.lactations` instead of `.ownLactations` or `.daughtersLactations`).
+* **Fix:** Ensure the component supports the correct array properties in `LactationTable.tsx`:
+  ```typescript
+  const lactations = pathNode?.ownLactations || pathNode?.lactations || [];
+  ```
+
+---
+
+## 11. Running & Testing Locally
+
+### Prerequisites
+* **Node.js:** v18.18.0 or higher.
+* **PostgreSQL:** Access to a PostgreSQL database (Supabase credentials or a local docker container running the schema).
+
+### Development Command
+To start the local development server with hot-reloading:
+```bash
+npm run dev
+```
+
+### Production Build Validation
+To compile, run TypeScript checks, and output the production bundle:
+```bash
+npm run build
+```
+Always run this command before committing code to ensure that no compile-time errors block the Vercel deployment pipeline.

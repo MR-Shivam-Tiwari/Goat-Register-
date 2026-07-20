@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { selectOfficialLactationAction } from '@/lib/actions';
+import { selectOfficialLactationAction, deleteLactationAction } from '@/lib/actions';
 
 interface LactationTableProps {
   ancestorLacts: any;
@@ -58,6 +58,7 @@ export default function LactationTable({
       const isSelf = node.id === Number(goatId);
       allLacts.push({
         ...l,
+        id_goat: l.id_goat || node.id,
         _isSelf: isSelf,
         _isDescendant: false,
         // For self: no prefix, for ancestors: "Pr: (N)"
@@ -76,6 +77,7 @@ export default function LactationTable({
     d.lactations.forEach((l: any) => {
       allLacts.push({
         ...l,
+        id_goat: l.id_goat || d.id,
         _isSelf: false,
         _isDescendant: true,
         // Old site uses "Пт:" (Russian) → in English "Fri:" based on old site screenshots
@@ -103,6 +105,29 @@ export default function LactationTable({
         router.refresh();
       } else {
         alert(result.error || 'Error selecting lactation');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error occurred');
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleDeleteLact = async (goatId: number | string, lactId: number) => {
+    const confirmed = window.confirm(
+      lang === 'ru'
+        ? 'Вы уверены, что хотите удалить эту запись о лактации?'
+        : 'Are you sure you want to delete this lactation record?'
+    );
+    if (!confirmed) return;
+
+    setLoadingId(lactId);
+    try {
+      const result = await deleteLactationAction(goatId, lactId);
+      if (result.success) {
+        router.refresh();
+      } else {
+        alert(result.error || 'Error deleting lactation');
       }
     } catch (err: any) {
       alert(err.message || 'Error occurred');
@@ -207,19 +232,22 @@ export default function LactationTable({
                 </td>
 
                 {/* Correction column:
-                    - own record: "..." with link to edit that specific row (old PHP style)
-                    - ancestor/descendant: "No" */}
-                <td className="p-2 text-center">
-                  {l._isSelf ? (
-                    <a
-                      href={`/goats/${goatId}/lact?row=${l.id}`}
-                      className="text-blue-600 hover:text-blue-800 underline font-bold"
-                    >
-                      ...
-                    </a>
-                  ) : (
-                    lang === 'ru' ? 'Нет' : 'No'
-                  )}
+                    - all records: Edit and Delete buttons */}
+                <td className="p-2 text-center text-xs space-x-2">
+                  <Link
+                    href={`/goats/${l.id_goat}/lact?row=${l.id}`}
+                    className="text-blue-600 hover:text-blue-800 underline font-bold"
+                  >
+                    {lang === 'ru' ? 'Исправить' : 'Edit'}
+                  </Link>
+                  <span className="text-gray-300">|</span>
+                  <button
+                    onClick={() => handleDeleteLact(l.id_goat, l.id)}
+                    disabled={loadingId !== null}
+                    className="text-red-600 hover:text-red-800 underline font-bold cursor-pointer disabled:opacity-50"
+                  >
+                    {lang === 'ru' ? 'Удалить' : 'Delete'}
+                  </button>
                 </td>
               </tr>
             );
