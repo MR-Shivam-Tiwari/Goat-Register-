@@ -273,7 +273,7 @@ export default async function GuestGoatPage({
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {Object.entries(ancestorLacts).map(([path, node]: [string, any]) => 
-                  node.lactations.map((l: any, i: number) => {
+                  (node?.lactations || []).map((l: any, i: number) => {
                     const level = path.length - 2;
                     const label = path === 'ME' ? 'ME' : `Pr: (${level})`;
                     return (

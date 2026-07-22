@@ -8,7 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 async function getUsers() {
     const result = await query(`
         SELECT DISTINCT ON (U.id) 
-            U.id, U.login, U.name, U.email, U.time_added, U.role, F.name as farm_name
+            U.id, U.login, U.name, U.email, U.time_added, U.role, U.is_apk, F.name as farm_name
         FROM users U
         LEFT JOIN (
             SELECT DISTINCT ON (id_user) id_user, id_farm 
@@ -54,6 +54,7 @@ export default async function UsersPage() {
                                     <th className="px-6 py-4 font-black">{t.users.fullName}</th>
                                     <th className="px-6 py-4 font-black">{t.users.email}</th>
                                     <th className="px-6 py-4 font-black">{t.auth.roleLabel || 'ROLE'}</th>
+                                    <th className="px-6 py-4 font-black">APK</th>
                                     <th className="px-6 py-4 font-black text-center">{t.breedManage.actions || 'ACTIONS'}</th>
                                 </tr>
                             </thead>
@@ -75,6 +76,11 @@ export default async function UsersPage() {
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-3 py-1 rounded-sm text-[9px] font-black uppercase tracking-widest ${user.role >= 10 ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
                                                 {user.role >= 10 ? (t.auth.adminRole || 'ADMIN') : (t.auth.memberRole || 'MEMBER')}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-sm text-[9px] font-black uppercase tracking-widest ${user.is_apk === 1 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-gray-50 text-gray-500 border border-gray-100'}`}>
+                                                {user.is_apk === 1 ? (t.users?.yes || 'YES') : (t.users?.no || 'NO')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

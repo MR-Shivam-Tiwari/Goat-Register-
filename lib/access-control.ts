@@ -9,7 +9,7 @@ export const getSessionUser = cache(async () => {
     
     if (!token) return null;
 
-    const result = await query('SELECT id, login, role FROM users WHERE token = $1', [token]);
+    const result = await query('SELECT id, login, role, is_apk FROM users WHERE token = $1', [token]);
     const user = result.rows[0];
     if (user) {
         // Ensure role is treated as number for logic safety

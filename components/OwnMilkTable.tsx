@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { copyMilkToLactationAction } from '@/lib/actions';
+import { copyMilkToLactationAction, deleteOwnMilkAction } from '@/lib/actions';
 
 interface OwnMilkTableProps {
   ownMilk: any[];
@@ -24,6 +24,32 @@ export default function OwnMilkTable({ ownMilk, goatId, lang, t }: OwnMilkTableP
         router.refresh();
       } else {
         alert(result.error || 'Error copying milk record');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error occurred');
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleDeleteMilk = async (milkId: number) => {
+    const confirmMsg =
+      lang === 'ru'
+        ? 'Вы уверены, что хотите удалить эту запись о продуктивности?'
+        : lang === 'uk'
+        ? 'Ви впевнені, що хочете видалити цей запис про продуктивність?'
+        : 'Are you sure you want to delete this productivity record?';
+
+    const confirmed = window.confirm(confirmMsg);
+    if (!confirmed) return;
+
+    setLoadingId(milkId);
+    try {
+      const result = await deleteOwnMilkAction(goatId, milkId);
+      if (result.success) {
+        router.refresh();
+      } else {
+        alert(result.error || 'Error deleting record');
       }
     } catch (err: any) {
       alert(err.message || 'Error occurred');
@@ -91,13 +117,22 @@ export default function OwnMilkTable({ ownMilk, goatId, lang, t }: OwnMilkTableP
                 )}
               </td>
               <td className="p-3 truncate max-w-[150px]">{m.source || '-'}</td>
-              <td className="p-3">
+              <td className="p-3 text-center text-xs space-x-2">
                 <Link
                   href={`/goats/${goatId}/milk?row=${m.id}`}
                   className="text-blue-600 hover:underline font-bold"
                 >
                   {t.goats.milkCorrection}
                 </Link>
+                <span className="text-gray-300">|</span>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteMilk(m.id)}
+                  disabled={loadingId !== null}
+                  className="text-red-600 hover:underline font-bold cursor-pointer disabled:opacity-50"
+                >
+                  {lang === 'ru' ? 'Удалить' : lang === 'uk' ? 'Видалити' : 'Delete'}
+                </button>
               </td>
               <td className="p-3 text-gray-600">
                 {m.added

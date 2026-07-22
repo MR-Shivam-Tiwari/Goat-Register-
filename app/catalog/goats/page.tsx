@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { getTranslation, Locale } from '@/lib/translations';
 import BreedCatalogDisplay from '@/components/BreedCatalogDisplay';
 import { getSessionUser } from '@/lib/access-control';
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,9 @@ export default async function CatalogPage() {
     const t = getTranslation(lang);
 
     const sessionUser = await getSessionUser();
+    if (!sessionUser || (sessionUser.role < 10 && sessionUser.is_apk !== 1)) {
+      redirect("/login");
+    }
     const isAdmin = sessionUser && sessionUser.role >= 10;
 
     return (

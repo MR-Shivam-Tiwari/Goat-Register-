@@ -3,6 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
+import { redirect } from "next/navigation";
 import GoatFilters from "@/components/GoatFilters";
 import { getSessionUser } from "@/lib/access-control";
 import GoatDeleteButton from "@/components/GoatDeleteButton";
@@ -129,6 +130,9 @@ export default async function AllGoatsPage({
   ]);
 
   const user = await getSessionUser();
+  if (!user || (user.role < 10 && user.is_apk !== 1)) {
+    redirect("/login");
+  }
   const isAdmin = user && user.role >= 10;
 
   const cookieStore = await cookies();

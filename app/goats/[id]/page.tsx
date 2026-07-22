@@ -54,8 +54,8 @@ export default async function GoatDetailPage({
       </div>
     );
 
-  // ACCESS CONTROL: Allow Admin (role >= 10) or Owner (by id_user)
-  const isOwner = user && (user.role >= 10 || user.id === goat.id_user);
+  // ACCESS CONTROL: Allow Admin (role >= 10) or APK Member Owner (by id_user)
+  const isOwner = user && (user.role >= 10 || (user.is_apk === 1 && user.id === goat.id_user));
 
   if (!isOwner) {
     redirect("/goats");
@@ -149,7 +149,7 @@ export default async function GoatDetailPage({
                     rel="noopener noreferrer"
                     className="text-blue-700 font-bold text-xs hover:text-blue-900 underline decoration-blue-200"
                   >
-                    {goat.f_name} (ID: {goat.f_id})
+                    {goat.f_name} ({(goat.f_is_abg ? "R" : "X") + (10000 + Number(goat.f_id))})
                   </a>
                 </div>
               ) : (
@@ -172,7 +172,7 @@ export default async function GoatDetailPage({
                     rel="noopener noreferrer"
                     className="text-pink-600 font-bold text-xs hover:text-pink-800 underline decoration-pink-200"
                   >
-                    {goat.m_name} (ID: {goat.m_id})
+                    {goat.m_name} ({(goat.m_is_abg ? "R" : "X") + (10000 + Number(goat.m_id))})
                   </a>
                 </div>
               ) : (

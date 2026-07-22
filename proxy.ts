@@ -5,7 +5,12 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Define protected routes
-  const isProtectedRoute = pathname.startsWith('/catalog') || pathname.startsWith('/farms') || pathname.startsWith('/profile');
+  const isProtectedRoute = pathname.startsWith('/catalog') || 
+                           pathname.startsWith('/farms') || 
+                           pathname.startsWith('/profile') ||
+                           pathname.startsWith('/goats') ||
+                           pathname.startsWith('/users') ||
+                           pathname.startsWith('/manage');
   
   // Check for auth cookie
   const token = request.cookies.get('uid_token');
@@ -28,5 +33,8 @@ export const config = {
     '/catalog/:path*',
     '/farms/:path*',
     '/profile/:path*',
+    '/goats/:path*',
+    '/users/:path*',
+    '/manage/:path*',
   ],
 };

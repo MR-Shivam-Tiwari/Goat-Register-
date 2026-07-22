@@ -11,12 +11,12 @@ export async function getGoatData(id: string) {
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
         Di.ava, Di.blood_percent, Di.id_lact_show,
 
-        M.name  AS m_name,  M.id AS m_id,
+        M.name  AS m_name,  M.id AS m_id, Dm.is_abg AS m_is_abg,
         Dm.code_ua AS m_code_ua, Dm.code_abg AS m_code_abg,
         Dm.code_farm AS m_code_farm, Dm.code_chip AS m_code_chip,
         Dm.code_int AS m_code_int, Dm.code_brand AS m_code_brand,
 
-        F.name  AS f_name,  F.id AS f_id,
+        F.name  AS f_name,  F.id AS f_id, Df.is_abg AS f_is_abg,
         Df.code_ua AS f_code_ua, Df.code_abg AS f_code_abg,
         Df.code_farm AS f_code_farm, Df.code_chip AS f_code_chip,
         Df.code_int AS f_code_int, Df.code_brand AS f_code_brand,

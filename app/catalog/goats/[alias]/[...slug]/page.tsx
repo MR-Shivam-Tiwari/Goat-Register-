@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import Link from "next/link";
 import { Suspense } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import FilterCard from "./FilterCard";
@@ -289,6 +290,9 @@ export default async function GoatsListPage({
   const s = searchParams.s || sex;
 
   const user = await getSessionUser();
+  if (!user || (user.role < 10 && user.is_apk !== 1)) {
+    redirect("/login");
+  }
 
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";

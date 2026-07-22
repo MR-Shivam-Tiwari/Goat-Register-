@@ -4,6 +4,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
 import { getSessionUser } from "@/lib/access-control";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -67,11 +68,10 @@ export default async function TransferredGoatsPage({
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
   const t = getTranslation(lang);
 
-  // SECURE ACCESS: Bypassed for testing as per user request
-  /*
   const user = await getSessionUser();
-  if (!user || Number(user.role) < 10) { ... }
-  */
+  if (!user || (user.role < 10 && user.is_apk !== 1)) {
+    redirect("/login");
+  }
 
   let breed = null;
   if (alias && alias !== "all") {

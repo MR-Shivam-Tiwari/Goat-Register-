@@ -41,7 +41,7 @@ export default async function MilkAddPage({
              <span className="text-[9px] font-black uppercase text-gray-300 tracking-[0.3em]">Breeding ID: {id} • Animal: {goat.name}</span>
           </div>
        </div>
-       <MilkForm goatId={id} initialData={initialData} t={t} />
+       <MilkForm goatId={id} initialData={initialData} t={t} lang={locale} />
     </div>
   );
 }

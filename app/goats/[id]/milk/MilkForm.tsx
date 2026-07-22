@@ -2,18 +2,50 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { deleteOwnMilkAction } from '@/lib/actions';
 
 export default function MilkForm({ 
   goatId, 
   initialData, 
-  t 
+  t,
+  lang = 'ru'
 }: { 
   goatId: string, 
   initialData?: any, 
-  t: any 
+  t: any,
+  lang?: string
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    if (!initialData?.id) return;
+    
+    const confirmMsg =
+      lang === 'ru'
+        ? 'Вы уверены, что хотите удалить эту запись о продуктивности?'
+        : lang === 'uk'
+        ? 'Ви впевнені, що хочете видалити цей запис про продуктивність?'
+        : 'Are you sure you want to delete this productivity record?';
+
+    const confirmed = window.confirm(confirmMsg);
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      const result = await deleteOwnMilkAction(goatId, initialData.id);
+      if (result.success) {
+        router.push(`/goats/${goatId}`);
+        router.refresh();
+      } else {
+        alert(result.error || 'Failed to delete record');
+      }
+    } catch (err: any) {
+      alert(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
   const [formData, setFormData] = useState({
     par_0: initialData?.par_0 || '', // Lactation number
     par_1: initialData?.par_1 || '', // Days
@@ -121,21 +153,35 @@ export default function MilkForm({
            </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-100 flex gap-4">
-           <button 
-             type="button"
-             onClick={() => router.back()}
-             className="flex-1 bg-white border border-gray-200 text-gray-400 px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all"
-           >
-             {t.goatForm.milk.cancel}
-           </button>
-           <button 
-             type="submit"
-             disabled={loading}
-             className="flex-[2] bg-[#491907] text-white px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all shadow-xl shadow-[#491907]/10 disabled:opacity-50"
-           >
-             {loading ? t.goatForm.milk.processing : t.goatForm.milk.save}
-           </button>
+        <div className="pt-8 border-t border-gray-100 flex flex-col gap-3">
+          <div className="flex gap-4">
+             <button 
+               type="button"
+               onClick={() => router.back()}
+               className="flex-1 bg-white border border-gray-200 text-gray-400 px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all"
+             >
+               {t.goatForm.milk.cancel}
+             </button>
+             <button 
+               type="submit"
+               disabled={loading}
+               className="flex-[2] bg-[#491907] text-white px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all shadow-xl shadow-[#491907]/10 disabled:opacity-50"
+             >
+               {loading ? t.goatForm.milk.processing : t.goatForm.milk.save}
+             </button>
+          </div>
+          {initialData?.id && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-800 text-white px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-xl shadow-red-600/10 disabled:opacity-50"
+            >
+              {loading
+                ? (lang === 'ru' ? 'Удаление...' : lang === 'uk' ? 'Видалення...' : 'Deleting...')
+                : (lang === 'ru' ? 'Удалить запись' : lang === 'uk' ? 'Видалити запис' : 'Delete Record')}
+            </button>
+          )}
         </div>
       </form>
     </div>
