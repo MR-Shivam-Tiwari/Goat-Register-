@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import MovementForm from "./MovementForm";
 import MovementHistory from "./MovementHistory";
+import { adminOnly } from "@/lib/access-control";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function MovementPage({
   params: Promise<{ id: string }>,
   searchParams: Promise<{ mode?: 'add' | 'view', targetFarm?: string }>
 }) {
+  await adminOnly();
   const { id } = await params;
   const { mode = 'view', targetFarm } = await searchParams;
   

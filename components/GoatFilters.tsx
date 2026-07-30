@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Search, X, Filter } from 'lucide-react';
 import Link from 'next/link';
 
-export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: string, t: any }) {
+export default function GoatFilters({ breeds, lang, t, isAdmin }: { breeds: any[], lang: string, t: any, isAdmin?: boolean }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -124,22 +124,24 @@ export default function GoatFilters({ breeds, lang, t }: { breeds: any[], lang: 
                 </div>
             </div>
             
-            <div className="flex justify-end gap-3">
-                <Link 
-                    href="/manage"
-                    target="_blank"
-                    className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
-                >
-                    {t.nav.managegoat}
-                </Link>
-                <Link 
-                    href="/catalog/goats/add" 
-                    target="_blank"
-                    className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
-                >
-                    + {t.nav.addGoat}
-                </Link>
-            </div>
+            {isAdmin && (
+                <div className="flex justify-end gap-3">
+                    <Link 
+                        href="/manage"
+                        target="_blank"
+                        className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
+                    >
+                        {t.nav.managegoat}
+                    </Link>
+                    <Link 
+                        href="/catalog/goats/add" 
+                        target="_blank"
+                        className="px-6 py-2.5 bg-[#4D2C1A] text-white text-[13px] font-black uppercase tracking-[0.2em] rounded shadow-sm hover:translate-y-[-1px] transition-all"
+                    >
+                        + {t.nav.addGoat}
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

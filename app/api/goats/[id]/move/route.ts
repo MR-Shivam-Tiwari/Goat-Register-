@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
+import { getSessionUser } from '@/lib/access-control';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
@@ -48,6 +49,11 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getSessionUser();
+  if (!user || user.role < 10) {
+    return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
+  }
+
   const { id } = await params;
   const body = await req.json();
   const { id_farm_of, id_farm_on, id_reason, date_return, info } = body;

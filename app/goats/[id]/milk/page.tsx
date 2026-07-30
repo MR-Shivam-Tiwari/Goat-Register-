@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import MilkForm from "./MilkForm";
 import Link from "next/link";
+import { adminOnly } from "@/lib/access-control";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function MilkAddPage({
   params: Promise<{ id: string }>,
   searchParams: Promise<{ row?: string }>
 }) {
+  await adminOnly();
   const { id } = await params;
   const { row } = await searchParams;
   

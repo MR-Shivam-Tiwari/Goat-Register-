@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import AssessmentForm from "./AssessmentForm";
 import Link from "next/link";
+import { adminOnly } from "@/lib/access-control";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function AssessmentPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await adminOnly();
   const { id } = await params;
 
   // Verify goat exists

@@ -4,6 +4,7 @@ import { query } from '@/lib/db';
 import { adminOnly } from '@/lib/access-control';
 import Link from 'next/link';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import ApkToggleButton from '@/components/ApkToggleButton';
 
 async function getUsers() {
     const result = await query(`
@@ -43,6 +44,17 @@ export default async function UsersPage() {
                         <h1 className="text-4xl font-black text-[#491907] uppercase tracking-tighter leading-none">{t.users.management}</h1>
                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-2">{t.users.registry}</p>
                     </div>
+                    <div>
+                        <Link 
+                            href="/users/new" 
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#491907] text-white font-black text-xs uppercase tracking-widest rounded-sm hover:bg-black transition-all shadow-lg shadow-[#491907]/10 active:scale-95 duration-200"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>{t.users.addUser || 'Add User'}</span>
+                        </Link>
+                    </div>
                 </div>
                 
                 <div className="bg-white border border-gray-200 rounded-sm shadow-xl shadow-black/5 overflow-hidden">
@@ -79,9 +91,12 @@ export default async function UsersPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-sm text-[9px] font-black uppercase tracking-widest ${user.is_apk === 1 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-gray-50 text-gray-500 border border-gray-100'}`}>
-                                                {user.is_apk === 1 ? (t.users?.yes || 'YES') : (t.users?.no || 'NO')}
-                                            </span>
+                                            <ApkToggleButton 
+                                                userId={user.id} 
+                                                isApk={user.is_apk} 
+                                                yesText={t.users?.yes || 'ДА'} 
+                                                noText={t.users?.no || 'НЕТ'} 
+                                            />
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center justify-center gap-2">

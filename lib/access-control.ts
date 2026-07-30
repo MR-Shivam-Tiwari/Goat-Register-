@@ -20,8 +20,11 @@ export const getSessionUser = cache(async () => {
 
 export async function adminOnly() {
     const user = await getSessionUser();
-    if (!user || user.role < 10) {
+    if (!user) {
         redirect('/login');
+    }
+    if (user.role < 10) {
+        redirect('/unauthorized');
     }
     return user;
 }

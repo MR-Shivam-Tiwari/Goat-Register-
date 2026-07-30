@@ -41,7 +41,7 @@ export default function FarmGoatTables({
                 <table className="w-full text-left border-collapse table-auto min-w-[1000px] md:min-w-[1300px] text-[13px] md:text-[15px] font-semibold leading-none text-gray-900">
                     <thead className="sticky top-0 z-30 shadow-sm">
                         <tr className={`text-[12px] md:text-[14px] font-black uppercase tracking-widest text-white ${headerBg} border-b border-black`}>
-                            <th colSpan={11} className="p-2 md:p-4 text-center border-r border-black uppercase tracking-widest">
+                            <th colSpan={isAdmin ? 11 : 10} className="p-2 md:p-4 text-center border-r border-black uppercase tracking-widest">
                                 {title}
                             </th>
                         </tr>
@@ -56,7 +56,7 @@ export default function FarmGoatTables({
                             <th className="p-2 md:p-3.5 px-2 md:px-4 border-r border-black text-center">{t.goats.breeder}</th>
                             <th className="p-2 md:p-3.5 px-2 md:px-4 border-r border-black text-center">{t.goats.owner}</th>
                             <th className="p-2 md:p-3.5 px-2 md:px-4 border-r border-black text-center w-28 md:w-36">{t.goats.birthDate || "Born"}</th>
-                            <th className="p-2 md:p-3.5 px-2 md:px-4 border-black text-center w-40 md:w-56">ACTIONS</th>
+                            {isAdmin && <th className="p-2 md:p-3.5 px-2 md:px-4 border-black text-center w-40 md:w-56">ACTIONS</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-black bg-white">
@@ -100,9 +100,9 @@ export default function FarmGoatTables({
                                     <td className="p-2 md:p-3.5 md:px-4 text-center font-mono font-bold tabular-nums border-r border-black">
                                         {goat.date_born ? new Date(goat.date_born).toLocaleDateString("ru-RU") : "-"}
                                     </td>
-                                    <td className="p-2 md:p-3.5 md:px-4 text-center">
-                                        <div className="flex items-center justify-center gap-1.5 md:gap-2.5 flex-wrap">
-                                        {isAdmin && (
+                                    {isAdmin && (
+                                        <td className="p-2 md:p-3.5 md:px-4 text-center">
+                                            <div className="flex items-center justify-center gap-1.5 md:gap-2.5 flex-wrap">
                                             <Link 
                                                 href={`/catalog/goats/fix/${goat.id}`}
                                                 target="_blank"
@@ -111,8 +111,6 @@ export default function FarmGoatTables({
                                                 <Pencil size={11} className="group-hover:scale-110 transition-transform" />
                                                 <span className="hidden sm:inline">{t.common.edit || "EDIT"}</span>
                                             </Link>
-                                        )}
-                                        {isAdmin && (
                                             <button 
                                                 onClick={async () => {
                                                     if (window.confirm(t.common.deleteGoatConfirm || "Are you sure you want to delete this goat?")) {
@@ -130,17 +128,17 @@ export default function FarmGoatTables({
                                                 <Trash2 size={11} className="group-hover:scale-110 transition-transform" />
                                                 <span className="hidden sm:inline">{t.common.delete || "DELETE"}</span>
                                             </button>
-                                        )}
-                                        <Link 
-                                            href={`/goats/${goat.id}/move?mode=add&targetFarm=${farmId}`}
-                                            target="_blank"
-                                            className={`inline-flex items-center justify-center p-2 md:p-2.5 rounded-md text-white hover:bg-black transition-all shadow-md bg-[#491907]`}
-                                            title={t.goats.animalMovement}
-                                        >
-                                            <Truck size={14} />
-                                        </Link>
-                                        </div>
-                                    </td>
+                                            <Link 
+                                                href={`/goats/${goat.id}/move?mode=add&targetFarm=${farmId}`}
+                                                target="_blank"
+                                                className={`inline-flex items-center justify-center p-2 md:p-2.5 rounded-md text-white hover:bg-black transition-all shadow-md bg-[#491907]`}
+                                                title={t.goats.animalMovement}
+                                            >
+                                                <Truck size={14} />
+                                            </Link>
+                                            </div>
+                                        </td>
+                                    )}
 
                                 </tr>
                             );

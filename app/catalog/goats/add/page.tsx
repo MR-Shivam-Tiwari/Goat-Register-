@@ -1,6 +1,7 @@
 import { query } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { adminOnly } from '@/lib/access-control';
 import GoatForm from '@/components/GoatForm';
 import { Locale } from '@/lib/translations';
 import { Suspense } from 'react';
@@ -19,11 +20,10 @@ async function getFarms() {
 }
 
 export default async function AddGoatPage() {
-    const cookieStore = await cookies();
-    const username = cookieStore.get('user_login')?.value;
-    const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
+    await adminOnly();
     
-    if (!username) redirect('/login');
+    const cookieStore = await cookies();
+    const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
 
     const breeds = await getBreeds();
     const farms = await getFarms();

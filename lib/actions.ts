@@ -10,6 +10,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { getTranslation, Locale } from '@/lib/translations';
+import { phpHash } from '@/lib/auth';
+import { adminOnly } from '@/lib/access-control';
 
 async function getT() {
     const cookieStore = await cookies();
@@ -47,20 +49,39 @@ export async function loginAction(prevState: any, formData: FormData) {
   const loginInput = formData.get('login') as string;
   const password = formData.get('password') as string;
 
-  // MD5 Hashing (Standard for 32-char hashes)
-  const hash = crypto.createHash('md5').update(password).digest('hex');
+  if (!loginInput || !password) {
+      return { error: t.errors.invalidLogin };
+  }
+
+  // MD5 Hashing & PHP CRC32 Salt Hashing
+  const hashMd5 = crypto.createHash('md5').update(password).digest('hex');
+  const hashPhp = phpHash(password);
   
   try {
-    // Check both login and email
+    // Check both login and email with either MD5 or PHP hash
     const result = await query(
-        'SELECT * FROM users WHERE (login = $1 OR email = $1) AND pass = $2', 
-        [loginInput, hash]
+        'SELECT * FROM users WHERE (login = $1 OR email = $1) AND (pass = $2 OR pass = $3)', 
+        [loginInput, hashMd5, hashPhp]
     );
 
     if (result.rows.length > 0) {
       const user = result.rows[0];
+      
+      // Auto-generate token and secret if missing/null in legacy user records
+      let token = user.token;
+      let secret = user.secret;
+      
+      if (!token || typeof token !== 'string' || token.trim() === '') {
+        token = crypto.randomBytes(8).toString('hex').substring(0, 18);
+        secret = secret || crypto.randomBytes(8).toString('hex').substring(0, 16);
+        await query(
+            'UPDATE users SET token = $1, secret = $2 WHERE id = $3',
+            [token, secret, user.id]
+        );
+      }
+
       const cookieStore = await cookies();
-      cookieStore.set('uid_token', user.token, { httpOnly: true, secure: false, path: '/' });
+      cookieStore.set('uid_token', token, { httpOnly: true, secure: false, path: '/' });
       cookieStore.set('user_login', user.login, { httpOnly: true, secure: false, path: '/' });
       return { success: true };
     }
@@ -665,6 +686,63 @@ export async function updateUserAction(formData: FormData) {
     } catch (e: any) {
         console.error('Update User Error:', e.message);
         return { error: t.errors.dbError + (e.message || '') };
+    }
+}
+
+export async function createUserAction(formData: FormData) {
+    await adminOnly();
+    const t = await getT();
+    
+    const login = (formData.get('login') as string || '').trim();
+    const email = (formData.get('email') as string || '').trim();
+    const name = (formData.get('name') as string || '').trim();
+    const phone = (formData.get('phone') as string || '').trim();
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirm_password') as string;
+    const roleValue = parseInt(formData.get('role') as string) || 1;
+    const is_apk = parseInt(formData.get('is_apk') as string) || 0;
+
+    if (!login || !email || !password) {
+        return { error: t.errors.invalidData || 'Missing required fields' };
+    }
+
+    if (password !== confirmPassword) {
+        return { error: t.errors.passMismatch || 'Passwords do not match' };
+    }
+
+    try {
+        const checkRes = await query('SELECT id FROM users WHERE email = $1 OR login = $2', [email, login]);
+        if (checkRes.rows.length > 0) {
+            return { error: t.errors.userExists || 'User already exists' };
+        }
+
+        const passHash = crypto.createHash('md5').update(password).digest('hex');
+        const secret = crypto.randomBytes(8).toString('hex').substring(0, 16);
+        const token = crypto.randomBytes(8).toString('hex').substring(0, 18);
+
+        await query(
+            'INSERT INTO users (login, email, name, phone, pass, secret, token, is_apk, role, time_added) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())',
+            [login, email, name || null, phone || null, passHash, secret, token, is_apk, roleValue]
+        );
+
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) {
+        console.error('Create User Error:', e.message);
+        return { error: t.errors.dbError + (e.message || '') };
+    }
+}
+
+export async function toggleApkAction(userId: number, currentStatus: number) {
+    await adminOnly();
+    const newStatus = currentStatus === 1 ? 0 : 1;
+    try {
+        await query('UPDATE users SET is_apk = $1 WHERE id = $2', [newStatus, userId]);
+        revalidatePath('/users');
+        return { success: true, newStatus };
+    } catch (e: any) {
+        console.error('Toggle APK Error:', e.message);
+        return { error: e.message };
     }
 }
 

@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getTranslation, Locale } from "@/lib/translations";
-import { getSessionUser } from "@/lib/access-control";
+import { adminOnly } from "@/lib/access-control";
 import { redirect } from "next/navigation";
 import { saveLactationAction } from "@/lib/actions";
 import DeleteLactationButton from "@/components/DeleteLactationButton";
@@ -17,16 +17,12 @@ export default async function LactationFormPage({
   params: paramsPromise,
   searchParams: searchParamsPromise,
 }: PageProps) {
+  await adminOnly();
   const { id } = await paramsPromise;
   const { row } = await searchParamsPromise;
   const cookieStore = await cookies();
   const lang = (cookieStore.get("nxt-lang")?.value as Locale) || "ru";
   const t = getTranslation(lang);
-
-  const user = await getSessionUser();
-  if (!user) {
-    redirect("/auth/login");
-  }
 
   const goatRes = await query("SELECT id, name FROM animals WHERE id = $1", [id]);
   const goat = goatRes.rows[0];

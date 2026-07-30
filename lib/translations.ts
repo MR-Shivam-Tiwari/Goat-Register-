@@ -35,7 +35,7 @@ export const translations = {
       writeDown: 'Записать',
       loading: 'Загрузка...',
       error: 'Ошибка',
-      accessDenied: 'Доступ запрещен',
+      accessDenied: 'У Вас нет доступа к этой странице',
       onlyAdmin: 'Только администратор имеет доступ к этой странице.',
       goHome: 'На главную',
       notAvailable: 'Нет данных',
@@ -115,6 +115,9 @@ export const translations = {
       no: 'Нет',
       password: 'Новый пароль',
       passwordHelp: 'Оставьте пустым, если не меняете',
+      addUser: 'Добавить пользователя',
+      createTitle: 'Создание пользователя',
+      createDesc: 'Заполните данные для создания нового пользователя',
       copyright: 'Использование материалов разрешается только с согласия автора'
     },
     goats: {
@@ -833,6 +836,9 @@ export const translations = {
       no: 'No',
       password: 'New Password',
       passwordHelp: 'Leave blank if not changing',
+      addUser: 'Add User',
+      createTitle: 'Create User',
+      createDesc: 'Fill in details to create a new system user',
       copyright: 'Use of materials is permitted only with the consent of the author'
     },
     goats: {
@@ -1496,6 +1502,9 @@ export const translations = {
       no: 'Ні',
       password: 'Новий пароль',
       passwordHelp: 'Залиште порожнім, якщо не змінюєте',
+      addUser: 'Додати користувача',
+      createTitle: 'Створення користувача',
+      createDesc: 'Заповніть дані для створення нового користувача',
       copyright: 'Використання матеріалів дозволяється лише за згодою автора'
     },
     goats: {

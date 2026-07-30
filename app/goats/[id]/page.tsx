@@ -54,11 +54,12 @@ export default async function GoatDetailPage({
       </div>
     );
 
-  // ACCESS CONTROL: Allow Admin (role >= 10) or APK Member Owner (by id_user)
-  const isOwner = user && (user.role >= 10 || (user.is_apk === 1 && user.id === goat.id_user));
+  // ACCESS CONTROL: Allow Admin (role >= 10) OR APK Member viewing their OWN registered goat (user.id === goat.id_user)
+  const isAdmin = user && user.role >= 10;
+  const canViewGoatCard = user && (user.role >= 10 || (user.is_apk === 1 && user.id === goat.id_user));
 
-  if (!isOwner) {
-    redirect("/goats");
+  if (!canViewGoatCard) {
+    redirect("/unauthorized");
   }
 
   const [
@@ -367,9 +368,11 @@ export default async function GoatDetailPage({
             <h2 className="text-[#491907] text-sm font-black uppercase tracking-widest flex items-center gap-1.5">
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.lactDataTitle}
-              <Link href={`/goats/${id}/lact`} className="text-blue-600 hover:text-blue-800 underline lowercase font-normal text-[11px] ml-1">
-                {t.goats.add}
-              </Link>
+              {isAdmin && (
+                <Link href={`/goats/${id}/lact`} className="text-blue-600 hover:text-blue-800 underline lowercase font-normal text-[11px] ml-1">
+                  {t.goats.add}
+                </Link>
+              )}
             </h2>
           </div>
           <div className="p-0">
@@ -391,12 +394,14 @@ export default async function GoatDetailPage({
               <span className="w-1 h-3 bg-[#491907] rounded-full"></span>
               {t.goats.ownProductivityTitle}
             </h2>
-            <Link
-              href={`/goats/${goat.id}/milk`}
-              className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
-            >
-              {t.goats.add} {t.goats.recordShort}
-            </Link>
+            {isAdmin && (
+              <Link
+                href={`/goats/${goat.id}/milk`}
+                className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
+              >
+                {t.goats.add} {t.goats.recordShort}
+              </Link>
+            )}
           </div>
           <div className="p-0">
             <OwnMilkTable ownMilk={ownMilk} goatId={goat.id} lang={lang} t={t} />
@@ -411,13 +416,15 @@ export default async function GoatDetailPage({
               {t.goats.expertAssessment}
             </h2>
             <div className="flex items-center gap-4">
-              <Link
-                href={`/goats/${goat.id}/assessment`}
-                className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
-              >
-                {expertTests.length > 0 ? t.goats.editShort : t.goats.add}{" "}
-                {t.goats.expertAssessment.replace(":", "")}
-              </Link>
+              {isAdmin && (
+                <Link
+                  href={`/goats/${goat.id}/assessment`}
+                  className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase hover:bg-black transition-all shadow-sm"
+                >
+                  {expertTests.length > 0 ? t.goats.editShort : t.goats.add}{" "}
+                  {t.goats.expertAssessment.replace(":", "")}
+                </Link>
+              )}
               {(goat.cert_no || goat.cert_serial || certData.id) && (
                 <>
                   <div className="h-6 w-[1px] bg-gray-200"></div>
@@ -703,14 +710,16 @@ export default async function GoatDetailPage({
               >
                 {t.goats.viewMovement}
               </a>
-              <a
-                href={`/goats/${goat.id}/move?mode=add`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
-              >
-                {t.goats.moveAnimal}
-              </a>
+              {isAdmin && (
+                <a
+                  href={`/goats/${goat.id}/move?mode=add`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all font-black text-[10px] uppercase"
+                >
+                  {t.goats.moveAnimal}
+                </a>
+              )}
             </div>
 
             <InviteSection goatId={goat.id} t={t} />

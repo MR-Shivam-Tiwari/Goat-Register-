@@ -11,6 +11,8 @@ import { User } from "lucide-react";
 async function logoutAction() {
   "use server";
   const cookieStore = await cookies();
+  cookieStore.set("uid_token", "", { path: "/", maxAge: 0, expires: new Date(0) });
+  cookieStore.set("user_login", "", { path: "/", maxAge: 0, expires: new Date(0) });
   cookieStore.delete("uid_token");
   cookieStore.delete("user_login");
   redirect("/login");
@@ -34,11 +36,9 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
 
   // All links for Mobile Menu (Excluding admin only links handled by icons below)
   const allMobileLinks = [...mainLinks];
-  if (user && Number(user.role) >= 1) {
+  if (user && Number(user.role) >= 10) {
     allMobileLinks.push({ href: "/catalog/goats/add", label: t.nav.addGoat });
-    if (Number(user.role) >= 10) {
-      allMobileLinks.push({ href: "/users", label: t.nav.users });
-    }
+    allMobileLinks.push({ href: "/users", label: t.nav.users });
   }
 
   return (
@@ -78,7 +78,7 @@ export default async function Navbar({ lang: propLang }: { lang?: Locale }) {
       <div className="flex items-center gap-5 md:gap-10">
         {/* Desktop Admin/Auth Controls */}
         <div className="hidden lg:flex items-center gap-8">
-          {user && Number(user.role) >= 1 && (
+          {user && Number(user.role) >= 10 && (
             <div className="flex items-center gap-4 border-r border-gray-100 pr-8 mr-2">
               {/* Admin Quick Icons */}
               {Number(user.role) >= 10 && (

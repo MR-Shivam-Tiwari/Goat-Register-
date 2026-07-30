@@ -80,7 +80,7 @@ export default function GoatListTable({
                 <th className="p-2 border-r border-white/10 w-40">
                   {t.goats.operator}
                 </th>
-                <th className="p-2 w-20">{t.goats.managementShort}</th>
+                {isAdmin && <th className="p-2 w-20">{t.goats.managementShort}</th>}
               </tr>
             </thead>
             <tbody className="text-[10px] uppercase font-bold text-gray-700 bg-white">
@@ -197,17 +197,17 @@ export default function GoatListTable({
                     <td className="p-2 border-r text-md border-gray-100 text-center text-gray-400 font-black">
                       {goat.operator || "SYSTEM"}
                     </td>
-                    <td className="p-2 text-center flex items-center justify-center gap-1.5 h-full">
-                      <a
-                        href={`/catalog/goats/fix/${goat.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-300 rounded-sm hover:border-amber-900 hover:text-amber-900 transition-colors shadow-sm font-black text-xs text-blue-600"
-                        title="Management / Edit"
-                      >
-                        P
-                      </a>
-                      {isAdmin && (
+                    {isAdmin && (
+                      <td className="p-2 text-center flex items-center justify-center gap-1.5 h-full">
+                        <a
+                          href={`/catalog/goats/fix/${goat.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-300 rounded-sm hover:border-amber-900 hover:text-amber-900 transition-colors shadow-sm font-black text-xs text-blue-600"
+                          title="Management / Edit"
+                        >
+                          P
+                        </a>
                         <GoatDeleteButton
                           goatId={goat.id}
                           confirmMsg={
@@ -216,15 +216,15 @@ export default function GoatListTable({
                           }
                           titleText={t.common?.remove || "Delete"}
                         />
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
               {goats.length === 0 && (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={isAdmin ? 9 : 8}
                     className="p-32 text-center text-gray-200 font-black uppercase tracking-[1em] text-2xl"
                   >
                     {t.goats.emptyRegistry}
