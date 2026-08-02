@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Save, Trash2, Check, X, Shield, User, Mail, Phone, Lock } from 'lucide-react';
+import { ChevronLeft, Save, Trash2, Check, X, Shield, User, Mail, Phone, Lock, Eye, EyeOff } from 'lucide-react';
 import { updateUserAction, deleteUserAction } from '@/lib/actions';
 
 interface UserData {
@@ -19,6 +19,7 @@ interface UserData {
 export default function UserEditForm({ user, t }: { user: UserData; t: any }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     async function handleSubmit(formData: FormData) {
@@ -207,12 +208,22 @@ export default function UserEditForm({ user, t }: { user: UserData; t: any }) {
                     <div className="bg-white p-8 border border-gray-100 rounded-sm shadow-sm space-y-6">
                         <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">{t.users.password}</label>
-                            <input
-                                name="password"
-                                type="password"
-                                placeholder={t.users.passwordHelp || 'Leave blank to keep current'}
-                                className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 text-sm font-bold transition-all outline-none"
-                            />
+                            <div className="relative">
+                                <input
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder={t.users.passwordHelp || 'Leave blank to keep current'}
+                                    className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 pr-10 text-sm font-bold transition-all outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
                             <p className="text-[9px] text-gray-400 leading-relaxed uppercase tracking-tighter">
                                 {t.users.passwordHelp || 'Change user password securely. MD5 encryption is applied automatically.'}
                             </p>

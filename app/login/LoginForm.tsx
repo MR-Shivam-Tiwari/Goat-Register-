@@ -1,11 +1,12 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { loginAction } from '@/lib/actions';
 import { translations } from '@/lib/translations';
+import { Eye, EyeOff } from 'lucide-react';
 
 function SubmitButton({ t }: { t: any }) {
   const { pending } = useFormStatus();
@@ -32,6 +33,7 @@ function SubmitButton({ t }: { t: any }) {
 
 export default function LoginForm({ t }: { t?: any }) {
   const [state, formAction] = useActionState(loginAction, null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   // Fallback to Russian if t is missing
@@ -76,13 +78,24 @@ export default function LoginForm({ t }: { t?: any }) {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 block ml-1">{auth.passLabel}</label>
-            <input 
-              name="password" 
-              type="password" 
-              className="w-full bg-white border-2 border-gray-200 px-5 py-4 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
-              placeholder={auth.passPlaceholder} 
-              required 
-            />
+            <div className="relative">
+              <input 
+                name="password" 
+                type={showPassword ? "text" : "password"} 
+                className="w-full bg-white border-2 border-gray-200 px-5 py-4 pr-12 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
+                placeholder={auth.passPlaceholder} 
+                required 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           
           <SubmitButton t={t} />

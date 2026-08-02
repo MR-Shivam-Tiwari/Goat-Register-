@@ -1,11 +1,12 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { registerAction } from '@/lib/actions';
 import { translations } from '@/lib/translations';
+import { Eye, EyeOff } from 'lucide-react';
 
 function SubmitButton({ t }: { t: any }) {
   const { pending } = useFormStatus();
@@ -39,6 +40,8 @@ function SubmitButton({ t }: { t: any }) {
 
 export default function RegisterForm({ t }: { t?: any }) {
   const [state, formAction] = useActionState(registerAction, null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
   // Fallback to Russian if t is missing
@@ -112,24 +115,46 @@ export default function RegisterForm({ t }: { t?: any }) {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block ml-1 uppercase tracking-wider">{auth.passLabel}</label>
-            <input 
-              name="password" 
-              type="password" 
-              className="w-full bg-white border-2 border-gray-200 px-5 py-3.5 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
-              placeholder={auth.passPlaceholder} 
-              required 
-            />
+            <div className="relative">
+              <input 
+                name="password" 
+                type={showPassword ? "text" : "password"} 
+                className="w-full bg-white border-2 border-gray-200 px-5 py-3.5 pr-12 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
+                placeholder={auth.passPlaceholder} 
+                required 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block ml-1 uppercase tracking-wider">{auth.confirmPassLabel}</label>
-            <input 
-              name="confirm_password" 
-              type="password" 
-              className="w-full bg-white border-2 border-gray-200 px-5 py-3.5 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
-              placeholder={auth.passPlaceholder} 
-              required 
-            />
+            <div className="relative">
+              <input 
+                name="confirm_password" 
+                type={showConfirmPassword ? "text" : "password"} 
+                className="w-full bg-white border-2 border-gray-200 px-5 py-3.5 pr-12 rounded-xl focus:border-blue-500 transition-all font-medium text-gray-900 text-lg outline-none" 
+                placeholder={auth.passPlaceholder} 
+                required 
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           
           <SubmitButton t={t} />

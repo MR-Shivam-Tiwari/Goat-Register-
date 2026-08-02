@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, UserPlus, Shield, User, Mail, Phone, Lock, Check, AlertCircle } from 'lucide-react';
+import { ChevronLeft, UserPlus, Shield, User, Mail, Phone, Lock, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { createUserAction } from '@/lib/actions';
 
 export default function UserAddForm({ t }: { t: any }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     async function handleSubmit(formData: FormData) {
@@ -187,24 +189,44 @@ export default function UserAddForm({ t }: { t: any }) {
                     <div className="bg-white p-8 border border-gray-100 rounded-sm shadow-sm space-y-6">
                         <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">{t.auth.passLabel} *</label>
-                            <input
-                                name="password"
-                                type="password"
-                                placeholder="••••••••"
-                                className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 text-sm font-bold transition-all outline-none"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 pr-10 text-sm font-bold transition-all outline-none"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">{t.auth.confirmPassLabel || 'Confirm Password'} *</label>
-                            <input
-                                name="confirm_password"
-                                type="password"
-                                placeholder="••••••••"
-                                className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 text-sm font-bold transition-all outline-none"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    name="confirm_password"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    className="w-full bg-[#F9F9F9] border-b-2 border-transparent focus:border-[#491907] p-4 pr-10 text-sm font-bold transition-all outline-none"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                    tabIndex={-1}
+                                >
+                                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
                         </div>
                         
                         <div className="pt-4 border-t border-gray-50 flex items-center gap-3 text-amber-600">

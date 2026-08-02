@@ -54,9 +54,54 @@ export default async function GoatDetailPage({
       </div>
     );
 
-  // ACCESS CONTROL: Allow Admin (role >= 10) OR APK Member viewing their OWN registered goat (user.id === goat.id_user)
   const isAdmin = user && user.role >= 10;
-  const canViewGoatCard = user && (user.role >= 10 || (user.is_apk === 1 && user.id === goat.id_user));
+  
+  // ACCESS CONTROL: Allow Admin, Current Owner, or Breeder
+  let canViewGoatCard = false;
+  if (user) {
+    if (isAdmin) {
+      canViewGoatCard = true; // Admin
+    } else if (user.is_apk === 1) {
+      // 1. Creator Check
+      if (user.id === goat.id_user) {
+        canViewGoatCard = true;
+      }
+      
+      if (!canViewGoatCard && user.farms) {
+        // 2. Current Owner Check
+        const userFarmIds = user.farms.split(',').map((f: string) => f.trim());
+        if (userFarmIds.includes(String(goat.id_farm))) {
+          canViewGoatCard = true;
+        }
+
+        // 3. Breeder Check
+        if (!canViewGoatCard) {
+          try {
+            const userFarmsRes = await query(
+              `SELECT name FROM farms WHERE id = ANY(string_to_array($1, ',')::int[])`, 
+              [user.farms]
+            );
+            
+            for (const row of userFarmsRes.rows) {
+              const farmName = row.name.toLowerCase().trim();
+              if (farmName && farmName !== 'without farm' && farmName !== 'без фермы') {
+                if (goat.manuf && goat.manuf.toLowerCase().includes(farmName)) {
+                  canViewGoatCard = true;
+                  break;
+                }
+                if (goat.name && goat.name.toLowerCase().startsWith(farmName)) {
+                  canViewGoatCard = true;
+                  break;
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Error verifying breeder access:", err);
+          }
+        }
+      }
+    }
+  }
 
   if (!canViewGoatCard) {
     redirect("/unauthorized");
