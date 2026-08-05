@@ -100,6 +100,20 @@ export default async function GoatDetailPage({
           }
         }
       }
+        // 4. Moved from user's farm check (Displaced)
+        if (!canViewGoatCard && user.farms) {
+          try {
+            const movedRes = await query(
+              `SELECT 1 FROM goats_move WHERE id_goat = $1 AND id_farm_of = ANY(string_to_array($2, ',')::int[]) LIMIT 1`,
+              [goat.id, user.farms]
+            );
+            if (movedRes.rows.length > 0) {
+              canViewGoatCard = true;
+            }
+          } catch (err) {
+            console.error("Error verifying moved goat access:", err);
+          }
+        }
     }
   }
 

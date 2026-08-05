@@ -61,7 +61,8 @@ export default function FarmGoatTables({
                     </thead>
                     <tbody className="divide-y divide-black bg-white">
                         {data.map((goat, idx) => {
-                            const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user);
+                            const isFarmOwner = sessionUser?.farms?.split(',').includes(farmId.toString());
+                            const hasAccess = sessionUser && (sessionUser.role >= 10 || sessionUser.id === goat.id_user || isFarmOwner);
                             const bg = idx % 2 === 0 ? "#FFFFFF" : rowBgColor;
                             return (
                                 <tr key={goat.id} style={{ backgroundColor: bg }} className="divide-x divide-black hover:opacity-95 transition-opacity">
