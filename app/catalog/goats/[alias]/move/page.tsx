@@ -72,6 +72,7 @@ export default async function TransferredGoatsPage({
   if (!user || (user.role < 10 && user.is_apk !== 1)) {
     redirect("/login");
   }
+  const isAdmin = user && user.role >= 10;
 
   let breed = null;
   if (alias && alias !== "all") {
@@ -169,14 +170,21 @@ export default async function TransferredGoatsPage({
                       style={{ backgroundColor: rowBg }}
                       className="p-1 px-4 col-sticky-md border-r border-black font-bold whitespace-nowrap"
                     >
-                      <Link
-                        href={`/goats/${g.id}`}
-                        target="_blank"
-                        className="hover:underline flex items-center gap-2"
-                      >
-                        <span className="opacity-30">➔</span>
-                        {g.goat_name || "UNKNOWN"}
-                      </Link>
+                      {isAdmin ? (
+                        <Link
+                          href={`/goats/${g.id}`}
+                          target="_blank"
+                          className="hover:underline flex items-center gap-2"
+                        >
+                          <span className="opacity-30">➔</span>
+                          {g.goat_name || "UNKNOWN"}
+                        </Link>
+                      ) : (
+                        <span className="flex items-center gap-2 opacity-80">
+                          <span className="opacity-30">➔</span>
+                          {g.goat_name || "UNKNOWN"}
+                        </span>
+                      )}
                     </td>
                     <td className="p-1 px-4 text-center uppercase opacity-80">
                       {g.breed_name || "-"}

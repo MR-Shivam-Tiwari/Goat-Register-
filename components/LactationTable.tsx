@@ -12,6 +12,7 @@ interface LactationTableProps {
   currentSelectedId: number | null;
   lang: string;
   t: any;
+  currentUser?: any;
 }
 
 export default function LactationTable({
@@ -21,9 +22,13 @@ export default function LactationTable({
   currentSelectedId,
   lang,
   t,
+  currentUser,
 }: LactationTableProps) {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<number | null>(null);
+
+  const userRole = currentUser?.role ? Number(currentUser.role) : 0;
+  const isAdmin = userRole >= 10;
 
   const allLacts: any[] = [];
 
@@ -201,12 +206,18 @@ export default function LactationTable({
                       {l.relationLabel && (
                         <span className="text-gray-500/60 mr-1">{l.relationLabel}</span>
                       )}
-                      <Link
-                        href={`/goats/${l.id_goat}`}
-                        className="text-blue-600 hover:text-blue-800 underline font-bold"
-                      >
-                        {l.goatName}
-                      </Link>
+                      {isAdmin ? (
+                        <Link
+                          href={`/goats/${l.id_goat}`}
+                          className="text-blue-600 hover:text-blue-800 underline font-bold"
+                        >
+                          {l.goatName}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-900 font-bold">
+                          {l.goatName}
+                        </span>
+                      )}
                     </>
                   )}
                 </td>

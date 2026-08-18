@@ -16,10 +16,14 @@ export default function PedigreeNode({
   border,
   isGuest = false,
   t,
-}: PedigreeNodeProps) {
+  currentUser,
+}: PedigreeNodeProps & { currentUser?: any }) {
   const isHex = color && color.startsWith('#');
   const style = isHex ? { backgroundColor: color } : undefined;
   const colorClass = isHex ? '' : color;
+  
+  const userRole = currentUser?.role ? Number(currentUser.role) : 0;
+  const isAdmin = userRole >= 10;
 
   if (!node) {
     return (
@@ -46,7 +50,7 @@ export default function PedigreeNode({
       >
         {prefix}
       </span>
-      {isGuest ? (
+      {!isAdmin ? (
         <span className="font-bold text-[#491907] truncate">
           {node.name} ({node.is_abg ? "R" : "X"}
           {10000 + Number(node.id)})

@@ -296,7 +296,7 @@ export default async function GoatDetailPage({
           </div>
           <div className="p-3 md:p-5">
             <div className="rounded-lg border border-gray-200 shadow-xl shadow-gray-100/50 overflow-hidden ring-1 ring-black/5">
-              <PedigreeChart ancestry={ancestry} t={t} />
+              <PedigreeChart ancestry={ancestry} t={t} user={user} />
             </div>
           </div>
         </section>
@@ -435,7 +435,7 @@ export default async function GoatDetailPage({
             </h2>
           </div>
           <div className="p-0">
-            <LactationTable
+            <LactationTable currentUser={user}
               ancestorLacts={ancestorLacts}
               descendantLacts={descendantLacts}
               goatId={id}
@@ -933,7 +933,7 @@ function CertRows({
 
 
 
-function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
+function PedigreeChart({ ancestry, t, user }: { ancestry: any; t: any; user: any }) {
   if (!ancestry) return null;
 
   // Walk tree to find repeated ancestors by name (Inbreeding detection)
@@ -995,14 +995,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
       <div className="flex divide-x divide-gray-400">
         {/* GENERATION 1 */}
         <div className="flex-1 flex-col flex">
-          <PedigreeNode
+          <PedigreeNode currentUser={user}
             node={ancestry.father}
             prefix={t.common.pedigreePrefix.father}
             color={getNodeColor(ancestry.father, 1)}
             border
             t={t}
           />
-          <PedigreeNode
+          <PedigreeNode currentUser={user}
             node={ancestry.mother}
             prefix={t.common.pedigreePrefix.mother}
             color={getNodeColor(ancestry.mother, 2)}
@@ -1017,14 +1017,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
               key={i}
               className="flex-1 flex flex-col border-b last:border-0 border-gray-400"
             >
-              <PedigreeNode
+              <PedigreeNode currentUser={user}
                 node={p?.father}
                 prefix={t.common.pedigreePrefix.father}
                 color={getNodeColor(p?.father, 1)}
                 border
                 t={t}
               />
-              <PedigreeNode
+              <PedigreeNode currentUser={user}
                 node={p?.mother}
                 prefix={t.common.pedigreePrefix.mother}
                 color={getNodeColor(p?.mother, 2)}
@@ -1042,14 +1042,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
                 key={`${i}-${j}`}
                 className="flex-1 flex flex-col border-b last:border-0 border-gray-400"
               >
-                <PedigreeNode
+                <PedigreeNode currentUser={user}
                   node={gp?.father}
                   prefix={t.common.pedigreePrefix.father}
                   color={getNodeColor(gp?.father, 1)}
                   border
                   t={t}
                 />
-                <PedigreeNode
+                <PedigreeNode currentUser={user}
                   node={gp?.mother}
                   prefix={t.common.pedigreePrefix.mother}
                   color={getNodeColor(gp?.mother, 2)}
@@ -1069,14 +1069,14 @@ function PedigreeChart({ ancestry, t }: { ancestry: any; t: any }) {
                   key={`${i}-${j}-${k}`}
                   className="flex-1 flex flex-col border-b last:border-0 border-gray-300"
                 >
-                  <PedigreeNode
+                  <PedigreeNode currentUser={user}
                     node={ggp?.father}
                     prefix={t.common.pedigreePrefix.father}
                     color={getNodeColor(ggp?.father, 1)}
                     border
                     t={t}
                   />
-                  <PedigreeNode
+                  <PedigreeNode currentUser={user}
                     node={ggp?.mother}
                     prefix={t.common.pedigreePrefix.mother}
                     color={getNodeColor(ggp?.mother, 2)}

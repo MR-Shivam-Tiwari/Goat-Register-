@@ -417,10 +417,7 @@ export default function ClassicGoatTable({
 
                         const canAccess = isGuest
                           ? false
-                          : currentUser &&
-                            (userRole >= 10 ||
-                              (goatOwnerId !== null &&
-                                currentUserId === goatOwnerId));
+                          : currentUser && userRole >= 10;
 
                         if (!canAccess)
                           return (
@@ -522,18 +519,20 @@ export default function ClassicGoatTable({
 
                   {/* Mother Group */}
                   <td className="p-0.5 px-2 text-nowrap text-blue-900 truncate max-w-[150px] bg-[#E2F0D9]/10">
-                    {g.m_id ? (
-                      <a
-                        href={`/goats/${g.m_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline"
-                      >
-                        {g.m_name}
-                      </a>
-                    ) : (
-                      g.m_name || "-"
-                    )}
+                    {(() => {
+                      const currentUserId = currentUser?.id ? String(currentUser.id) : null;
+                      const userRole = currentUser?.role ? Number(currentUser.role) : 0;
+                      const canAccess = isGuest ? false : currentUser && userRole >= 10;
+                      
+                      if (g.m_id && canAccess) {
+                        return (
+                          <a href={`/goats/${g.m_id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {g.m_name}
+                          </a>
+                        );
+                      }
+                      return g.m_name || "-";
+                    })()}
                   </td>
                   <td className="p-0.5 px-2 text-center font-mono bg-[#E2F0D9]/10">
                     {g.m_id ? `R${10000 + g.m_id}` : "-"}
@@ -559,18 +558,20 @@ export default function ClassicGoatTable({
 
                   {/* Father Group */}
                   <td className="p-0.5 px-2 text-nowrap text-blue-900 truncate max-w-[150px] bg-[#FCE4D6]/15">
-                    {g.f_id ? (
-                      <a
-                        href={`/goats/${g.f_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline"
-                      >
-                        {g.f_name}
-                      </a>
-                    ) : (
-                      g.f_name || "-"
-                    )}
+                    {(() => {
+                      const currentUserId = currentUser?.id ? String(currentUser.id) : null;
+                      const userRole = currentUser?.role ? Number(currentUser.role) : 0;
+                      const canAccess = isGuest ? false : currentUser && userRole >= 10;
+                      
+                      if (g.f_id && canAccess) {
+                        return (
+                          <a href={`/goats/${g.f_id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {g.f_name}
+                          </a>
+                        );
+                      }
+                      return g.f_name || "-";
+                    })()}
                   </td>
                   <td className="p-0.5 px-2 text-center font-mono bg-[#FCE4D6]/15">
                     {g.f_id ? `R${10000 + g.f_id}` : "-"}

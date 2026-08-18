@@ -126,9 +126,7 @@ export default function GoatListTable({
                       {/* Name */}
                       <div className="flex items-center gap-2">
                         {(() => {
-                          const canAccess =
-                            user &&
-                            (user.role >= 10 || user.id === goat.id_user);
+                          const canAccess = user && user.role >= 10;
                           if (!canAccess) {
                             return (
                               <span className="text-[#491907] text-lg font-bold">
@@ -163,22 +161,27 @@ export default function GoatListTable({
                       {goat.breed_alias || goat.breed_name}
                     </td>
                     <td className="p-2 border-r text-md border-gray-100 text-center flex items-center justify-center gap-4 h-full">
-                      <a
-                        href={`/goats/${goat.id}/offspring?sex=male`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
-                      >
-                        {t.goats.sonPlus}
-                      </a>
-                      <a
-                        href={`/goats/${goat.id}/offspring?sex=female`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
-                      >
-                        {t.goats.daughterPlus}
-                      </a>
+                      {(() => {
+                        const canAccess = user && user.role >= 10;
+                        if (!canAccess) {
+                          return (
+                            <>
+                              <span className="text-gray-500">{t.goats.sonPlus}</span>
+                              <span className="text-gray-500">{t.goats.daughterPlus}</span>
+                            </>
+                          );
+                        }
+                        return (
+                          <>
+                            <a href={`/goats/${goat.id}/offspring?sex=male`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                              {t.goats.sonPlus}
+                            </a>
+                            <a href={`/goats/${goat.id}/offspring?sex=female`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                              {t.goats.daughterPlus}
+                            </a>
+                          </>
+                        );
+                      })()}
                     </td>
                     <td className="p-2 border-r text-md border-gray-100 text-center opacity-60 font-mono">
                       {goat.time_added
