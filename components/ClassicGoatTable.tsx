@@ -65,7 +65,7 @@ export default function ClassicGoatTable({
             {/* TOP HEADER - GROUPS (UNIFIED VIBRANT GREEN) */}
             <tr className="text-[12px] font-bold uppercase tracking-tight text-black bg-[#23DC69] border-b border-black">
               <th
-                colSpan={21}
+                colSpan={22}
                 className="p-1 text-center border-r-[3px] border-black bg-[#23DC69]"
               >
                 {isMain ? t.goats.showAll : t.catalog.title}
@@ -138,6 +138,9 @@ export default function ClassicGoatTable({
               </th>
               <th className="p-0.5 px-2 border-r text-center text-nowrap border-black">
                 {t.goats.birthDate}
+              </th>
+              <th className="p-0.5 px-2 border-r text-center text-nowrap border-black text-red-700/80">
+                {t.goats.deathDate}
               </th>
               <th className="p-0.5 px-2 border-r text-center text-nowrap border-black">
                 {t.goats.birthWeight}
@@ -464,6 +467,15 @@ export default function ClassicGoatTable({
                   <td className="p-0.5 px-2 text-center text-nowrap font-mono text-[12px]">
                     {g.date_born
                       ? new Date(g.date_born).toLocaleDateString("ru-RU", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                      : "-"}
+                  </td>
+                  <td className="p-0.5 px-2 text-center text-nowrap font-mono text-[12px] text-red-700/80 font-bold">
+                    {g.date_dead
+                      ? new Date(g.date_dead).toLocaleDateString("ru-RU", {
                           day: "2-digit",
                           month: "2-digit",
                           year: "numeric",

@@ -20,6 +20,7 @@ interface Goat {
   manuf: string;
   owner: string;
   date_born: any;
+  date_dead: any;
   time_added: any;
   reg_id: number;
   id_stoodbook: number;
@@ -192,7 +193,7 @@ async function getGoats(
   let sql = `
       SELECT 
         A.id, A.is_reg, A.name, A.sex, A.id AS reg_id, A.status, A.time_added, A.id_farm,
-        Di.ava, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
+        Di.ava, Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.date_dead, Di.born_weight, Di.born_qty,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.blood_percent,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,

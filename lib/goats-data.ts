@@ -5,7 +5,7 @@ export async function getGoatData(id: string) {
     `
       SELECT 
         A.name, A.sex, A.id AS id, A.status, A.is_reg, A.time_added, A.id_farm, A.id_mother, A.id_father, A.id_user,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty, Di.id_breed,
+        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.date_dead, Di.born_weight, Di.born_qty, Di.id_breed,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook, Di.score,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
@@ -55,7 +55,7 @@ export async function getOffspringDetailed(id: string) {
     `
       SELECT 
         A.name, A.sex, A.id AS id, A.status, A.is_reg, A.time_added, A.id_farm,
-        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.born_weight, Di.born_qty,
+        Di.is_abg, Di.manuf, Di.owner, Di.date_born, Di.date_dead, Di.born_weight, Di.born_qty,
         Di.horns_type, Di.have_gen, Di.gen_mat, Di.id_stoodbook,
         Di.code_ua, Di.code_abg, Di.code_farm, Di.code_chip, Di.code_int, Di.code_brand,
         Di.source, Di.special, Di.cert_serial, Di.cert_no,
@@ -111,10 +111,10 @@ export async function getDescendantsTree(id: string, maxLevel: number = 4) {
       unique_descendants AS (
         SELECT DISTINCT ON (id) * FROM descendants_raw ORDER BY id, level DESC
       )
-      SELECT ud.*, gd.date_born 
+      SELECT ud.*, gd.date_born, gd.date_dead 
       FROM unique_descendants ud
       LEFT JOIN goats_data gd ON ud.id = gd.id_goat
-      ORDER BY ud.level ASC, gd.date_born ASC, ud.id ASC
+      ORDER BY ud.level ASC, gd.date_born, gd.date_dead ASC, ud.id ASC
     `,
     [id, maxLevel],
   );
