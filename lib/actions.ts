@@ -662,12 +662,13 @@ export async function updateUserAction(formData: FormData) {
     const is_apk = parseInt(formData.get('is_apk') as string) || 0;
     const roleValue = parseInt(formData.get('role') as string) || 1;
     const password = formData.get('password') as string;
+    const farms = formData.get('farms') as string;
 
     if (!id) return { error: t.errors.invalidData };
 
     try {
-        const updateFields = ['name = $1', 'email = $2', 'phone = $3', 'is_apk = $4', 'role = $5'];
-        const values: any[] = [name, email, phone, is_apk, roleValue];
+        const updateFields = ['name = $1', 'email = $2', 'phone = $3', 'is_apk = $4', 'role = $5', 'farms = $6'];
+        const values: any[] = [name, email, phone, is_apk, roleValue, farms || null];
 
         if (password && password.trim() !== '') {
             const hash = crypto.createHash('md5').update(password).digest('hex');

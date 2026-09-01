@@ -9,7 +9,7 @@ import UserEditForm from '@/components/UserEditForm';
 export const dynamic = "force-dynamic";
 
 async function getUser(id: string) {
-    const result = await query('SELECT id, login, name, email, phone, role, is_apk FROM users WHERE id = $1', [id]);
+    const result = await query('SELECT id, login, name, email, phone, role, is_apk, farms FROM users WHERE id = $1', [id]);
     return result.rows[0];
 }
 
@@ -24,6 +24,9 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
     if (!user) {
         notFound();
     }
+
+    const farmsResult = await query('SELECT id, name FROM farms ORDER BY name ASC');
+    const allFarms = farmsResult.rows;
 
     const cookieStore = await cookies();
     const lang = (cookieStore.get('nxt-lang')?.value as Locale) || 'ru';
@@ -53,7 +56,7 @@ export default async function UserEditPage({ params: paramsPromise }: { params: 
 
                 <div className="bg-white p-1 rounded-sm shadow-xl border border-black/10">
                     <div className="bg-white p-6 md:p-10 rounded-sm">
-                        <UserEditForm user={user} t={t} />
+                        <UserEditForm user={user} t={t} allFarms={allFarms} />
                     </div>
                 </div>
             </div>

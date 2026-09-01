@@ -14,13 +14,15 @@ interface UserData {
     phone: string | null;
     role: number;
     is_apk: number;
+    farms: string | null;
 }
 
-export default function UserEditForm({ user, t }: { user: UserData; t: any }) {
+export default function UserEditForm({ user, t, allFarms = [] }: { user: UserData; t: any; allFarms?: { id: number, name: string }[] }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [selectedFarms, setSelectedFarms] = useState<string[]>(user.farms ? user.farms.split(',').map(f => f.trim()).filter(Boolean) : []);
 
     async function handleSubmit(formData: FormData) {
         setLoading(true);
@@ -123,7 +125,7 @@ export default function UserEditForm({ user, t }: { user: UserData; t: any }) {
                             <h3 className="text-[13px] font-black text-[#491907] uppercase tracking-[0.2em]">{t.auth.roleLabel || 'ACCESS CONTROL'}</h3>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-8 border border-gray-100 rounded-sm shadow-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-8 border border-gray-100 rounded-sm shadow-sm">
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.auth.roleLabel}</label>
                                 <select 
@@ -145,6 +147,32 @@ export default function UserEditForm({ user, t }: { user: UserData; t: any }) {
                                     <option value="0">{t.users.no}</option>
                                     <option value="1">{t.users.yes}</option>
                                 </select>
+                            </div>
+                            <div className="space-y-1.5 md:col-span-3">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Assigned Farms</label>
+                                <div className="w-full bg-[#F9F9F9] border-2 border-gray-100 rounded-sm p-4 max-h-[250px] overflow-y-auto space-y-2 custom-scrollbar">
+                                    {allFarms.map(farm => (
+                                        <label key={farm.id} className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-gray-100 rounded transition-colors">
+                                            <input 
+                                                type="checkbox"
+                                                checked={selectedFarms.includes(String(farm.id))}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedFarms(prev => [...prev, String(farm.id)]);
+                                                    } else {
+                                                        setSelectedFarms(prev => prev.filter(id => id !== String(farm.id)));
+                                                    }
+                                                }}
+                                                className="w-4 h-4 text-[#491907] bg-white border-gray-300 rounded focus:ring-[#491907] cursor-pointer"
+                                            />
+                                            <span className="text-[13px] font-bold text-gray-700 group-hover:text-black transition-colors">
+                                                {farm.name} <span className="text-gray-400 font-normal text-[10px] uppercase tracking-widest ml-1">(ID: {farm.id})</span>
+                                            </span>
+                                        </label>
+                                    ))}
+                                    {allFarms.length === 0 && <span className="text-xs text-gray-400 font-bold uppercase">No farms found</span>}
+                                </div>
+                                <input type="hidden" name="farms" value={selectedFarms.join(',')} />
                             </div>
                         </div>
                     </div>
